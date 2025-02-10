@@ -1,7 +1,7 @@
 ---
 name: issue-template
-about: Describe this issue template's purpose here.
-title: "[BE] Feat: 구현할 유저스토리 내용"
+about: 이번 이슈에 하고자 하는 일을 적어주세요 😊
+title: "Feat: 구현할 유저스토리 내용"
 labels: ''
 assignees: ''
 
