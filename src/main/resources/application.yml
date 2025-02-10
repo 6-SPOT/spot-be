@@ -1,0 +1,12 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    context-path: /api
+  tomcat:
+    threads:
+      max: 200
+    max-connections: 10000
