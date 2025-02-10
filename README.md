@@ -1,11 +1,5 @@
-[toc]
-
-
-
 # WELCOME TO SPOT !
-
-![TEAM LOGO](../../../Documents/GitHub/dalcheonroadhead-github-blog/dalcheonroadhead.github.io/images/README/TEAM LOGO, team name is spot, logo with cloud, dreamy cloud, round cloud (1).jpg)
-
+![TEAM LOGO)](https://github.com/user-attachments/assets/cb6b5577-2f24-40bc-997d-2946493171dd)
 # ABOUT DOCS
 
 ## (0) WHAT IS SPOT?
