@@ -1,7 +1,7 @@
 ---
 name: bug-report
-about: Describe bug you met.
-title: "[BE] bug: 로그인 무한 Redirection 오류"
+about: 버그가 어떻게 생겼는지 상세히 적어주세요! 후일을 위해^^
+title: "bug: 로그인 무한 Redirection 오류"
 labels: ''
 assignees: ''
 
