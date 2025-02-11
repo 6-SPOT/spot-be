@@ -1,4 +1,6 @@
-package spot.spot.chat.chatparticipant.domain;
+package spot.spot.domain.chat.message.entity;
+
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Comment;
 
@@ -13,18 +15,18 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.chat.chatroom.domain.ChatRoom;
+import spot.spot.domain.chat.chatroom.entity.ChatRoom;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "chat_participants")
-@Comment("채팅 참여자")
-public class ChatParticipant {
+@Table(name = "messages")
+@Comment("메세지")
+public class Message {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Comment("채팅 참여자 아이디")
+	@Comment("메세지 아이디")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +35,14 @@ public class ChatParticipant {
 	private ChatRoom chatRoom;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", nullable = false)
-	@Comment("회원 아이디")
+	@JoinColumn(name = "sender_id", nullable = false)
+	@Comment("발신 회원 아이디")
 	private Member member;
+
+	@Comment("내용")
+	private String content;
+
+	@Comment("작성 시간")
+	private LocalDateTime createdAt;
+
 }

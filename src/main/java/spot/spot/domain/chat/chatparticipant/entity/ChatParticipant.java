@@ -1,4 +1,4 @@
-package spot.spot.chat.messagestatus.domain;
+package spot.spot.domain.chat.chatparticipant.entity;
 
 import org.hibernate.annotations.Comment;
 
@@ -13,19 +13,18 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.chat.chatroom.domain.ChatRoom;
-import spot.spot.chat.message.domain.Message;
+import spot.spot.domain.chat.chatroom.entity.ChatRoom;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "message_status")
-@Comment("메세지 상태")
-public class MessageStatus {
+@Table(name = "chat_participants")
+@Comment("채팅 참여자")
+public class ChatParticipant {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Comment("메세지 상태 아이디")
+	@Comment("채팅 참여자 아이디")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -37,12 +36,4 @@ public class MessageStatus {
 	@JoinColumn(name = "member_id", nullable = false)
 	@Comment("회원 아이디")
 	private Member member;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "message_id", nullable = false)
-	@Comment("메세지 아이디")
-	private Message message;
-
-	@Comment("읽음 여부")
-	private boolean isRead;
 }
