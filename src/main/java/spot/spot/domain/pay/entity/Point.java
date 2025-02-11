@@ -1,25 +1,24 @@
-package spot.spot.pay.entity;
+package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KlayAboutJob {
+@Getter
+public class Point {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String pointName;
+    private int pointAmount;
+    private String pointCode;
 
-    private int amtKlay;
-
-    private int amtKRW;
-
-    private double exchangeRate;
+    @Setter
+    private boolean isValid;
 }

@@ -1,4 +1,4 @@
-package spot.spot.pay.entity;
+package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,13 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PayHistory {
+public class KlayAboutJob {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int payAmount;
-    private int payPoint;
-    private String depositor;
-    private Long memberId;
+    private int amtKlay;
+
+    private int amtKRW;
+
+    private double exchangeRate;
 }
