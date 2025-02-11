@@ -2,8 +2,11 @@ name: Auto assign
 
 on:
   pull_request:
-    types: [opened]
-
+    types:
+      - opened
+      - reopened
+      - synchronize
+      
 permissions: write-all
 
 jobs:
@@ -33,7 +36,10 @@ jobs:
                   exit 1
                   ;;
           esac
-          gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$AUTHOR" --add-reviewer "$reviewer" --repo "$GITHUB_REPOSITORY"
+          reviewers_str="${reviewers[*]}"  # 쉼표 대신 공백 구분
+          echo "Author: $AUTHOR"
+          echo "Reviewers: $reviewers_str"
+          gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$AUTHOR" --add-reviewer "$reviewers_str" --repo "$GITHUB_REPOSITORY"
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
