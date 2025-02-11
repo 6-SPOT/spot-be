@@ -18,10 +18,7 @@ public class PayHistory {
     private Long id;
 
     private int payAmount;
-
     private int payPoint;
-
     private String depositor;
-
     private Long memberId;
 }
