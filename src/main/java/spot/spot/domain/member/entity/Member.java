@@ -1,4 +1,4 @@
-package spot.spot.member.entity;
+package spot.spot.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
