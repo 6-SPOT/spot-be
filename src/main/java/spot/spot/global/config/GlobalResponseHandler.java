@@ -33,6 +33,7 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
             return new ResultResponse("success", "처리가 완료되었습니다.", null);
         }
 
+
         // 만약 String이면 예외 발생
         if (body instanceof String) {
             throw new GlobalException(ErrorCode.NOT_ALLOW_STRING);

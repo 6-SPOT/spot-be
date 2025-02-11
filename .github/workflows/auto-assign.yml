@@ -22,7 +22,6 @@ jobs:
           GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
         run: |
           AUTHOR="${{ github.event.sender.login }}"
-
           case "$AUTHOR" in
               immyeong)
                   reviewers=("42kko" "dalcheonroadhead")
