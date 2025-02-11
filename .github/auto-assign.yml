@@ -2,7 +2,7 @@ name: Auto assign
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened, synchronize]
 
 permissions: write-all
 
