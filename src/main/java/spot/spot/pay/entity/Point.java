@@ -15,11 +15,8 @@ public class Point {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String pointName;
-
     private int pointAmount;
-
     private String pointCode;
 
     @Setter
