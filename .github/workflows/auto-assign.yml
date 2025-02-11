@@ -6,7 +6,7 @@ on:
       - opened
       - reopened
       - synchronize
-      
+
 permissions: write-all
 
 jobs:
@@ -14,7 +14,8 @@ jobs:
     name: Auto add reviewer and assignee
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Set Reviewers and Assignee
+        run: |
           case "$AUTHOR" in
               immyeong)
                   reviewers=("42kko" "dalcheonroadhead")
@@ -36,9 +37,10 @@ jobs:
                   exit 1
                   ;;
           esac
-          reviewers_str="${reviewers[*]}"  # 쉼표 대신 공백 구분
+
           echo "Author: $AUTHOR"
-          echo "Reviewers: $reviewers_str"
+          echo "Reviewers: ${reviewers[*]}"
+
           # PR에 Assignee 추가
           gh pr edit "${{ github.event.pull_request.number }}" --add-assignee "$AUTHOR"
 
@@ -49,5 +51,3 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
-      OWNER: ${{ github.repository_owner }}
-      REPO: ${{ github.event.repository.name }}
