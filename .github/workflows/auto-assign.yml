@@ -38,16 +38,14 @@ jobs:
                   ;;
           esac
 
+          reviewers_str=$(IFS=,; echo "${reviewers[*]}")
+
           echo "Author: $AUTHOR"
-          echo "Reviewers: ${reviewers[*]}"
+          echo "Reviewers: $reviewers_str"
 
           # PR에 Assignee 추가
           gh pr edit "${{ github.event.pull_request.number }}" --add-assignee "$AUTHOR"
-
-          # 리뷰어를 개별적으로 추가
-          for reviewer in "${reviewers[@]}"; do
-            gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewer"
-          done
+          gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewers_str"
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
