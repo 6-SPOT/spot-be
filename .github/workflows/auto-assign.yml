@@ -39,7 +39,13 @@ jobs:
           reviewers_str="${reviewers[*]}"  # 쉼표 대신 공백 구분
           echo "Author: $AUTHOR"
           echo "Reviewers: $reviewers_str"
-          gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$AUTHOR" --add-reviewer "$reviewers_str" --repo "$GITHUB_REPOSITORY"
+          # PR에 Assignee 추가
+          gh pr edit "${{ github.event.pull_request.number }}" --add-assignee "$AUTHOR"
+
+          # 리뷰어를 개별적으로 추가
+          for reviewer in "${reviewers[@]}"; do
+            gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewer"
+          done
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
