@@ -2,7 +2,10 @@ name: Auto assign
 
 on:
   pull_request:
-    types: [opened]
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 permissions: write-all
 
@@ -11,7 +14,14 @@ jobs:
     name: Auto add reviewer and assignee
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Reviewers and Assignee
+        env:
+          GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
+        run: |
+          AUTHOR="${{ github.event.sender.login }}"
           case "$AUTHOR" in
               immyeong)
                   reviewers=("42kko" "dalcheonroadhead")
@@ -33,7 +43,18 @@ jobs:
                   exit 1
                   ;;
           esac
-          gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$AUTHOR" --add-reviewer "$reviewer" --repo "$GITHUB_REPOSITORY"
+
+          # 쉼표(,)로 리뷰어 문자열 생성
+          reviewers_str=$(IFS=,; echo "${reviewers[*]}")
+
+          echo "Author: $AUTHOR"
+          echo "Reviewers: $reviewers_str"
+
+          # PR에 Assignee 추가
+          gh pr edit "${{ github.event.pull_request.number }}" --add-assignee "$AUTHOR"
+
+          # 여러 명의 리뷰어를 한 번에 추가
+          gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewers_str"
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
