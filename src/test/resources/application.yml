@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: spot
+  config:
+    import: classpath:application-key.yml
