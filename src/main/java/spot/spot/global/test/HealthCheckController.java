@@ -1,4 +1,4 @@
-package spot.spot.global.controller;
+package spot.spot.global.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import spot.spot.global.exception.ErrorCode;
-import spot.spot.global.exception.GlobalException;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 
 @RestController
 @RequestMapping("/health")

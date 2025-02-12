@@ -1,4 +1,4 @@
-package spot.spot.global.dto.response;
+package spot.spot.global.response.format;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
