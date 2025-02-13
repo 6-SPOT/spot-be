@@ -61,7 +61,7 @@ dependencies {
 compileJava {
 	options.compilerArgs += [
 			'--enable-preview',
-			'-Amapstruct.defaultComponentModel=spring' // here
+			'-Amapstruct.defaultComponentModel=spring' // @Mapper 어노테이션이 적힌 클래스는 자동으로 스프링 컨테이너에 등록
 	]
 }
 
