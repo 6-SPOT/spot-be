@@ -33,6 +33,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.klaytn.caver:core:1.8.0'
+
+	// Logging ⭐
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
+	implementation 'com.squareup:javapoet:1.13.0'
+	annotationProcessor 'com.google.auto.service:auto-service:1.0'
+	compileOnly 'javax.annotation:javax.annotation-api:1.3.2' // Java 9 이상에서는 필요
+
 	// TEST 🚀
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
@@ -43,7 +50,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// SECURITY ⭐
-	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 }
 
 tasks.named('test') {

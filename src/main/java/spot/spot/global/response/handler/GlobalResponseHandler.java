@@ -7,8 +7,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.ResultResponse;
-import spot.spot.global.exception.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
 @RestControllerAdvice

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import spot.spot.global.exception.ErrorCode;
+import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
 @RestController
