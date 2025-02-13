@@ -1,4 +1,4 @@
-package spot.spot.global.dto;
+package spot.spot.global.klaytn;
 
 import com.klaytn.caver.Caver;
 import com.klaytn.caver.contract.Contract;

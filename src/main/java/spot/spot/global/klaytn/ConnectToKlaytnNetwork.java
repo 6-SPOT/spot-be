@@ -1,4 +1,4 @@
-package spot.spot.global.response.handler;
+package spot.spot.global.klaytn;
 
 import com.klaytn.caver.Caver;
 import com.klaytn.caver.abi.datatypes.Type;
@@ -10,8 +10,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.utils.Numeric;
-import spot.spot.global.dto.CaverConnection;
-import spot.spot.global.dto.ContractConstants;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 

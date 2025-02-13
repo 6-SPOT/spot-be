@@ -1,4 +1,4 @@
-package spot.spot.global.config;
+package spot.spot.global.response.handler;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -7,9 +7,9 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import spot.spot.global.dto.response.ResultResponse;
+import spot.spot.global.response.format.ResultResponse;
 import spot.spot.global.exception.ErrorCode;
-import spot.spot.global.exception.GlobalException;
+import spot.spot.global.response.format.GlobalException;
 
 @RestControllerAdvice
 public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {

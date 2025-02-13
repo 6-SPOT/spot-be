@@ -1,4 +1,4 @@
-package spot.spot.global.dto;
+package spot.spot.global.klaytn;
 
 public enum ContractConstants {
     PRIVATE_KEY("7858e77af705cc06b5674bb8e01294379c1b4737629c8498c931848b98c2a878"),
