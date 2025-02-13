@@ -13,8 +13,6 @@ server:
 spring:
   application:
     name: spot
-  config:
-    import: classpath:application-key.yml
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver

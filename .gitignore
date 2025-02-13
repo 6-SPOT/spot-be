@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### CUSTOM IGNORE ###
-application-key.yml
+application-local.yml
