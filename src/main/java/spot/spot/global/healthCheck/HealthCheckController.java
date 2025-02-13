@@ -2,6 +2,7 @@ package spot.spot.global.healthCheck;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
+@Slf4j
 @RestController
 @RequestMapping("/health")
 public class HealthCheckController {
@@ -17,6 +19,9 @@ public class HealthCheckController {
     // ✅ 1️⃣ 기본형 반환 (int, double, boolean 등)
     @GetMapping("/primitive")
     public int getPrimitive() {
+        log.info("TRACE LEVEL LOG");
+        log.warn(" WARN LEVEL LOG");
+        log.error("ERROR LEVEL LOG");
         return 42; // 자동으로 ResultResponse.success(42)로 감싸져야 함
     }
 
