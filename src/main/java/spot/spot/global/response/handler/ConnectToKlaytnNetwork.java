@@ -1,4 +1,4 @@
-package spot.spot.global.config;
+package spot.spot.global.response.handler;
 
 import com.klaytn.caver.Caver;
 import com.klaytn.caver.abi.datatypes.Type;
@@ -12,8 +12,8 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.utils.Numeric;
 import spot.spot.global.dto.CaverConnection;
 import spot.spot.global.dto.ContractConstants;
-import spot.spot.global.exception.ErrorCode;
-import spot.spot.global.exception.GlobalException;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 
 import java.io.IOException;
 import java.math.BigInteger;
