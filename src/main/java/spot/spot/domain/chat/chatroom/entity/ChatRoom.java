@@ -15,7 +15,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.domain.job.entity.Job;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

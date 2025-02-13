@@ -1,4 +1,4 @@
-package spot.spot.domain.chat.messagestatus.entity;
+package spot.spot.chat.messagestatus.domain;
 
 import org.hibernate.annotations.Comment;
 
@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import spot.spot.domain.chat.chatroom.entity.ChatRoom;
 import spot.spot.domain.chat.message.entity.Message;
-import spot.spot.domain.member.entity.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

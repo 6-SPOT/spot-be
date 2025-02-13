@@ -1,4 +1,4 @@
-package spot.spot.global.response.format;
+package spot.spot.global.exception;
 
 import lombok.Getter;
 

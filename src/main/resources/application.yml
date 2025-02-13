@@ -10,14 +10,3 @@ server:
     threads:
       max: 200
     max-connections: 10000
-spring:
-  application:
-    name: spot
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
