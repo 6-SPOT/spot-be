@@ -28,9 +28,10 @@ public class MemberController {
         return ResponseEntity.ok(memberRepository.getById(memberId));
     }
 
-    @PostMapping("/{accessToken}")
-    public ResponseEntity<Member> saveAdditionalInfo(@PathVariable String accessToken,@RequestParam String phone,@RequestParam double lat,@RequestParam double lng){
-        Long memberId = authTokensGenerator.extractMemberId(accessToken);
+    @PostMapping("/{memberId}")
+    public ResponseEntity<Member> saveAdditionalInfo(@PathVariable Long memberId,@RequestParam String phone,@RequestParam double lat,@RequestParam double lng){
+//        Long memberId = authTokensGenerator.extractMemberId(accessToken);
+
         memberService.updateMember(memberId,phone,lat,lng);
 
         return ResponseEntity.ok(memberRepository.getById(memberId));
