@@ -10,6 +10,8 @@ on:
 permissions: write-all
 
 jobs:
+
+### 이메일에 알림을 보냅니다.
   auto_add:
     name: Auto add reviewer and assignee
     runs-on: ubuntu-latest
@@ -55,6 +57,7 @@ jobs:
 
           # 여러 명의 리뷰어를 한 번에 추가
           gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewers_str"
+
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}

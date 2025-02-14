@@ -26,17 +26,17 @@ repositories {
 
 dependencies {
 	// BASIC ⭐
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	// DB 📦
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// KLAYTN 🪙
 	implementation 'com.klaytn.caver:core:1.8.0'
-
 	// Logging ⭐
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-
 	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
@@ -45,9 +45,7 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok:1.18.28'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 	// SECURITY ⭐
-
 	// Map Struct ⭐
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
 	implementation group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.5.Final'	// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리
@@ -62,7 +60,7 @@ dependencies {
 
 }
 
-// Add VM Option (1)
+// MapStruct 설정 ⭐
 compileJava {
 	options.compilerArgs += [
 			'--enable-preview',
