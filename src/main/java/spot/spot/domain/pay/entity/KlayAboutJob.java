@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class KlayAboutJob {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int amtKlay;
+    private double amtKlay;
 
     private int amtKRW;
 
