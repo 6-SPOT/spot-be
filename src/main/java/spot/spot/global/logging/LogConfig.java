@@ -21,60 +21,69 @@ import spot.spot.global.response.format.ResultResponse;
 @RequiredArgsConstructor
 @Slf4j
 public class LogConfig {
-
-    private double beforeTime = 0L;
-    private double afterTime = 0L;
-
-    // 컨트롤러 내의 모든 매소드에 대하여 Logging을 실행한다. 다만 어노테이션이 붙은 매소드는 실행하지 않는다.
     @Around("@annotation(spot.spot.global.logging.Logging)")
     public Object logging(ProceedingJoinPoint pjp) throws Throwable {
-        // 시작시간 check
-        beforeTime = System.currentTimeMillis();
+        double beforeTime = System.currentTimeMillis();
+
         // request 파라미터 값 가져오기
         Object[] args = pjp.getArgs();
         StringBuilder logMsg = new StringBuilder();
-        // request 값 확인
         for (Object arg : args) {
-            logMsg.append(arg.getClass().getSimpleName()).append(" [");
-            logMsg.append(getObjectDetails(arg)).append("],  ");
+            logMsg.append(arg.getClass().getSimpleName()).append(" [")
+                .append(getObjectDetails(arg)).append("],  ");
         }
         if (logMsg.length() > 2) {
             logMsg.setLength(logMsg.length() - 2);
         }
 
-        ColorLogger.green("-----------> REQUEST <Header>: {} \n <Body>: {}({}) ={}"
-            , getHeaderDetail()
-            , pjp.getSignature().getDeclaringTypeName()
-            , pjp.getSignature().getName()
-            , logMsg);
+        ColorLogger.green("-----------> REQUEST <Header>: {} \n <Body>: {}({}) ={}",
+            getHeaderDetail(),
+            pjp.getSignature().getDeclaringTypeName(),
+            pjp.getSignature().getName(),
+            logMsg);
 
         // 결과 확인
-        ResponseEntity<ResultResponse<?>> result = null;
-
+        Object result;
         try {
-            result = (ResponseEntity<ResultResponse<?>>) pjp.proceed();
+            result = pjp.proceed();  // AOP 실행
         } catch (Exception e) {
-            log.error("다음의 메소드 실행 중 에러가 발생함: {}({})",
+            log.error("다음의 메소드 실행 중 에러 발생: {}({})",
                 pjp.getSignature().getDeclaringTypeName(),
                 pjp.getSignature().getName(), e);
+            throw e;  // 예외 재전파
         }
 
-        // 끝시간 check
-        afterTime = System.currentTimeMillis();
-        if (result != null) {
-             ColorLogger.green("-----------> RESPONSE : {}({}) = {} ({}ms)"
-                , pjp.getSignature().getDeclaringTypeName(), pjp.getSignature().getName(),
-                result.getBody().getData(),
-                (afterTime - beforeTime) / 1000.0);
-        } else {
-            // 어떠한 에러로 인해 Pjp 실행이 끝난 후 ResponseEntity 자체가 생성되지 않은 상황을 의미
-            log.warn("-----------> RESPONSE : {}({}) = 에러로 인해 결과 반환 안됨. ({}ms)",
+        double afterTime = System.currentTimeMillis();
+        double executionTime = (afterTime - beforeTime) / 1000.0;
+
+        // ResponseEntity일 경우 처리
+        if (result instanceof ResponseEntity<?> responseEntity) {
+            ColorLogger.green("-----------> RESPONSE : {}({}) = {} ({}ms)",
                 pjp.getSignature().getDeclaringTypeName(),
                 pjp.getSignature().getName(),
-                (afterTime - beforeTime) / 1000.0);
+                responseEntity.getBody(),
+                executionTime);
         }
-        return result;
+        // ResultResponse일 경우
+        else if (result instanceof ResultResponse<?> resultResponse) {
+            ColorLogger.green("-----------> RESPONSE : {}({}) = {} ({}ms)",
+                pjp.getSignature().getDeclaringTypeName(),
+                pjp.getSignature().getName(),
+                resultResponse.getData(),
+                executionTime);
+        }
+        // 일반적인 Object 리턴 (int, String, List 등)
+        else {
+            ColorLogger.green("-----------> RESPONSE : {}({}) = {} ({}ms)",
+                pjp.getSignature().getDeclaringTypeName(),
+                pjp.getSignature().getName(),
+                result,
+                executionTime);
+        }
+
+        return result;  // 원래 응답 그대로 반환
     }
+
 
     private String getObjectDetails(Object arg) {
         StringBuilder details = new StringBuilder();
