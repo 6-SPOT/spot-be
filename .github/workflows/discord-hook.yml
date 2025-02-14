@@ -72,15 +72,15 @@ jobs:
           for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
             LOGIN=$(echo "$row" | jq -r '.login')
             NAME=${USER_MAP[$LOGIN]:-$LOGIN}  # 매핑된 이름이 없으면 GitHub ID 그대로 사용
-            REVIEWERS_FIELD="${REVIEWERS_FIELD}· $NAME | "
+            REVIEWERS_FIELD="${REVIEWERS_FIELD}  $NAME  |"
           done
 
-          # 마지막 " | " 제거
-          REVIEWERS_FIELD=$(echo "$REVIEWERS_FIELD" | sed 's/ | $//')
+          # 마지막 " |" 제거
+          REVIEWERS_FIELD=$(echo "$REVIEWERS_FIELD" | sed 's/ |$//')
 
           # 리뷰어가 없으면 기본 메시지 설정
           if [ -z "$REVIEWERS_FIELD" ]; then
-            REVIEWERS_FIELD="리뷰어가 없습니다."
+            REVIEWERS_FIELD="   리뷰어가 없습니다."
           fi
 
           # 작성자 이름 매핑
@@ -89,10 +89,10 @@ jobs:
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "🚀 Pull Request Created/Updated" \
             --arg description "**제꺼 리뷰좀 해주세요!**" \
-            --arg pr_title "[$PR_TITLE]($PR_URL)" \
-            --arg pr_author "$AUTHOR_NAME" \
-            --arg issue_content "$ISSUE_CONTENT" \
-            --arg reviewers "$REVIEWERS_FIELD" \
+            --arg pr_title "   [$PR_TITLE]($PR_URL)" \
+            --arg pr_author "   $AUTHOR_NAME" \
+            --arg issue_content "   $ISSUE_CONTENT" \
+            --arg reviewers "   $REVIEWERS_FIELD" \
             --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             '{
               "embeds": [{
@@ -100,10 +100,10 @@ jobs:
                 "title": $title,
                 "description": $description,
                 "fields": [
-                  { "name": "📌 PR 제목", "value": $pr_title, "inline": false },
-                  { "name": "👤 작성자", "value": $pr_author, "inline": false },
-                  { "name": "📝 Issue", "value": $issue_content, "inline": false },
-                  { "name": "👀 리뷰어", "value": $reviewers, "inline": false }
+                  { "name": "📌PR 제목", "value": $pr_title, "inline": false },
+                  { "name": "👤작성자", "value": $pr_author, "inline": false },
+                  { "name": "📝Issue", "value": $issue_content, "inline": false },
+                  { "name": "👀리뷰어", "value": $reviewers, "inline": false }
                 ],
                 "timestamp": $timestamp
               }]
