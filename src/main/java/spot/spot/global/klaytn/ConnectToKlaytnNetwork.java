@@ -65,6 +65,9 @@ public class ConnectToKlaytnNetwork {
     }
 
     public String deposit(int amount, String fromAddress){
+        if(amount <= 0) {
+            throw new GlobalException(ErrorCode.LOW_AMOUNT);
+        }
         BigInteger nonce = getNonce(fromAddress);
         BigInteger gasPrice = getGasPrice();
         SmartContractExecution tx = new SmartContractExecution.Builder()
@@ -81,6 +84,9 @@ public class ConnectToKlaytnNetwork {
     }
 
     public String transfer(int amount, String toAddress) {
+        if(amount <= 0) {
+            throw new GlobalException(ErrorCode.LOW_AMOUNT);
+        }
         BigInteger amountBigInt = BigInteger.valueOf(amount);
         BigInteger nonce = getNonce(toAddress);
         BigInteger gasPrice = getGasPrice();

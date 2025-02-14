@@ -48,11 +48,17 @@ public class ExchangeRateByBithumbApi {
     }
 
     public double exchangeToKaia(int cash) {
+        if(cash <= 0) {
+            throw new GlobalException(ErrorCode.LOW_AMOUNT);
+        }
         log.info("exchanged kaia = {}", cash * changeRateCoin);
         return cash * changeRateCoin;
     }
 
     public int exchangeToCash(double kaia) {
+        if(kaia <= 0) {
+            throw new GlobalException(ErrorCode.LOW_AMOUNT);
+        }
         log.info("exchanged Cash = {}", kaia * changeRateCash);
         return (int) (kaia * changeRateCash);
     }

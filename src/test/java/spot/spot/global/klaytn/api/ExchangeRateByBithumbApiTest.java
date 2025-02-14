@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import spot.spot.global.response.format.GlobalException;
 
 @SpringBootTest
 @Slf4j
@@ -22,5 +23,17 @@ class ExchangeRateByBithumbApiTest {
         log.info("exchanged Cash = {}", cash);
 
         Assertions.assertThat(amount).isEqualTo(cash);
+    }
+
+    @Test
+    public void inValidAmountExceptionExchangeToKaia() {
+        Assertions.assertThatThrownBy(() -> bithumbApi.exchangeToKaia(0))
+                .isInstanceOf(GlobalException.class);
+    }
+
+    @Test
+    public void inValidAmountExceptionExchangeToCash() {
+        Assertions.assertThatThrownBy(() -> bithumbApi.exchangeToCash(0))
+                .isInstanceOf(GlobalException.class);
     }
 }
