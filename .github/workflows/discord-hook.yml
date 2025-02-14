@@ -34,12 +34,12 @@ jobs:
             LOGIN=$(echo "$row" | jq -r '.login')
             AVATAR_URL=$(echo "$row" | jq -r '.avatar_url')
 
-            # Discord Embed 필드에 추가
-            REVIEWERS_FIELD="${REVIEWERS_FIELD} {
-              \"name\": \"리뷰어\",
-              \"value\": \"![${LOGIN}](${AVATAR_URL}) [$LOGIN](https://github.com/${LOGIN})\",
-              \"inline\": true
-            },"
+          # Discord Embed 필드에 추가
+          REVIEWERS_FIELD="${REVIEWERS_FIELD} {
+            \"name\": \"리뷰어\",
+            \"value\": \"![${LOGIN}](${AVATAR_URL}) [$LOGIN](https://github.com/${LOGIN})\",
+            \"inline\": true
+          },"
           done
 
           # 만약 리뷰어가 없다면 기본 메시지 설정
@@ -50,6 +50,8 @@ jobs:
               \"inline\": true
             }"
           fi
+
+          echo "데이터 정리완료, 디스코드 알림을 보냅니다."
 
           curl -H "Content-Type: application/json" \
             -X POST \
