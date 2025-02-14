@@ -22,6 +22,7 @@ public class Member {
     private Long id;
     private String email;
     private String nickname;
+    private String phone;
 
     private double lat; //위도
     private double lng; //경도
@@ -39,6 +40,15 @@ public class Member {
         this.email = email;
         this.nickname = nickname;
         this.oAuthProvider = oAuthProvider;
+    }
+
+    public void updatePhone(String phone){
+        this.phone = phone;
+    }
+
+    public void updateAddress(double lat,double lng){
+        this.lat = lat;
+        this.lng = lng;
     }
 
 

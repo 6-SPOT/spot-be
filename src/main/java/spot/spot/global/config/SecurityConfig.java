@@ -37,8 +37,7 @@ public class SecurityConfig {
         //해당 경로로 들어가려면 인증된 사용자여야 함.
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정(jwt는 세션을 stateless로 만들어야함)

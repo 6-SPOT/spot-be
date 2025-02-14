@@ -1,5 +1,6 @@
 package spot.spot.domain.member;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 public class MemberController {
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
+    private final MemberService memberService;
 
     @GetMapping
     public ResponseEntity<List<Member>> findAll() {
@@ -26,16 +28,11 @@ public class MemberController {
         return ResponseEntity.ok(memberRepository.getById(memberId));
     }
 
-//    @PostMapping("/{accessToken}")
-//    public ResponseEntity<Member> saveAdditionalInfo(@PathVariable String accessToken,@RequestParam String phone,@RequestParam double lat,@RequestParam double lng){
-//        Long memberId = authTokensGenerator.extractMemberId(accessToken);
-//        Member member = memberRepository.getById(memberId);
-//        Member.builder()
-//                .phone(phone)
-//                .lat(lat)
-//                .lng(lng)
-//                .build();
-//        return ResponseEntity.ok(member);
-//
-//    }
+    @PostMapping("/{accessToken}")
+    public ResponseEntity<Member> saveAdditionalInfo(@PathVariable String accessToken,@RequestParam String phone,@RequestParam double lat,@RequestParam double lng){
+        Long memberId = authTokensGenerator.extractMemberId(accessToken);
+        memberService.updateMember(memberId,phone,lat,lng);
+
+        return ResponseEntity.ok(memberRepository.getById(memberId));
+    }
 }
