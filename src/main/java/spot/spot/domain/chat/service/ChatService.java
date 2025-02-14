@@ -3,7 +3,6 @@ package spot.spot.domain.chat.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.dto.request.ChatMessageCreateRequest;
+import spot.spot.domain.chat.dto.request.ChatRoomCreateRequest;
 import spot.spot.domain.chat.dto.response.ChatListResponse;
 import spot.spot.domain.chat.dto.response.ChatMessageResponse;
 import spot.spot.domain.chat.entity.ChatMessage;
@@ -132,15 +132,15 @@ public class ChatService {
 	}
 
 	@Transactional
-	public Long getOrCreatePrivateRoom(Long otherMemberId, Long jobId) {
+	public Long getOrCreateChatRoom(ChatRoomCreateRequest chatRoomCreateRequest) {
 		Long myMemberId = 1L;
 		Member member = memberRepository.findById(myMemberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 
-		Member otherMember = memberRepository.findById(otherMemberId)
+		Member otherMember = memberRepository.findById(chatRoomCreateRequest.otherMemberId())
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 
-		Job job = jobRepository.findById(jobId)
+		Job job = jobRepository.findById(chatRoomCreateRequest.jobId())
 			.orElseThrow(() -> new EntityNotFoundException("job not found"));
 
 		// TODO: 이미 둘과 일에 대한 채팅방이 존재하는지 확인하고 존재하면 룸 id 리턴 아니면 생성
