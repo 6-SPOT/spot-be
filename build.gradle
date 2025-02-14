@@ -71,12 +71,6 @@ dependencies {
 	// SWAGGER  ⭐
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.0'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.21'
-	// WEBSOCKET ⭐
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-	// VALIDATION ⭐
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
 
 }
 
@@ -85,6 +79,16 @@ def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
 // gradle에게 읽어야 할 source 폴더를 알려줌
 sourceSets {
 	main.java.srcDirs += [querydslDir]	// src/main/java 에 querydslDir 폴더를 추가
+	// SWAGGER  ⭐
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.0'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.21'
+	// WEBSOCKET ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// VALIDATION ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
 }
 
 // 모든 `JAVA compile` 작업에 밑의 설정을 각각 제공함.
