@@ -11,8 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import spot.spot.domain.member.entity.Member;
 
 @Entity
@@ -40,8 +42,17 @@ public class ReadStatus {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "message_id", nullable = false)
 	@Comment("메세지 아이디")
-	private ChatMessage message;
+	private ChatMessage chatMessage;
 
 	@Comment("읽음 여부")
+	@Setter
 	private boolean isRead;
+
+	@Builder
+	public ReadStatus(ChatRoom chatRoom, Member member, ChatMessage chatMessage, boolean isRead) {
+		this.chatRoom = chatRoom;
+		this.member = member;
+		this.chatMessage = chatMessage;
+		this.isRead = isRead;
+	}
 }

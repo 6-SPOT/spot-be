@@ -42,6 +42,18 @@ public class ChatRoom {
 	private String thumbnailImageUrl;
 
 
+	@Comment("생성 시간")
+	private LocalDateTime createdAt;
+
 	@Comment("업데이트 시간")
 	private LocalDateTime updatedAt;
+
+
+	public ChatRoom(Job job, String title, String thumbnailImageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		this.job = job;
+		this.title = title;
+		this.thumbnailImageUrl = thumbnailImageUrl;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
 }

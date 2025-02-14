@@ -52,6 +52,14 @@ dependencies {
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
 	implementation group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.5.Final'	// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'						// 컴파일 시간에 구현체를 만드는 Lombok과 컴파일 타임에 충돌이 날 수 있음. 따라서 순서 조정 (Lombok 먼저, MapStruct 다음에)
+
+	// WEBSOCKET ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// VALIDATION ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
 }
 
 // Add VM Option (1)

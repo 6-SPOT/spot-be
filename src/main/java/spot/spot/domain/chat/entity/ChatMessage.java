@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import spot.spot.domain.member.entity.Member;
@@ -45,4 +46,11 @@ public class ChatMessage {
 	@Comment("작성 시간")
 	private LocalDateTime createdAt;
 
+	@Builder
+	public ChatMessage(ChatRoom chatRoom, Member member, String content, LocalDateTime createdAt) {
+		this.chatRoom = chatRoom;
+		this.member = member;
+		this.content = content;
+		this.createdAt = createdAt;
+	}
 }
