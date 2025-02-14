@@ -78,5 +78,5 @@ jobs:
             }" \
             "$DISCORD_URL"
     env:
-      TOKEN: ${{ secrets.KKOTOKEN }}
+      TOKEN: ${{ secrets.PR_WEBHOOK_PAT }}
       DISCORD_URL: ${{ secrets.PR_WEBHOOK_PAT }}
