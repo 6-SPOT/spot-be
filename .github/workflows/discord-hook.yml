@@ -38,12 +38,12 @@ jobs:
           echo "🟢 PR 본문 원본 데이터:"
           echo "$PR_BODY"
 
-          # Issue 감지 여부 확인
+          # Issue 감지 여부 확인 (grep 활용)
           echo "🟢 Issue 감지 테스트:"
-          echo "$PR_BODY" | awk '/^# .*Issue$/{print "✅ Issue 감지됨: "$0}'
+          echo "$PR_BODY" | grep -i "Issue" && echo "✅ Issue 감지됨!" || echo "❌ Issue 감지되지 않음!"
 
           # "Issue"로 끝나는 제목을 감지하고 그 아래 내용을 가져오기
-          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*Issue$/{flag=1} /^# /{flag=0} flag' | sed '/^$/d')
+          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*[Ii]ssue/{flag=1} /^# /{flag=0} flag' | sed '/^$/d')
 
           echo "🟢 추출된 Issue 내용:"
           echo "$ISSUE_CONTENT"
