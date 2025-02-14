@@ -79,4 +79,4 @@ jobs:
             "$DISCORD_URL"
     env:
       TOKEN: ${{ secrets.PR_WEBHOOK_PAT }}
-      DISCORD_URL: ${{ secrets.PR_WEBHOOK_PAT }}
+      DISCORD_URL: ${{ secrets.DISCORD_WEBHOO_BE }}
