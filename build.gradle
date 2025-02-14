@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
 	// BASIC ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -35,6 +36,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	// KLAYTN 🪙
 	implementation 'com.klaytn.caver:core:1.8.0'
+
+	// querydsl
+	implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	// Logging ⭐
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
 	// TEST ⭐
@@ -52,18 +60,24 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'						// 컴파일 시간에 구현체를 만드는 Lombok과 컴파일 타임에 충돌이 날 수 있음. 따라서 순서 조정 (Lombok 먼저, MapStruct 다음에)
 }
 
-// MapStruct 설정 ⭐
-compileJava {
+def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
+
+// gradle에게 읽어야 할 source 폴더를 알려줌
+sourceSets {
+	main.java.srcDirs += [querydslDir]	// src/main/java 에 querydslDir 폴더를 추가
+}
+
+// 모든 `JAVA compile` 작업에 밑의 설정을 각각 제공함.
+tasks.withType(JavaCompile).configureEach {
+	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
 	options.compilerArgs += [
 			'--enable-preview',
-			'-Amapstruct.defaultComponentModel=spring' // @Mapper 어노테이션이 적힌 클래스는 자동으로 스프링 컨테이너에 등록
+			'-Amapstruct.defaultComponentModel=spring',
+			'-parameters'
 	]
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
-	jvmArgs([
-			'--enable-preview',
-			'-Amapstruct.defaultComponentModel=spring'
-	])
+	jvmArgs(['--enable-preview'])
 }
