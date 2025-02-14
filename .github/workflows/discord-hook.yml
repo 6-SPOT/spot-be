@@ -86,12 +86,11 @@ jobs:
           # 작성자 이름 매핑
           AUTHOR_NAME=${USER_MAP[$PR_AUTHOR]:-$PR_AUTHOR}  # 작성자 이름 매핑
 
-          # **들여쓰기 공백 적용**
-          INDENT="   "
-          PR_TITLE_FORMATTED="${INDENT}${PR_TITLE}"
-          PR_AUTHOR_FORMATTED="${INDENT}${AUTHOR_NAME}"
-          ISSUE_CONTENT_FORMATTED="${INDENT}${ISSUE_CONTENT}"
-          REVIEWERS_FIELD_FORMATTED="${INDENT}${REVIEWERS_FIELD}"
+          # **Markdown 블록(`>`) 적용**
+          PR_TITLE_FORMATTED="> ${PR_TITLE}"
+          PR_AUTHOR_FORMATTED="> ${AUTHOR_NAME}"
+          ISSUE_CONTENT_FORMATTED="> ${ISSUE_CONTENT}"
+          REVIEWERS_FIELD_FORMATTED="> ${REVIEWERS_FIELD}"
 
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "🚀 Pull Request Created/Updated" \
