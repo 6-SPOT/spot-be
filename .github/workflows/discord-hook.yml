@@ -30,40 +30,41 @@ jobs:
 
           echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
 
-          # 리뷰어 정보를 JSON으로 변환
-          REVIEWERS_FIELD=$(echo "$REVIEWERS_JSON" | jq -c '[.[] | {
-            "name": "리뷰어",
-            "value": "![\(.login)](\(.avatar_url)) [\(.login)](https://github.com/\(.login))",
-            "inline": true
-          }]')
+          # 리뷰어 정보를 가로로 정렬하여 변환
+          REVIEWERS_FIELD=""
+          for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
+            LOGIN=$(echo "$row" | jq -r '.login')
+            AVATAR_URL=$(echo "$row" | jq -r '.avatar_url')
 
-          # 리뷰어가 없으면 기본 메시지 추가
-          if [ -z "$REVIEWERS_FIELD" ] || [ "$REVIEWERS_FIELD" = "[]" ]; then
-            REVIEWERS_FIELD='[{
-              "name": "리뷰어",
-              "value": "리뷰어가 없습니다.",
-              "inline": true
-            }]'
+            # Discord 메시지 형식으로 변환
+            REVIEWERS_FIELD="${REVIEWERS_FIELD} ![$LOGIN]($AVATAR_URL) [$LOGIN](https://github.com/$LOGIN) |"
+          done
+
+          # 마지막 `|` 제거
+          REVIEWERS_FIELD=$(echo "$REVIEWERS_FIELD" | sed 's/|$//')
+
+          # 리뷰어가 없으면 기본 메시지 설정
+          if [ -z "$REVIEWERS_FIELD" ]; then
+            REVIEWERS_FIELD="리뷰어가 없습니다."
           fi
 
-          # JSON 요청 바디 생성 (리뷰어 필드를 별도로 추가)
+          # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
             --arg description "새로운 PR이 생성되었거나 업데이트되었습니다." \
             --arg pr_title "[$PR_TITLE]($PR_URL)" \
             --arg pr_author "[$PR_AUTHOR](https://github.com/$PR_AUTHOR)" \
+            --arg reviewers "$REVIEWERS_FIELD" \
             --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-            --argjson reviewers "$REVIEWERS_FIELD" \
             '{
               "embeds": [{
                 "color": 16776960,
                 "title": $title,
                 "description": $description,
-                "fields": (
-                  [
-                    { "name": "PR 제목", "value": $pr_title, "inline": false },
-                    { "name": "작성자", "value": $pr_author, "inline": true }
-                  ] + $reviewers
-                ),
+                "fields": [
+                  { "name": "PR 제목", "value": $pr_title, "inline": false },
+                  { "name": "작성자", "value": $pr_author, "inline": true },
+                  { "name": "리뷰어", "value": $reviewers, "inline": false }
+                ],
                 "timestamp": $timestamp
               }]
             }')
