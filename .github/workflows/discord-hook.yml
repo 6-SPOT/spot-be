@@ -38,6 +38,10 @@ jobs:
           echo "🟢 PR 본문 원본 데이터:"
           echo "$PR_BODY"
 
+          # Issue 감지 여부 확인
+          echo "🟢 Issue 감지 테스트:"
+          echo "$PR_BODY" | awk '/^# .*Issue$/{print "✅ Issue 감지됨: "$0}'
+
           # "Issue"로 끝나는 제목을 감지하고 그 아래 내용을 가져오기
           ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*Issue$/{flag=1} /^# /{flag=0} flag' | sed '/^$/d')
 
