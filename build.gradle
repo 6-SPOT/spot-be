@@ -21,7 +21,7 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
+	maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -66,6 +66,5 @@ tasks.named('test') {
 	useJUnitPlatform()
 	jvmArgs([
 			'--enable-preview',
-			'-Amapstruct.defaultComponentModel=spring'
 	])
 }
