@@ -60,8 +60,6 @@ jobs:
           # "Issue" 내용이 없으면 기본 메시지 설정
           if [ -z "$ISSUE_CONTENT" ]; then
             ISSUE_CONTENT="Issue 내용이 없습니다."
-          else
-            ISSUE_CONTENT="\\n\\n\u00A0\u00A0\u00A0$ISSUE_CONTENT"
           fi
 
           # 리뷰어 목록 가져오기
@@ -82,21 +80,26 @@ jobs:
 
           # 리뷰어가 없으면 기본 메시지 설정
           if [ -z "$REVIEWERS_FIELD" ]; then
-            REVIEWERS_FIELD="\\n\\n\u00A0\u00A0\u00A0리뷰어가 없습니다."
-          else
-            REVIEWERS_FIELD="\\n\\n\u00A0\u00A0\u00A0$REVIEWERS_FIELD"
+            REVIEWERS_FIELD="리뷰어가 없습니다."
           fi
 
           # 작성자 이름 매핑
           AUTHOR_NAME=${USER_MAP[$PR_AUTHOR]:-$PR_AUTHOR}  # 작성자 이름 매핑
 
+          # **들여쓰기 공백 적용**
+          INDENT="   "
+          PR_TITLE_FORMATTED="${INDENT}${PR_TITLE}"
+          PR_AUTHOR_FORMATTED="${INDENT}${AUTHOR_NAME}"
+          ISSUE_CONTENT_FORMATTED="${INDENT}${ISSUE_CONTENT}"
+          REVIEWERS_FIELD_FORMATTED="${INDENT}${REVIEWERS_FIELD}"
+
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "🚀 Pull Request Created/Updated" \
             --arg description "**제꺼 리뷰좀 해주세요!**" \
-            --arg pr_title "\\n\\n\u00A0\u00A0\u00A0[$PR_TITLE]($PR_URL)" \
-            --arg pr_author "\\n\\n\u00A0\u00A0\u00A0$AUTHOR_NAME" \
-            --arg issue_content "$ISSUE_CONTENT" \
-            --arg reviewers "$REVIEWERS_FIELD" \
+            --arg pr_title "$PR_TITLE_FORMATTED" \
+            --arg pr_author "$PR_AUTHOR_FORMATTED" \
+            --arg issue_content "$ISSUE_CONTENT_FORMATTED" \
+            --arg reviewers "$REVIEWERS_FIELD_FORMATTED" \
             --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             '{
               "embeds": [{
