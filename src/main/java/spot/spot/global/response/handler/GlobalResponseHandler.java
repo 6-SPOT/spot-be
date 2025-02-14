@@ -28,6 +28,17 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
         Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
         ServerHttpResponse response) {
 
+        // ✅ Swagger API 요청은 변환하지 않음
+        String requestPath = request.getURI().getPath();
+        if (requestPath.startsWith("/v3/api-docs") || requestPath.startsWith("/swagger-ui")) {
+            return body;
+        }
+
+        // ✅ 만약 응답이 byte[]인 경우 변환하지 않음
+        if (body instanceof byte[]) {
+            return body;
+        }
+
         // 만약 반환 타입이 void이면 data 없이 응답
         if (Void.TYPE.equals(returnType.getParameterType())) {
             return new ResultResponse("success", "처리가 완료되었습니다.", null);
