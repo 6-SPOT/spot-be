@@ -45,5 +45,8 @@ public class Job {
 
     // 연관 관계 (주인 섦정: job (job에서의 조회는 읽기 전용), 영속성 전이 설정, 연관관계가 끊기면 고아가 된 레코드 삭제, FetchType.Lazy 설정)
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<HashTag> hashTags = new ArrayList<>();
+    private List<HashTag> hashTags;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Matching> matchings;
 }
