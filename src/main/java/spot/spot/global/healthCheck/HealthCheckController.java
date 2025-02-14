@@ -22,7 +22,6 @@ public class HealthCheckController {
 
 
     // ✅ 1️⃣ 기본형 반환
-    @Logging
     @GetMapping("/primitive")
     public int getPrimitive() {
         ColorLogger.red("TRACE LEVEL LOG");
@@ -74,6 +73,7 @@ public class HealthCheckController {
     }
 
     // ✅ 9️⃣ POST 요청으로 DTO 테스트
+    @Logging
     @PostMapping("/post-dto")
     public SampleDto postDto(@RequestBody SampleDto dto) {
         return dto; // 공통 응답으로 감싸져야 함

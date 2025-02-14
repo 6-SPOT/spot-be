@@ -60,6 +60,7 @@ dependencies {
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
 	// feign Client ⭐
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
 	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
