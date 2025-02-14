@@ -20,8 +20,9 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           PR_AUTHOR="${{ github.event.sender.login }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR_URL="https://github.com/${PR_AUTHOR}"
 
-          # GitHub ID를 실제 이름으로 변환하는 매핑 (디버깅 포함)
+          # GitHub ID를 실제 이름으로 변환하는 매핑
           declare -A USER_MAP
           USER_MAP["42kko"]="고경훈"
           USER_MAP["eunSoft"]="심은정"
@@ -67,7 +68,7 @@ jobs:
 
           echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
 
-          # 리뷰어 정보를 `· 이름 |` 형식으로 변환하여 GitHub 링크 포함 (디버깅 추가)
+          # 리뷰어 정보를 `· 이름 |` 형식으로 변환하여 GitHub 링크 포함
           REVIEWERS_FIELD=""
           for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
             LOGIN=$(echo "$row" | jq -r '.login')
@@ -78,7 +79,7 @@ jobs:
             else
               echo "✅ 매핑 성공: $LOGIN → $NAME"
             fi
-            REVIEWERS_FIELD="${REVIEWERS_FIELD}  [$NAME](https://github.com/$LOGIN)  |"
+            REVIEWERS_FIELD="${REVIEWERS_FIELD}  [${NAME}](https://github.com/${LOGIN})  |"
           done
 
           # 마지막 " |" 제거
@@ -89,7 +90,7 @@ jobs:
             REVIEWERS_FIELD="리뷰어가 없습니다."
           fi
 
-          # 작성자 이름 매핑 (디버깅 추가)
+          # 작성자 이름 매핑
           AUTHOR_NAME="${USER_MAP[$PR_AUTHOR]}"
           if [ -z "$AUTHOR_NAME" ]; then
             AUTHOR_NAME="$PR_AUTHOR"  # 기본적으로 GitHub ID 유지
@@ -98,9 +99,9 @@ jobs:
             echo "✅ 작성자 매핑 성공: $PR_AUTHOR → $AUTHOR_NAME"
           fi
 
-          # **Markdown 블록(`>`) 적용**
-          PR_TITLE_FORMATTED="> ${PR_TITLE}"
-          PR_AUTHOR_FORMATTED="> ${AUTHOR_NAME}"
+          # PR 제목을 GitHub PR 링크로 연결
+          PR_TITLE_FORMATTED="> [${PR_TITLE}](${PR_URL})"
+          PR_AUTHOR_FORMATTED="> [${AUTHOR_NAME}](${PR_AUTHOR_URL})"
           ISSUE_CONTENT_FORMATTED="> ${ISSUE_CONTENT}"
           REVIEWERS_FIELD_FORMATTED="> ${REVIEWERS_FIELD}"
 
@@ -133,5 +134,5 @@ jobs:
           # Discord 웹훅 요청 보내기
           curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_URL"
     env:
-      GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
+      GH_TOKEN: ${{ secrets.PR_WEBHOOK_PAT }}
       DISCORD_URL: ${{ secrets.DISCORD_WEBHOO_BE }}
