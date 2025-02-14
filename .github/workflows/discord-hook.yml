@@ -21,6 +21,14 @@ jobs:
           PR_AUTHOR="${{ github.event.sender.login }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
 
+          # GitHub ID를 실제 이름으로 변환하는 매핑
+          declare -A USER_MAP
+          USER_MAP["42kko"]="고경훈"
+          USER_MAP["eunSoft"]="심은정"
+          USER_MAP["immyeong"]="임명철"
+          USER_MAP["dalcheonroadhead"]="전수민"
+          USER_MAP["hxcva1"]="박문순"
+
           # GitHub API에서 PR의 리뷰어 정보 가져오기
           API_RESPONSE=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
@@ -30,18 +38,16 @@ jobs:
 
           echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
 
-          # 리뷰어 정보를 가로로 정렬하여 변환
+          # 리뷰어 정보를 줄바꿈(\n)으로 정리
           REVIEWERS_FIELD=""
           for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
             LOGIN=$(echo "$row" | jq -r '.login')
-            AVATAR_URL=$(echo "$row" | jq -r '.avatar_url')
-
-            # Discord 메시지 형식으로 변환
-            REVIEWERS_FIELD="${REVIEWERS_FIELD} ![$LOGIN]($AVATAR_URL) [$LOGIN](https://github.com/$LOGIN) |"
+            NAME=${USER_MAP[$LOGIN]:-$LOGIN}  # 매핑된 이름이 없으면 GitHub ID 그대로 사용
+            REVIEWERS_FIELD="${REVIEWERS_FIELD}- [$NAME](https://github.com/$LOGIN)\n"
           done
 
-          # 마지막 `|` 제거
-          REVIEWERS_FIELD=$(echo "$REVIEWERS_FIELD" | sed 's/|$//')
+          # 마지막 개행 문자 제거
+          REVIEWERS_FIELD=$(echo -e "$REVIEWERS_FIELD" | sed '$d')
 
           # 리뷰어가 없으면 기본 메시지 설정
           if [ -z "$REVIEWERS_FIELD" ]; then
