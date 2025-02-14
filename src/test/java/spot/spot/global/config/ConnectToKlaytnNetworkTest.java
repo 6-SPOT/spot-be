@@ -9,8 +9,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.web3j.exceptions.MessageDecodingException;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 @SpringBootTest
@@ -76,6 +80,35 @@ class ConnectToKlaytnNetworkTest {
         BigInteger balance = klaytnNetwork.getBalance();
         log.info("balance value = {}", balance);
         Assertions.assertThat(balance).isEqualTo(initialBalance.subtract(BigInteger.valueOf(1)));
+    }
+
+    /**
+     * deposit 시 kaia 변환값이 0일 때 에러 발생
+     */
+    @Test
+    void depositException() {
+        Assertions.assertThatThrownBy(() -> klaytnNetwork.deposit(0, fromAddress))
+                .isInstanceOf(GlobalException.class);
+    }
+
+    /**
+     * deposit , transfer 시 잘못된 주소 입력 에러 발생
+     * 지갑 주소가 잘못되었기때문에 키링에서 찾을수 없어서 NullPointException 반환
+     */
+    @Test
+    void invalidAddressException() {
+        Assertions.assertThatThrownBy(() -> klaytnNetwork.deposit(1, "0xDec5c942E7d596284a5e11C244dE0da3BEFf755c"))
+                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> klaytnNetwork.transfer(1, "0xDec5c942E7d596284a5e11C244dE0da3BEFf755c"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    /**
+     * tranfer 시 kaia 변환값이 0일 때 에러 발생
+     */
+    @Test
+    void transferException() {
+        Assertions.assertThatThrownBy(() -> klaytnNetwork.transfer(0, fromAddress))
+                .isInstanceOf(GlobalException.class);
     }
 
     /**
