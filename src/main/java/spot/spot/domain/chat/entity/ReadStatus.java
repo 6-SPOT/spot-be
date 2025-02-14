@@ -1,6 +1,4 @@
-package spot.spot.domain.chat.message.entity;
-
-import java.time.LocalDateTime;
+package spot.spot.domain.chat.entity;
 
 import org.hibernate.annotations.Comment;
 
@@ -13,21 +11,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.domain.chat.chatroom.entity.ChatRoom;
+import lombok.Setter;
 import spot.spot.domain.member.entity.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "messages")
-@Comment("메세지")
-public class Message {
+@Table(name = "message_status")
+@Comment("메세지 상태")
+public class ReadStatus {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Comment("메세지 아이디")
+	@Comment("메세지 상태 아이디")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -36,14 +35,24 @@ public class Message {
 	private ChatRoom chatRoom;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "sender_id", nullable = false)
-	@Comment("발신 회원 아이디")
+	@JoinColumn(name = "member_id", nullable = false)
+	@Comment("회원 아이디")
 	private Member member;
 
-	@Comment("내용")
-	private String content;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "message_id", nullable = false)
+	@Comment("메세지 아이디")
+	private ChatMessage chatMessage;
 
-	@Comment("작성 시간")
-	private LocalDateTime createdAt;
+	@Comment("읽음 여부")
+	@Setter
+	private boolean isRead;
 
+	@Builder
+	public ReadStatus(ChatRoom chatRoom, Member member, ChatMessage chatMessage, boolean isRead) {
+		this.chatRoom = chatRoom;
+		this.member = member;
+		this.chatMessage = chatMessage;
+		this.isRead = isRead;
+	}
 }
