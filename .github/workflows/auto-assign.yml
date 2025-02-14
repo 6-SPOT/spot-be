@@ -10,8 +10,6 @@ on:
 permissions: write-all
 
 jobs:
-
-### 이메일에 알림을 보냅니다.
   auto_add:
     name: Auto add reviewer and assignee
     runs-on: ubuntu-latest
@@ -57,57 +55,8 @@ jobs:
 
           # 여러 명의 리뷰어를 한 번에 추가
           gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$reviewers_str"
-
-### 디스코드에 알림을 보냅니다.
-  notify_discord:
-    name: Send Discord Notification
-    runs-on: ubuntu-latest
-    needs: auto_add  # auto_add 완료 후 실행
-    steps:
-      - name: Send PR Notification to Discord
-        run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_AUTHOR="${{ github.event.sender.login }}"
-          PR_URL="${{ github.event.pull_request.html_url }}"
-          REVIEWERS=$(jq -r '.pull_request.requested_reviewers[].login' <<< '${{ toJson(github.event.pull_request) }}' | paste -sd ", ")
-
-          if [ -z "$REVIEWERS" ]; then
-            REVIEWERS="None"
-          fi
-
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d "{
-              \"embeds\": [
-                {
-                  \"color\": 16776960,
-                  \"title\": \"📌 Pull Request Created/Updated\",
-                  \"description\": \"새로운 PR이 생성되었거나 업데이트되었습니다.\",
-                  \"fields\": [
-                    {
-                      \"name\": \"PR 제목\",
-                      \"value\": \"[$PR_TITLE]($PR_URL)\",
-                      \"inline\": false
-                    },
-                    {
-                      \"name\": \"작성자\",
-                      \"value\": \"$PR_AUTHOR\",
-                      \"inline\": true
-                    },
-                    {
-                      \"name\": \"리뷰어\",
-                      \"value\": \"$REVIEWERS\",
-                      \"inline\": true
-                    }
-                  ],
-                  \"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
-                }
-              ]
-            }" \
-            "$DISCORD_URL"
     env:
       GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       AUTHOR: ${{ github.event.sender.login }}
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name }}
-      DISCORD_URL: ${{ secrets.DISCORD_WEBHOO_BE }}
