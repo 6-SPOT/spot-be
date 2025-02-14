@@ -4,6 +4,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
+ext {
+	springCloudVersion = '2024.0.0'
+}
+
 group = 'spot'
 version = '0.0.1-SNAPSHOT'
 
@@ -24,6 +28,12 @@ repositories {
 	maven { url 'https://jitpack.io' }
 }
 
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
 dependencies {
 	// BASIC ⭐
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -31,6 +41,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	// SECURITY ⭐
 	// DB 📦
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -47,9 +58,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'						// 컴파일 시간에 구현체를 만드는 Lombok과 컴파일 타임에 충돌이 날 수 있음. 따라서 순서 조정 (Lombok 먼저, MapStruct 다음에)
 	// Logging ⭐
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-	// Feign Client
-	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.5")
-	implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+	// feign Client ⭐
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
@@ -58,7 +68,9 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok:1.18.28'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	// SECURITY ⭐
+	// SWAGGER  ⭐
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.0'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.21'
 
 }
 
