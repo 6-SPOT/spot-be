@@ -13,7 +13,8 @@ public enum ErrorCode {
     FAIL_CREATE_CONTRACT(HttpStatus.BAD_REQUEST, "컨트랙트 생성에 실패하였습니다."),
     NOT_ALLOW_FROM_ADDRESS(HttpStatus.NOT_ACCEPTABLE, "가이아 전송 주소가 잘못되었습니다."),
     FIELD_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 필드가 없습니다."),
-    EMPTY_RESPONSE(HttpStatus.BAD_REQUEST, "응답값이 비어있습니다.")
+    EMPTY_RESPONSE(HttpStatus.BAD_REQUEST, "응답값이 비어있습니다."),
+    LOW_AMOUNT(HttpStatus.BAD_REQUEST, "변환값이 0보다 적습니다.")
     ;
     private final HttpStatus status;
     private final String message;
