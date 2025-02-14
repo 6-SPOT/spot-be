@@ -3,11 +3,15 @@ package spot.spot.global.healthCheck;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import spot.spot.global.logging.ColorLogger;
+import spot.spot.global.logging.Logging;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
@@ -16,13 +20,15 @@ import spot.spot.global.response.format.GlobalException;
 @RequestMapping("/health")
 public class HealthCheckController {
 
-    // ✅ 1️⃣ 기본형 반환 (int, double, boolean 등)
+
+    // ✅ 1️⃣ 기본형 반환
+    @Logging
     @GetMapping("/primitive")
     public int getPrimitive() {
-        log.info("TRACE LEVEL LOG");
+        ColorLogger.red("TRACE LEVEL LOG");
         log.warn(" WARN LEVEL LOG");
         log.error("ERROR LEVEL LOG");
-        return 42; // 자동으로 ResultResponse.success(42)로 감싸져야 함
+        return 42;
     }
 
     // ✅ 2️⃣ 참조형 반환 (String)
