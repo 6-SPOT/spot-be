@@ -38,8 +38,8 @@ jobs:
           echo "🟢 PR 본문 데이터:"
           echo "$PR_BODY"
 
-          # PR 본문에서 "Issue" 섹션 아래 내용 추출
-          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^💡 Issue/{flag=1;next} /^🌱 Key changes/{flag=0} flag' | sed '/^$/d')
+          # PR 본문에서 "💡 Issue" 섹션 아래 내용 추출 (Markdown 헤더 기준)
+          ISSUE_CONTENT=$(echo "$PR_BODY" | sed -n '/^# 💡 Issue$/,/^# /p' | sed '1d;$d')
 
           # "Issue" 내용이 없으면 기본 메시지 설정
           if [ -z "$ISSUE_CONTENT" ]; then
@@ -51,13 +51,16 @@ jobs:
 
           echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
 
-          # 리뷰어 정보를 띄어쓰기로 구분하여 정리
+          # 리뷰어 정보를 `· 이름 |` 형식으로 변환하여 GitHub 링크 포함
           REVIEWERS_FIELD=""
           for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
             LOGIN=$(echo "$row" | jq -r '.login')
             NAME=${USER_MAP[$LOGIN]:-$LOGIN}  # 매핑된 이름이 없으면 GitHub ID 그대로 사용
-            REVIEWERS_FIELD="${REVIEWERS_FIELD}$NAME "  # 띄어쓰기로 구분
+            REVIEWERS_FIELD="${REVIEWERS_FIELD}· [$NAME](https://github.com/$LOGIN) | "
           done
+
+          # 마지막 " | " 제거
+          REVIEWERS_FIELD=$(echo "$REVIEWERS_FIELD" | sed 's/ | $//')
 
           # 리뷰어가 없으면 기본 메시지 설정
           if [ -z "$REVIEWERS_FIELD" ]; then
