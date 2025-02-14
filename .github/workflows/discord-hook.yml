@@ -25,7 +25,7 @@ jobs:
           # GitHub ID를 실제 이름으로 변환하는 매핑
           declare -A USER_MAP
           USER_MAP["42kko"]="고경훈"
-          USER_MAP["eunSoft"]="심은정"
+          USER_MAP["eunSoft"]="심정은"
           USER_MAP["immyeong"]="임명철"
           USER_MAP["dalcheonroadhead"]="전수민"
           USER_MAP["hxcva1"]="박문순"
