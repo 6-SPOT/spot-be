@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import spot.spot.domain.member.entity.Member;
@@ -36,4 +37,10 @@ public class ChatParticipant {
 	@JoinColumn(name = "member_id", nullable = false)
 	@Comment("회원 아이디")
 	private Member member;
+
+	@Builder
+	public ChatParticipant(ChatRoom chatRoom, Member member) {
+		this.chatRoom = chatRoom;
+		this.member = member;
+	}
 }

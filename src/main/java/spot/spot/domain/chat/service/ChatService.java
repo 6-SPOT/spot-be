@@ -1,5 +1,6 @@
 package spot.spot.domain.chat.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,8 @@ import spot.spot.domain.chat.repository.ChatMessageRepository;
 import spot.spot.domain.chat.repository.ChatParticipantRepository;
 import spot.spot.domain.chat.repository.ChatRoomRepository;
 import spot.spot.domain.chat.repository.ReadStatusRepository;
+import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.repository.JobRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 
@@ -33,6 +36,7 @@ public class ChatService {
 	private final ChatMessageRepository chatMessageRepository;
 	private final ReadStatusRepository readStatusRepository;
 	private final MemberRepository memberRepository;
+	private final JobRepository jobRepository;
 
 
 	@Transactional
@@ -127,38 +131,41 @@ public class ChatService {
 			).toList());
 	}
 
-	// @Transactional
-	// public Long getOrCreatePrivateRoom(Long otherMemberId, Long jobId) {
-	// 	Long myMemberId = 1L;
-	// 	Member member = memberRepository.findById(myMemberId)
-	// 		.orElseThrow(() -> new EntityNotFoundException("member not found"));
-	//
-	// 	Member otherMember = memberRepository.findById(otherMemberId)
-	// 		.orElseThrow(() -> new EntityNotFoundException("member not found"));
-	//
-	//
-	//
-	// 	// TODO: 이미 둘과 일에 대한 채팅방이 존재하는지 확인하고 존재하면 룸 id 리턴 아니면 생성
-	//
-	//
-	// 	// 생성
-	// 	ChatRoom chatRoom = ChatRoom.builder()
-	// 		.isGroupChat("N")
-	// 		.name(member.getName() + "-" + otherMember.getName())
-	// 		.build();
-	// 	ChatRoom saved = chatRoomRepository.save(chatRoom);
-	// 	addParticipantToRoom(saved, member);
-	// 	addParticipantToRoom(saved, otherMember);
-	// 	return  saved.getId();
-	// }
-	//
-	// public void addParticipantToRoom(ChatRoom chatRoom, Member member) {
-	// 	ChatParticipant chatParticipant = ChatParticipant.builder()
-	// 		.chatRoom(chatRoom)
-	// 		.member(member)
-	// 		.build();
-	// 	chatParticipantRepository.save(chatParticipant);
-	// }
+	@Transactional
+	public Long getOrCreatePrivateRoom(Long otherMemberId, Long jobId) {
+		Long myMemberId = 1L;
+		Member member = memberRepository.findById(myMemberId)
+			.orElseThrow(() -> new EntityNotFoundException("member not found"));
+
+		Member otherMember = memberRepository.findById(otherMemberId)
+			.orElseThrow(() -> new EntityNotFoundException("member not found"));
+
+		Job job = jobRepository.findById(jobId)
+			.orElseThrow(() -> new EntityNotFoundException("job not found"));
+
+		// TODO: 이미 둘과 일에 대한 채팅방이 존재하는지 확인하고 존재하면 룸 id 리턴 아니면 생성
+
+
+		// 생성
+		ChatRoom chatRoom = ChatRoom.builder()
+			.job(job)
+			.title(job.getId().toString())
+			.createdAt(LocalDateTime.now())
+			.build();
+		ChatRoom saved = chatRoomRepository.save(chatRoom);
+
+		addParticipantToRoom(saved, member);
+		addParticipantToRoom(saved, otherMember);
+		return saved.getId();
+	}
+
+	private void addParticipantToRoom(ChatRoom chatRoom, Member member) {
+		ChatParticipant chatParticipant = ChatParticipant.builder()
+			.chatRoom(chatRoom)
+			.member(member)
+			.build();
+		chatParticipantRepository.save(chatParticipant);
+	}
 
 
 }
