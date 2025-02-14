@@ -1,4 +1,4 @@
-package spot.spot.domain.chat.chatroom.entity;
+package spot.spot.domain.chat.entity;
 
 import java.time.LocalDateTime;
 
@@ -15,33 +15,34 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.member.entity.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "chat_rooms")
-@Comment("채팅방")
-public class ChatRoom {
+@Table(name = "messages")
+@Comment("메세지")
+public class ChatMessage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Comment("채팅방 아이디")
+	@Comment("메세지 아이디")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "job_id", nullable = false)
-	@Comment("일 아이디")
-	private Job job;
+	@JoinColumn(name = "chat_room_id", nullable = false)
+	@Comment("채팅방 아이디")
+	private ChatRoom chatRoom;
 
-	@Comment("채팅방 제목")
-	private String title;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sender_id", nullable = false)
+	@Comment("발신 회원 아이디")
+	private Member member;
 
+	@Comment("내용")
+	private String content;
 
-	@Comment("채팅방 썸네일 사진")
-	private String thumbnailImageUrl;
+	@Comment("작성 시간")
+	private LocalDateTime createdAt;
 
-
-	@Comment("업데이트 시간")
-	private LocalDateTime updatedAt;
 }
