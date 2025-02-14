@@ -22,63 +22,56 @@ jobs:
           PR_AUTHOR="${{ github.event.sender.login }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
 
-          # 리뷰어 목록 가져오기 (JSON 파싱)
-          REVIEWERS_JSON=$(curl -s -H "Authorization: token $TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq '.requested_reviewers')
+          # GitHub API에서 PR의 리뷰어 정보 가져오기
+          API_RESPONSE=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}")
+
+          # 리뷰어 목록 추출 (빈 배열일 경우 대비)
+          REVIEWERS_JSON=$(echo "$API_RESPONSE" | jq '.requested_reviewers // []')
 
           echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
 
-          # 리뷰어 정보를 JSON에서 파싱하여 Discord 필드에 맞게 변환
-          REVIEWERS_FIELD=""
-          for row in $(echo "${REVIEWERS_JSON}" | jq -c '.[]'); do
-            LOGIN=$(echo "$row" | jq -r '.login')
-            AVATAR_URL=$(echo "$row" | jq -r '.avatar_url')
+          # 리뷰어 정보를 Discord 메시지에 맞게 변환
+          REVIEWERS_FIELD=$(echo "$REVIEWERS_JSON" | jq -r '.[] | {
+            "name": "리뷰어",
+            "value": "![" + .login + "](" + .avatar_url + ") [" + .login + "](https://github.com/" + .login + ")",
+            "inline": true
+          }' | jq -s '.')
 
-          # Discord Embed 필드에 추가
-          REVIEWERS_FIELD="${REVIEWERS_FIELD} {
-            \"name\": \"리뷰어\",
-            \"value\": \"![${LOGIN}](${AVATAR_URL}) [$LOGIN](https://github.com/${LOGIN})\",
-            \"inline\": true
-          },"
-          done
-
-          # 만약 리뷰어가 없다면 기본 메시지 설정
-          if [ -z "$REVIEWERS_FIELD" ]; then
-            REVIEWERS_FIELD="{
-              \"name\": \"리뷰어\",
-              \"value\": \"리뷰어가 없습니다.\",
-              \"inline\": true
-            }"
+          # 리뷰어가 없는 경우 기본 메시지 설정
+          if [ -z "$REVIEWERS_FIELD" ] || [ "$REVIEWERS_FIELD" = "[]" ]; then
+            REVIEWERS_FIELD='[{
+              "name": "리뷰어",
+              "value": "리뷰어가 없습니다.",
+              "inline": true
+            }]'
           fi
 
-          echo "데이터 정리완료, 디스코드 알림을 보냅니다."
+          # JSON 요청 바디 생성
+          PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
+            --arg description "새로운 PR이 생성되었거나 업데이트되었습니다." \
+            --arg pr_title "[$PR_TITLE]($PR_URL)" \
+            --arg pr_author "[$PR_AUTHOR](https://github.com/$PR_AUTHOR)" \
+            --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+            --argjson reviewers "$REVIEWERS_FIELD" \
+            '{
+              "embeds": [{
+                "color": 16776960,
+                "title": $title,
+                "description": $description,
+                "fields": [
+                  { "name": "PR 제목", "value": $pr_title, "inline": false },
+                  { "name": "작성자", "value": $pr_author, "inline": true }
+                ] + $reviewers,
+                "timestamp": $timestamp
+              }]
+            }')
 
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d "{
-              \"embeds\": [
-                {
-                  \"color\": 16776960,
-                  \"title\": \"📌 Pull Request Created/Updated\",
-                  \"description\": \"새로운 PR이 생성되었거나 업데이트되었습니다.\",
-                  \"fields\": [
-                    {
-                      \"name\": \"PR 제목\",
-                      \"value\": \"[$PR_TITLE]($PR_URL)\",
-                      \"inline\": false
-                    },
-                    {
-                      \"name\": \"작성자\",
-                      \"value\": \"[$PR_AUTHOR](https://github.com/$PR_AUTHOR)\",
-                      \"inline\": true
-                    },
-                    $REVIEWERS_FIELD
-                  ],
-                  \"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
-                }
-              ]
-            }" \
-            "$DISCORD_URL"
+          echo "🟢 생성된 JSON 페이로드:"
+          echo "$PAYLOAD" | jq '.'
+
+          # Discord 웹훅 요청 보내기
+          curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_URL"
     env:
-      TOKEN: ${{ secrets.PR_WEBHOOK_PAT }}
+      GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       DISCORD_URL: ${{ secrets.DISCORD_WEBHOO_BE }}
