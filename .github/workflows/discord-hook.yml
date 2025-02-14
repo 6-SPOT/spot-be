@@ -72,7 +72,7 @@ jobs:
           for row in $(echo "$REVIEWERS_JSON" | jq -c '.[]'); do
             LOGIN=$(echo "$row" | jq -r '.login')
             NAME=${USER_MAP[$LOGIN]:-$LOGIN}  # 매핑된 이름이 없으면 GitHub ID 그대로 사용
-            REVIEWERS_FIELD="${REVIEWERS_FIELD}· [$NAME](https://github.com/$LOGIN) | "
+            REVIEWERS_FIELD="${REVIEWERS_FIELD}· [$NAME] ·(https://github.com/$LOGIN) | "
           done
 
           # 마지막 " | " 제거
@@ -88,7 +88,7 @@ jobs:
 
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
-            --arg description "**새로운 PR이 생성되었거나 업데이트되었습니다.**" \
+            --arg description "**제꺼 리뷰좀 해주세요!**" \
             --arg pr_title "[$PR_TITLE]($PR_URL)" \
             --arg pr_author "[$AUTHOR_NAME](https://github.com/$PR_AUTHOR)" \
             --arg issue_content "$ISSUE_CONTENT" \
