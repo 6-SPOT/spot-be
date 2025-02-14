@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-	// BASIC 🚀
+	// BASIC ⭐
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -37,7 +37,7 @@ dependencies {
 	// Logging ⭐
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
 
-	// TEST 🚀
+	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -47,8 +47,25 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// SECURITY ⭐
+
+	// Map Struct ⭐
+	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
+	implementation group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.5.Final'	// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'						// 컴파일 시간에 구현체를 만드는 Lombok과 컴파일 타임에 충돌이 날 수 있음. 따라서 순서 조정 (Lombok 먼저, MapStruct 다음에)
+}
+
+// Add VM Option (1)
+compileJava {
+	options.compilerArgs += [
+			'--enable-preview',
+			'-Amapstruct.defaultComponentModel=spring' // @Mapper 어노테이션이 적힌 클래스는 자동으로 스프링 컨테이너에 등록
+	]
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	jvmArgs([
+			'--enable-preview',
+			'-Amapstruct.defaultComponentModel=spring'
+	])
 }
