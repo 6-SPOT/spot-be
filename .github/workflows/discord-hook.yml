@@ -39,7 +39,7 @@ jobs:
           echo "$PR_BODY"
 
           # "Issue"로 끝나는 제목을 감지하고 그 아래 내용을 가져오기
-          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*Issue$/{flag=1; next} /^# /{flag=0} flag' | sed '/^$/d')
+          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*Issue$/{flag=1} /^# /{flag=0} flag' | sed '/^$/d')
 
           echo "🟢 추출된 Issue 내용:"
           echo "$ISSUE_CONTENT"
@@ -75,7 +75,7 @@ jobs:
 
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
-            --arg description "**제꺼 리뷰좀 해주세요!**" \
+            --arg description "**새로운 PR이 생성되었거나 업데이트되었습니다.**" \
             --arg pr_title "[$PR_TITLE]($PR_URL)" \
             --arg pr_author "[$AUTHOR_NAME](https://github.com/$PR_AUTHOR)" \
             --arg issue_content "$ISSUE_CONTENT" \
