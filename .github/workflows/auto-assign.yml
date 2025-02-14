@@ -69,10 +69,34 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           PR_AUTHOR="${{ github.event.sender.login }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
-          REVIEWERS=$(jq -r '.pull_request.requested_reviewers[].login' <<< '${{ toJson(github.event.pull_request) }}' | paste -sd ", ")
 
-          if [ -z "$REVIEWERS" ]; then
-            REVIEWERS="None"
+          # 리뷰어 목록 가져오기 (JSON 파싱)
+          REVIEWERS_JSON=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq '.requested_reviewers')
+
+          echo "🟢 리뷰어 JSON 데이터: $REVIEWERS_JSON"
+
+          # 리뷰어 정보를 JSON에서 파싱하여 Discord 필드에 맞게 변환
+          REVIEWERS_FIELD=""
+          for row in $(echo "${REVIEWERS_JSON}" | jq -c '.[]'); do
+            LOGIN=$(echo "$row" | jq -r '.login')
+            AVATAR_URL=$(echo "$row" | jq -r '.avatar_url')
+
+            # Discord Embed 필드에 추가
+            REVIEWERS_FIELD="${REVIEWERS_FIELD} {
+              \"name\": \"리뷰어\",
+              \"value\": \"![${LOGIN}](${AVATAR_URL}) [$LOGIN](https://github.com/${LOGIN})\",
+              \"inline\": true
+            },"
+          done
+
+          # 만약 리뷰어가 없다면 기본 메시지 설정
+          if [ -z "$REVIEWERS_FIELD" ]; then
+            REVIEWERS_FIELD="{
+              \"name\": \"리뷰어\",
+              \"value\": \"리뷰어가 없습니다.\",
+              \"inline\": true
+            }"
           fi
 
           curl -H "Content-Type: application/json" \
@@ -91,14 +115,10 @@ jobs:
                     },
                     {
                       \"name\": \"작성자\",
-                      \"value\": \"$PR_AUTHOR\",
+                      \"value\": \"[$PR_AUTHOR](https://github.com/$PR_AUTHOR)\",
                       \"inline\": true
                     },
-                    {
-                      \"name\": \"리뷰어\",
-                      \"value\": \"$REVIEWERS\",
-                      \"inline\": true
-                    }
+                    $REVIEWERS_FIELD
                   ],
                   \"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
                 }
