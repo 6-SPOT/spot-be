@@ -60,6 +60,8 @@ jobs:
           # "Issue" 내용이 없으면 기본 메시지 설정
           if [ -z "$ISSUE_CONTENT" ]; then
             ISSUE_CONTENT="Issue 내용이 없습니다."
+          else
+            ISSUE_CONTENT="\\n\\n\u00A0\u00A0\u00A0$ISSUE_CONTENT"
           fi
 
           # 리뷰어 목록 가져오기
@@ -80,7 +82,9 @@ jobs:
 
           # 리뷰어가 없으면 기본 메시지 설정
           if [ -z "$REVIEWERS_FIELD" ]; then
-            REVIEWERS_FIELD="   리뷰어가 없습니다."
+            REVIEWERS_FIELD="\\n\\n\u00A0\u00A0\u00A0리뷰어가 없습니다."
+          else
+            REVIEWERS_FIELD="\\n\\n\u00A0\u00A0\u00A0$REVIEWERS_FIELD"
           fi
 
           # 작성자 이름 매핑
@@ -89,10 +93,10 @@ jobs:
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "🚀 Pull Request Created/Updated" \
             --arg description "**제꺼 리뷰좀 해주세요!**" \
-            --arg pr_title "   [$PR_TITLE]($PR_URL)" \
-            --arg pr_author "   $AUTHOR_NAME" \
-            --arg issue_content "   $ISSUE_CONTENT" \
-            --arg reviewers "   $REVIEWERS_FIELD" \
+            --arg pr_title "\\n\\n\u00A0\u00A0\u00A0[$PR_TITLE]($PR_URL)" \
+            --arg pr_author "\\n\\n\u00A0\u00A0\u00A0$AUTHOR_NAME" \
+            --arg issue_content "$ISSUE_CONTENT" \
+            --arg reviewers "$REVIEWERS_FIELD" \
             --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             '{
               "embeds": [{
@@ -100,10 +104,10 @@ jobs:
                 "title": $title,
                 "description": $description,
                 "fields": [
-                  { "name": "📌PR 제목", "value": $pr_title, "inline": false },
-                  { "name": "👤작성자", "value": $pr_author, "inline": false },
-                  { "name": "📝Issue", "value": $issue_content, "inline": false },
-                  { "name": "👀리뷰어", "value": $reviewers, "inline": false }
+                  { "name": "📌 PR 제목", "value": $pr_title, "inline": false },
+                  { "name": "👤 작성자", "value": $pr_author, "inline": false },
+                  { "name": "📝 Issue", "value": $issue_content, "inline": false },
+                  { "name": "👀 리뷰어", "value": $reviewers, "inline": false }
                 ],
                 "timestamp": $timestamp
               }]
