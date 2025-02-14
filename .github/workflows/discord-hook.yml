@@ -35,11 +35,14 @@ jobs:
 
           PR_BODY=$(echo "$API_RESPONSE" | jq -r '.body // ""')
 
-          echo "🟢 PR 본문 데이터:"
+          echo "🟢 PR 본문 원본 데이터:"
           echo "$PR_BODY"
 
-          # PR 본문에서 "💡 Issue" 섹션 아래 내용 추출 (Markdown 헤더 기준)
-          ISSUE_CONTENT=$(echo "$PR_BODY" | sed -n '/^# 💡 Issue$/,/^# /p' | sed '1d;$d')
+          # "Issue"로 끝나는 제목을 감지하고 그 아래 내용을 가져오기
+          ISSUE_CONTENT=$(echo "$PR_BODY" | awk '/^# .*Issue$/{flag=1; next} /^# /{flag=0} flag' | sed '/^$/d')
+
+          echo "🟢 추출된 Issue 내용:"
+          echo "$ISSUE_CONTENT"
 
           # "Issue" 내용이 없으면 기본 메시지 설정
           if [ -z "$ISSUE_CONTENT" ]; then
@@ -72,7 +75,7 @@ jobs:
 
           # JSON 요청 바디 생성
           PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
-            --arg description "새로운 PR이 생성되었거나 업데이트되었습니다." \
+            --arg description "**제꺼 리뷰좀 해주세요!**" \
             --arg pr_title "[$PR_TITLE]($PR_URL)" \
             --arg pr_author "[$AUTHOR_NAME](https://github.com/$PR_AUTHOR)" \
             --arg issue_content "$ISSUE_CONTENT" \
