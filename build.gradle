@@ -46,8 +46,13 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	// SECURITY ⭐
-
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
 	// Map Struct ⭐
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
 	implementation group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.5.Final'	// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리

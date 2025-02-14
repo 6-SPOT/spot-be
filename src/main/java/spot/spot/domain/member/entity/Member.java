@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import spot.spot.domain.member.OAuthProvider;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +31,7 @@ public class Member {
     private LocalDateTime deletedAt; //삭제일자
 
 
-    /*
+
 
     private OAuthProvider oAuthProvider; //소셜로그인
 
@@ -40,7 +41,7 @@ public class Member {
         this.oAuthProvider = oAuthProvider;
     }
 
-     */
+
 
 }
 
