@@ -46,7 +46,7 @@ jobs:
             }]'
           fi
 
-          # JSON 요청 바디 생성
+          # JSON 요청 바디 생성 (리뷰어 필드를 별도로 추가)
           PAYLOAD=$(jq -n --arg title "📌 Pull Request Created/Updated" \
             --arg description "새로운 PR이 생성되었거나 업데이트되었습니다." \
             --arg pr_title "[$PR_TITLE]($PR_URL)" \
@@ -58,10 +58,12 @@ jobs:
                 "color": 16776960,
                 "title": $title,
                 "description": $description,
-                "fields": [
-                  { "name": "PR 제목", "value": $pr_title, "inline": false },
-                  { "name": "작성자", "value": $pr_author, "inline": true }
-                ] + $reviewers,
+                "fields": (
+                  [
+                    { "name": "PR 제목", "value": $pr_title, "inline": false },
+                    { "name": "작성자", "value": $pr_author, "inline": true }
+                  ] + $reviewers
+                ),
                 "timestamp": $timestamp
               }]
             }')
@@ -72,5 +74,5 @@ jobs:
           # Discord 웹훅 요청 보내기
           curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_URL"
     env:
-      GH_TOKEN: ${{ secrets.PR_WEBHOOK_PAT }}
+      GH_TOKEN: ${{ secrets.PR_ASSIGN_KEY }}
       DISCORD_URL: ${{ secrets.DISCORD_WEBHOO_BE }}
