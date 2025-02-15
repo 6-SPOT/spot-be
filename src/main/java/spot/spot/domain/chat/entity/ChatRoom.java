@@ -49,6 +49,8 @@ public class ChatRoom {
 	@Comment("업데이트 시간")
 	private LocalDateTime updatedAt;
 
+	@Comment("그룹챗 여부")
+	private String isGroupChat;
 
 	@Builder
 	public ChatRoom(Job job, String title, String thumbnailImageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
