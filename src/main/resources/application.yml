@@ -40,3 +40,8 @@ springdoc:
         url: "/api/v3/api-docs"
 
   default-produces-media-type: application/json
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

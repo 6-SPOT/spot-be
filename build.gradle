@@ -35,6 +35,9 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	testImplementation 'org.springframework.security:spring-security-test'
+
 	// BASIC ⭐
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -42,6 +45,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// SECURITY ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// DB 📦
 	runtimeOnly 'com.mysql:mysql-connector-j'
