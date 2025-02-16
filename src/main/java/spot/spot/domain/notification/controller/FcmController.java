@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import spot.spot.domain.notification.dto.request.FcmTestRequest;
 import spot.spot.domain.notification.dto.request.UpdateFcmTokenRequest;
 import spot.spot.domain.notification.service.FcmService;
 
@@ -18,5 +19,10 @@ public class FcmController {
     @PostMapping("/save-token")
     public void saveFcmToken( @RequestBody UpdateFcmTokenRequest request) {
         fcmService.saveFcmToken(request);
+    }
+
+    @PostMapping("/test-sending")
+    public void testSend(@RequestBody FcmTestRequest request) {
+        fcmService.testSending(request);
     }
 }

@@ -21,7 +21,6 @@ import spot.spot.global.logging.ColorLogger;
 public class FcmUtil {
     private final FcmTokenRepository fcmTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
-
     // 회원 한 명과 관련된 FCM 토큰에 메시지를 보내는 기능
     @Async("taskExecutor")
     public void singleFcmSend(Member receiver,  FcmDTO fcmDTO) {
@@ -43,7 +42,9 @@ public class FcmUtil {
 
 
 
+
     private Message makeMessage(String token, FcmDTO fcmDTO) {
+        log.info(token);
         Notification.Builder notificationBuilder =
             Notification.builder()
                 .setTitle(fcmDTO.title())
@@ -57,9 +58,11 @@ public class FcmUtil {
 
     public void sendMessage(Message message) {
         try {
-            FirebaseMessaging.getInstance().send(message);
+            firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
             log.error("fcm send error");
+            ColorLogger.red(e.getMessage());
+            e.getStackTrace();
         }
     }
 
