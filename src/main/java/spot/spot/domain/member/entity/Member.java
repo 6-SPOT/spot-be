@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.notification.entity.FcmToken;
+import spot.spot.domain.notification.entity.Notification;
 
 @Getter
 @Entity
@@ -38,6 +40,12 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notificationList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FcmToken> fcmTokenList;
 
     /*
 
