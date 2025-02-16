@@ -14,22 +14,12 @@ server:
 
 # SPIRNG 설정
 spring:
-  application:
-    name: spot
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
   profiles:
     group:
       local:
         - local
     active: local
-    include: db
+    include: h2
   thymeleaf:
     check-template-location: false
 
