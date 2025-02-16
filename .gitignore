@@ -38,4 +38,4 @@ out/
 
 application-local.yml
 application-key.yml
-soomin-dea03-firebase-adminsdk-fbsvc-ea3a5ca301.json
+firebase-service-key.json
