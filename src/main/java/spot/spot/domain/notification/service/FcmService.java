@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.notification.dto.request.UpdateFcmTokenRequest;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.repository.FcmTokenRepository;
