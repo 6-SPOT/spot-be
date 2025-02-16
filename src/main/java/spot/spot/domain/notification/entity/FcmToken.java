@@ -30,4 +30,6 @@ public class FcmToken extends Updated {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String data;
+
 }

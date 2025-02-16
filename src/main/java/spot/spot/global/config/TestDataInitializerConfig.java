@@ -8,13 +8,13 @@ import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.global.logging.ColorLogger;
 
 @Configuration
-public class TestDataInitializer {
+public class TestDataInitializerConfig {
 
     // CommandLineRunner 클래스: Spring Boot 실행 시 한 번만 실행됨 -> DB 초기 데이터 삽입, 설정값 로드 캐시 초기화 작업에 쓰임.
     @Bean
     public CommandLineRunner initDatabase(MemberRepository memberRepository) {
         return args -> {
-            Long testId = -1L; // ID -1을 기준으로 확인
+            Long testId = 1L; // ID -1을 기준으로 확인
             boolean exists = memberRepository.existsById(testId);
 
             if (!exists) {
