@@ -19,7 +19,7 @@ spring:
       local:
         - local
     active: local
-    include: h2
+    include: mysql
   thymeleaf:
     check-template-location: false
 
