@@ -33,6 +33,7 @@ public class HealthCheckController {
     }
 
     //  ResponseEntity<T> 직접 반환 (ResponseBodyAdvice가 적용되지 않아야 함)
+    @Logging
     @GetMapping("/response-entity")
     public ResponseEntity<SampleDto> getResponseEntity() {
         return ResponseEntity.ok(new SampleDto(2, "ResponseEntity 사용"));

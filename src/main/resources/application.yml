@@ -22,6 +22,11 @@ spring:
     include: mysql, key
   thymeleaf:
     check-template-location: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 # SWAGGER
 springdoc:

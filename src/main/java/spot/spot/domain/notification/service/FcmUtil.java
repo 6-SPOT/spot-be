@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.entity.FcmToken;
@@ -18,7 +19,7 @@ import spot.spot.global.logging.ColorLogger;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FcmUtil {
+public class FcmUtil  {
     private final FcmTokenRepository fcmTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
     // 회원 한 명과 관련된 FCM 토큰에 메시지를 보내는 기능
