@@ -75,7 +75,7 @@ dependencies {
 
 	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	runtimeOnly 'com.h2database:h2'
+	testImplementation 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	testImplementation 'org.projectlombok:lombok:1.18.28'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
