@@ -6,7 +6,6 @@ on:
     branches-ignore:
       - master
       - develop
-
 jobs:
   dev-build:
     runs-on: ubuntu-latest
@@ -36,7 +35,9 @@ jobs:
           cache: gradle
 
       - name: test with Gradle
-        run: ./gradlew test --no-daemon --stacktrace --info
+        env:
+          SPRING_PROFILES_ACTIVE: local
+        run: ./gradlew test --no-daemon --info
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
