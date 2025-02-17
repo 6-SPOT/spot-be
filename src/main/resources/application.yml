@@ -6,6 +6,11 @@ spring:
     active: local
   thymeleaf:
     check-template-location: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 # 서버 설정
 server:
   port: 8080
@@ -20,6 +25,7 @@ server:
       max: 200
     max-connections: 10000
 
+# SPIRNG 설정
 
 # SWAGGER
 springdoc:
