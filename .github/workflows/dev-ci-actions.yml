@@ -40,7 +40,14 @@ jobs:
       - name: test with Gradle
         env:
           SPRING_PROFILES_ACTIVE: local
-        run: ./gradlew test --no-daemon --warn
+        run: ./gradlew test --no-daemon
+
+      - name: Upload test report
+        if: always()  # 테스트 실패해도 결과를 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/  # 테스트 리포트 경로
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
