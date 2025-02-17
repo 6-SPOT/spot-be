@@ -35,32 +35,44 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	testImplementation 'org.springframework.security:spring-security-test'
+
 	// BASIC ⭐
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	// SECURITY ⭐
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
 	// DB 📦
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	// KLAYTN 🪙
 	implementation 'com.klaytn.caver:core:1.8.0'
+
 	// querydsl ⭐
 	implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	// Map Struct ⭐
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'							// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'						// 컴파일 시간에 구현체를 만드는 Lombok과 컴파일 타임에 충돌이 날 수 있음. 따라서 순서 조정 (Lombok 먼저, MapStruct 다음에)
+
 	// Logging ⭐
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
+
 	// feign Client ⭐
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
+
 	// TEST ⭐
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
@@ -69,13 +81,19 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok:1.18.28'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 	// SWAGGER  ⭐
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.0'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.21'
+
 	// WEBSOCKET ⭐
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// VALIDATION ⭐
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Firebase ⭐
+	implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile

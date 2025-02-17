@@ -10,7 +10,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import spot.spot.global.ConstantUtil;
+import spot.spot.global.util.ConstantUtil;
 
 @Configuration
 public class SwaggerConfig {
