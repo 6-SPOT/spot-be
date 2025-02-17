@@ -15,11 +15,7 @@ server:
 # SPIRNG 설정
 spring:
   profiles:
-    group:
-      local:
-        - local
     active: local
-    include: mysql, key
   thymeleaf:
     check-template-location: false
 
