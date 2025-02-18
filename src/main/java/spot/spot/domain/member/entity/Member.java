@@ -29,6 +29,10 @@ public class Member {
 
     private String nickname;
 
+    private String img;
+
+    private String phone;
+
     private double lat; //위도
 
     private double lng; //경도
