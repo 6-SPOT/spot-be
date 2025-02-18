@@ -1,0 +1,67 @@
+name: dev-ci-phase
+on:
+  pull_request:
+    types: [ opened, reopened ]
+  push:
+    branches-ignore:
+      - master
+      - develop
+jobs:
+  dev-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Compile with Gradle
+        run: ./gradlew compileJava --no-daemon
+
+      - name: Upload compile report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compile-report
+          path: build/reports/compiles/compile/
+
+  dev-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+
+      - name: Create Firebase service account file
+        run: echo '${{ secrets.FIREBASE_KEY }}' | jq '.' > src/main/resources/firebase-service-key.json
+
+      - name: test with Gradle
+        env:
+          SPRING_PROFILES_ACTIVE: local
+        run: ./gradlew test --no-daemon
+
+      - name: Upload test report
+        if: always()  # 테스트 실패해도 결과를 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/  # 테스트 리포트 경로
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+            ${{ github.workspace }}/target/site/jacoco/index.html
+
