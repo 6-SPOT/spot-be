@@ -22,6 +22,13 @@ jobs:
       - name: Compile with Gradle
         run: ./gradlew compile --no-daemon
 
+      - name: Upload compile report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compile-report
+          path: build/reports/compiles/compile/
+
   dev-test:
     runs-on: ubuntu-latest
     steps:
