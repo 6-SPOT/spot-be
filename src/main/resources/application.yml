@@ -24,9 +24,6 @@ server:
     threads:
       max: 200
     max-connections: 10000
-
-# SPIRNG 설정
-
 # SWAGGER
 springdoc:
   show-login-endpoint: true
