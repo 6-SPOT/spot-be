@@ -1,19 +1,17 @@
 spring:
-  application:
-    name: spot
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MYSQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/spotdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
-    database: h2
+    database: mysql
     properties:
       hibernate:
         format_sql: true
@@ -21,7 +19,8 @@ spring:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
     open-in-view: false
-    database-platform: org.hibernate.dialect.H2Dialect
+
+
   data:
     redis:
       host: localhost

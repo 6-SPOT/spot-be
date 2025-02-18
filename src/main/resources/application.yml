@@ -1,3 +1,16 @@
+# 스프링 설정
+spring:
+  application:
+    name: spot-be
+  profiles:
+    active: local
+  thymeleaf:
+    check-template-location: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 # 서버 설정
 server:
   port: 8080
@@ -11,18 +24,6 @@ server:
     threads:
       max: 200
     max-connections: 10000
-
-# SPIRNG 설정
-spring:
-  profiles:
-    group:
-      local:
-        - local
-    active: local
-    include: mysql, key
-  thymeleaf:
-    check-template-location: false
-
 # SWAGGER
 springdoc:
   show-login-endpoint: true
@@ -40,8 +41,25 @@ springdoc:
         url: "/api/v3/api-docs"
 
   default-produces-media-type: application/json
+
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+
+klaytn:
+  bithumb:
+    kaia:
+      krw:
+        api:
+          url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
+
+valut:
+  connect:
+    url: https://infra.ilmatch.net/v1/be/
+
+github:
+  personal:
+    pat:
+      key: root

@@ -31,6 +31,8 @@ public class Job extends CreatedAndDeleted {
 
     private Double lng;
 
+    private String title;
+
     private String content;
 
     private Integer money;
