@@ -2,9 +2,7 @@ package spot.spot.domain.member.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
-
 import lombok.*;
-
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.member.entity.dto.MemberRole;
@@ -16,7 +14,6 @@ import spot.spot.domain.notification.entity.Notification;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="Members")
 public class Member {
 
     @Id
@@ -56,5 +53,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokenList;
+
 }
 
