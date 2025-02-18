@@ -1,3 +1,11 @@
+# 스프링 설정
+spring:
+  application:
+    name: spot-be
+  profiles:
+    active: local
+  thymeleaf:
+    check-template-location: false
 # 서버 설정
 server:
   port: 8080
@@ -12,12 +20,6 @@ server:
       max: 200
     max-connections: 10000
 
-# SPIRNG 설정
-spring:
-  profiles:
-    active: local
-  thymeleaf:
-    check-template-location: false
 
 # SWAGGER
 springdoc:
@@ -36,8 +38,16 @@ springdoc:
         url: "/api/v3/api-docs"
 
   default-produces-media-type: application/json
+
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+
+klaytn:
+  bithumb:
+    kaia:
+      krw:
+        api:
+          url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
