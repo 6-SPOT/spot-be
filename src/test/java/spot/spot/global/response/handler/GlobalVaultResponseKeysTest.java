@@ -11,8 +11,8 @@ import java.util.Map;
 @Slf4j
 class GlobalVaultResponseKeysTest {
 
-    @Autowired
-    GlobalVaultResponseKeys handler;
+//    @Autowired
+//    GlobalVaultResponseKeys handler;
 
     /**
      * vault서버 키를 확인할수 있는 테스트입니다.
