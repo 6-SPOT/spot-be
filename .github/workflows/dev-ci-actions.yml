@@ -20,7 +20,7 @@ jobs:
           cache: gradle
 
       - name: Compile with Gradle
-        run: ./gradlew compile --no-daemon
+        run: ./gradlew compileJava --no-daemon
 
       - name: Upload compile report
         if: always()
