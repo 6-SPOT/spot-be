@@ -43,7 +43,7 @@ jobs:
 
 
       - name: Create Firebase service account file
-        run: echo "${{ secrets.FIREBASE_KEY }}" > src/main/resources/firebase-service-key.json
+        run: echo '${{ secrets.FIREBASE_KEY }}' | jq '.' > src/main/resources/firebase-service-key.json
 
       - name: test with Gradle
         env:
