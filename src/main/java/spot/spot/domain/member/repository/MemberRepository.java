@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import spot.spot.domain.member.entity.Member;
 
-import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsById(@NotNull Long id);
+
     @Query(value = """
     SELECT  m.*,
             (6371*acos(
