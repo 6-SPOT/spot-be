@@ -27,11 +27,10 @@ public class FcmService {
     public void saveFcmToken(UpdateFcmTokenRequest request) {
         Member member = userAccessUtil.getMember()
             .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-        String value = request.fcmToken();
-        fcmTokenRepository.findByMemberAndData(member, value)
+        fcmTokenRepository.findByMemberAndData(member, request.fcmToken())
             .orElseGet(() -> fcmTokenRepository.save(FcmToken.builder()
                 .member(member)
-                .data(value)
+                .data(request.fcmToken())
                 .build()));
     }
 
