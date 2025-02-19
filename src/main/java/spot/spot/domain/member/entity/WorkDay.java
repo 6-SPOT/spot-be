@@ -21,7 +21,6 @@ public class WorkDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -31,4 +30,5 @@ public class WorkDay {
 
     @Column(name = "end_hour")
     private Long endHour;
+
 }
