@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +34,9 @@ public class GlobalVaultResponseKeys {
 
     private String resourcesPath = "/src/main/resources/";
 
+    @Value("${github.personal.pat.key}")
+    private String gitPAT;
+
     private String access_token;
 
     @Getter
@@ -44,11 +46,36 @@ public class GlobalVaultResponseKeys {
     private final Map<String, String> vaultKeyFiles = new ConcurrentHashMap<>();
 
     @PostConstruct
-    private void responseAccessToken() {
+    private void responseKeyValues() {
         //https로 바뀌면 api를 보내서 access_token에 값을 넣어주는 로직이 추가되야함.
-        access_token = "root";
+        responseAccessToken();
         responseDirectoryList();
         setVaultKeys();
+    }
+
+    public void responseAccessToken() {
+        Map<String, String> body = new HashMap<>();
+        body.put("token", gitPAT);
+
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body);
+        ResponseEntity<String> response = restTemplate.exchange(
+                baseUrl + "auth/github/login",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(response.getBody());
+        } catch (JsonProcessingException e) {
+            log.info("json 형태의 값이 아닙니다", e);
+            throw new RuntimeException(e);
+        }
+
+        access_token = root.path("auth").path("client_token").asText();
+        log.info("access_token = {}", access_token);
     }
 
     public void setVaultKeys() {
@@ -59,7 +86,7 @@ public class GlobalVaultResponseKeys {
     }
 
     public void responseDirectoryList() {
-        String urlWithParams = UriComponentsBuilder.fromHttpUrl(baseUrl + "metadata/")
+        String urlWithParams = UriComponentsBuilder.fromHttpUrl(baseUrl + "be/metadata/")
                 .queryParam("list", "true")
                 .toUriString();
 
@@ -99,7 +126,7 @@ public class GlobalVaultResponseKeys {
 
         HttpEntity<String> httpHeaders = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/data/" + domainName,
+                baseUrl + "be/data/" + domainName,
                 HttpMethod.GET,
                 httpHeaders,
                 String.class
