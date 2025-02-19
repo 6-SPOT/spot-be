@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 
@@ -36,6 +37,8 @@ public class Member {
 
     private int point;
 
+    private MemberRole memberRole;
+
     private LocalDateTime deletedAt; //삭제일자
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,18 +49,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokenList;
-
-    /*
-
-    private OAuthProvider oAuthProvider; //소셜로그인
-
-    public Member(String email,String nickname,OAuthProvider oAuthProvider){
-        this.email = email;
-        this.nickname = nickname;
-        this.oAuthProvider = oAuthProvider;
-    }
-
-     */
 
 }
 
