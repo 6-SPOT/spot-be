@@ -3,7 +3,7 @@ spring:
   application:
     name: spot-be
   profiles:
-    active: local, key
+    active: local , key
   thymeleaf:
     check-template-location: false
   servlet:
@@ -55,3 +55,13 @@ klaytn:
       krw:
         api:
           url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
+
+vault:
+  connect:
+    url: https://infra.ilmatch.net/v1/
+
+# key 값에 본인의 vault pat 토큰 값을 입력하셔야합니다.
+github:
+  personal:
+    pat:
+      key:
