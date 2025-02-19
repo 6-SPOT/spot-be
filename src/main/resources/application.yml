@@ -54,3 +54,12 @@ klaytn:
       krw:
         api:
           url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
+
+valut:
+  connect:
+    url: https://infra.ilmatch.net/v1/be/
+
+github:
+  personal:
+    pat:
+      key: root
