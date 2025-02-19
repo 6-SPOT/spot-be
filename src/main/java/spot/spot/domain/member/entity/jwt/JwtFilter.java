@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             token = authorizationHeader.substring(7);
         }
-        if (!token.isEmpty()) {
+        if (token != null) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 authenticateToken(token,response);
             }else{
