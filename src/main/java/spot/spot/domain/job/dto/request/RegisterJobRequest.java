@@ -1,7 +1,6 @@
 package spot.spot.domain.job.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import spot.spot.domain.job.dto.Location;
 
 public record RegisterJobRequest(
     @Schema(description = "일의 제목", example = "음쓰 버려주실 분~")
