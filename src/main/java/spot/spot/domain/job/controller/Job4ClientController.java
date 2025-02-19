@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import spot.spot.domain.job._docs.Job4ClientDocs;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
@@ -18,7 +19,7 @@ import spot.spot.global.logging.Logging;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/job")
-public class Job4ClientController {
+public class Job4ClientController implements Job4ClientDocs {
 
     private final Job4ClientService job4ClientService;
 
