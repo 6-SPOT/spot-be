@@ -1,14 +1,12 @@
 package spot.spot.domain.member.entity.jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 @RedisHash(value = "userToken", timeToLive = 86400)

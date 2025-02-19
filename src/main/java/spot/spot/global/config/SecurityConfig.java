@@ -1,8 +1,10 @@
 package spot.spot.global.config;
 
 import jakarta.servlet.DispatcherType;
-import java.util.Arrays;
+
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import spot.spot.domain.member.OAuth2FailureHandler;
+import spot.spot.domain.member.service.*;
 import spot.spot.domain.member.entity.jwt.JwtFilter;
 import spot.spot.domain.member.entity.jwt.JwtUtil;
-import spot.spot.domain.member.service.OAuth2MemberService;
-import spot.spot.domain.member.service.OAuth2SuccessHandler;
-import spot.spot.domain.member.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
@@ -35,6 +34,7 @@ public class SecurityConfig {
     private final OAuth2MemberService oAuth2MemberService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final MemberService memberService;
     /*
      *  Security Config의 변수 설명 - 필요한 것
      *  (1) JwtUtil                  : Jwt 토큰 발급, 검증 등의 로직 담당
@@ -100,14 +100,22 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()   // 비동기 접근 열어주기
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // FORWARD REDIRECTING 열어주기
                         .requestMatchers("/api/**", "/api/member/login/kakao", "/login/oauth2/code/kakao").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .requestMatchers(whiteList).permitAll()
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .oauth2Login(login -> login
                         .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/member/login"))
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2MemberService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler))
-                .addFilterBefore(new JwtFilter(jwtUtil, tokenService), UsernamePasswordAuthenticationFilter.class);;
+                .addFilterBefore(new JwtFilter(jwtUtil, tokenService, memberService), UsernamePasswordAuthenticationFilter.class);;
+
+        http
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                );
         return http.build();
     }
 

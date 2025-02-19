@@ -6,10 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.OAuth2Member;
+import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.member.service.TokenService;
 
 import java.io.IOException;
@@ -20,6 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final TokenService tokenService;
+    private final MemberService memberService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,8 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             token = authorizationHeader.substring(7);
         }
-        if (token != null) {
-            //토큰없는상태 첫 로그인
+        if (!token.isEmpty()) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 authenticateToken(token,response);
             }else{
@@ -51,16 +54,23 @@ public class JwtFilter extends OncePerRequestFilter {
             log.info("AccessToken 만료됨");
             // AccessToken 만료 시 처리 로직 추가 가능
             Token token1 = tokenService.findToken(token);
-            String loginId = jwtUtil.getLoginId(token1.getRefreshToken());
+            String memberId = jwtUtil.getLoginId(token1.getRefreshToken());
+            Member findMember = memberService.findById(Long.parseLong(memberId));
+            OAuth2Member oAuth2Member = new OAuth2Member(findMember);
             if(!jwtUtil.isExpired(token1.getRefreshToken())){
-                log.info("AccessToken 재발급됨");
+                Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+                if (currentAuth == null) {
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new UsernamePasswordAuthenticationToken(oAuth2Member, null, oAuth2Member.getAuthorities())
+                    );
+                }
                 String newAccessToken = jwtUtil.getAccessToken((OAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-                token1.setAccessToken(newAccessToken);
-                tokenService.saveToken(token1);
+                log.info("AccessToken 재발급됨 = {}", newAccessToken);
+                tokenService.updateAccessToken(token1.getAccessToken(), newAccessToken);
                 response.setHeader("Authorization", "Bearer " + newAccessToken);
                 SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(newAccessToken));
             }else {
-                tokenService.deleteToken(loginId);
+                tokenService.deleteToken(memberId);
             }
         }
     }

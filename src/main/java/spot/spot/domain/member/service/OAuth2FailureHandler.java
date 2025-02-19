@@ -1,4 +1,4 @@
-package spot.spot.domain.member;
+package spot.spot.domain.member.service;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
