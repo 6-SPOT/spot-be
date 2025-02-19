@@ -1,5 +1,8 @@
 package spot.spot.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +12,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import spot.spot.domain.member.entity.jwt.Token;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,5 +47,24 @@ public class RedisConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String, Token> redisTemplateToken(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Token> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule()) // ✅ LocalDateTime 지원
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ✅ 날짜를 ISO 형식으로 저장
+
+        Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Token.class);
+
+        // ✅ Redis Key는 String, Value는 JSON
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.afterPropertiesSet();
+
+        return template;
     }
 }
