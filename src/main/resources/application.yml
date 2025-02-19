@@ -3,7 +3,8 @@ spring:
   application:
     name: spot-be
   profiles:
-    active: local
+    active: dev
+    include: key
   thymeleaf:
     check-template-location: false
   servlet:
