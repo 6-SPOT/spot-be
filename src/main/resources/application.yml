@@ -50,7 +50,7 @@ springdoc:
   show-login-endpoint: true
   api-docs:
     enabled: true
-    path: /api/v3/api-docs
+    path: /v3/api-docs
   swagger-ui:
     enabled: true
     path: /api/swagger-ui.html
@@ -60,7 +60,7 @@ springdoc:
     disable-swagger-default-url: true # petStore default로 들어가는 것 끄기
     urls:
       - name: "Default Server URL"
-        url: "/api/v3/api-docs"
+        url: "/v3/api-docs"
 
   default-produces-media-type: application/json
 
