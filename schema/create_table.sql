@@ -113,3 +113,29 @@ CREATE TABLE worker_ability (
                                 FOREIGN KEY (ability_id) REFERENCES ability (id) ON DELETE CASCADE,
                                 FOREIGN KEY (member_id) REFERENCES worker (member_id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE TABLE klay_about_job (
+                                id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                job_id BIGINT NOT NULL,
+                                amt_klay DOUBLE NOT NULL,
+                                amt_krw INT NOT NULL,
+                                exchange_rate DOUBLE NOT NULL,
+                                FOREIGN KEY (job_id) REFERENCES job(id) ON DELETE CASCADE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE TABLE pay_history (
+                             id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                             pay_amount INT NOT NULL,
+                             pay_point INT DEFAULT 0, -- 기본값 0 설정
+                             depositor VARCHAR(255) NOT NULL,
+                             worker VARCHAR(255) NOT NULL,
+                             create_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE TABLE point (
+                       id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                       point_name VARCHAR(255) NOT NULL,
+                       point INT NOT NULL,
+                       point_code VARCHAR(255) NOT NULL,
+                       is_valid BOOLEAN NOT NULL DEFAULT TRUE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
