@@ -42,6 +42,13 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
+      - name: Print Debug Logs for VAULT_TOKEN
+        run: |
+          echo "✅ GitHub Environment 사용됨: $GITHUB_ENV"
+          echo "🔑 VAULT_TOKEN 값 확인 (마스킹됨): $VAULT_TOKEN"
+        env:
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+
       - name: test with Gradle
         env:
           SPRING_PROFILES_ACTIVE: local
