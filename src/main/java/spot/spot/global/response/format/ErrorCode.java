@@ -23,6 +23,8 @@ public enum ErrorCode {
     S3_SEVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 서버 내부 오류가 있습니다. 담당자 문의 바람"),
     S3_INPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 Input에 실패하였습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "지우려는 파일이 S3 내부에 없습니다."),
+    FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),
+    EMPTY_POINT(HttpStatus.NOT_FOUND, "포인트가 모두 소멸되었습니다."),
     ;
     private final HttpStatus status;
     private final String message;
