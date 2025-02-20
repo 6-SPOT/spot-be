@@ -112,22 +112,22 @@ jobs:
           docker push $ECR_REGISTRY/$DB_IMAGE_NAME:db-init
 
   deploy:
-      runs-on: ubuntu-latest
-      needs: [build-and-push-app, build-and-push-db]   
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    needs: [build-and-push-app, build-and-push-db]  # ✅ 두 개의 빌드 완료 후 실행
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Configure AWS credentials using OIDC
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
-            role-session-name: GitHubActionsSession
-            aws-region: ap-northeast-2
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ap-northeast-2
 
-        - name: Trigger AWS CodeDeploy
-          run: |
-            aws deploy create-deployment \
-              --application-name be \
-              --deployment-group-name be-server \
-              --s3-location bucket=testnet-spot-deploy, key=be.zip, bundleType=zip
+      - name: Trigger AWS CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name be \
+            --deployment-group-name be-server \
+            --s3-location bucket=testnet-spot-deploy,key=be.zip,bundleType=zip
