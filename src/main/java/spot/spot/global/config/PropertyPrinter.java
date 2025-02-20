@@ -16,7 +16,7 @@
 //
 // 	@PostConstruct
 // 	public void printProperties() {
-// 		// 방법 1: MutablePropertySources 사용
+// 		// 방법 1: MutablePropertySources 사용 test
 // 		env.getPropertySources().forEach(propertySource -> {
 // 			System.out.println("PropertySource: " + propertySource.getName());
 // 			if (propertySource instanceof EnumerablePropertySource) {
