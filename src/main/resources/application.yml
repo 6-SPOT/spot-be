@@ -19,7 +19,7 @@ spring:
       connection-timeout: 5000
       read-timeout: 15000
       authentication: TOKEN
-      token:
+      token: ${VAULT_TOKEN}
       kv:
         backend: ms
         default-context: spot-be
