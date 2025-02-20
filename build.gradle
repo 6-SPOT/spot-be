@@ -96,6 +96,10 @@ dependencies {
 
 	// AWS ⭐
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// Vault 설정
+	implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
+
 }
 
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
