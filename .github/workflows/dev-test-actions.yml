@@ -32,7 +32,7 @@ jobs:
   dev-test:
     runs-on: ubuntu-latest
     env:
-      TOKEN: ${{ secrets.VAULT_TOKEN}}
+      VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}  # Vault 토큰
     steps:
       - uses: actions/checkout@v4
 
