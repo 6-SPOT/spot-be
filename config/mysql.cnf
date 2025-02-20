@@ -1,0 +1,22 @@
+[mysqld]
+skip-name-resolve
+datadir=/var/lib/mysql
+socket=/var/run/mysqld/mysqld.sock
+secure-file-priv=/var/lib/mysql-files
+user=mysql
+pid-file=/var/run/mysqld/mysqld.pid
+character-set-server=utf8mb4
+collation-server=utf8mb4_0900_ai_ci
+init_connect='SET NAMES utf8mb4'
+
+[client]
+socket=/var/run/mysqld/mysqld.sock
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+
+[mysqldump]
+default-character-set=utf8mb4
+
+!includedir /etc/mysql/conf.d/

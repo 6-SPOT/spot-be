@@ -35,7 +35,7 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-    context-path: /api
+    context-path: /
   tomcat:
     threads:
       max: 200
@@ -49,13 +49,14 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     enabled: true
+    path: /api/swagger-ui.html
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     display-request-duration: true
     disable-swagger-default-url: true # petStore default로 들어가는 것 끄기
     urls:
       - name: "Default Server URL"
-        url: "/api/v3/api-docs"
+        url: "/v3/api-docs"
 
   default-produces-media-type: application/json
 

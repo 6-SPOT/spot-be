@@ -1,33 +1,51 @@
 package spot.spot.global.config;
 
 import jakarta.servlet.DispatcherType;
-import java.util.Arrays;
+
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import spot.spot.domain.member.service.*;
+import spot.spot.domain.member.entity.jwt.JwtFilter;
+import spot.spot.domain.member.entity.jwt.JwtUtil;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
+    private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
+    private final OAuth2MemberService oAuth2MemberService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final MemberService memberService;
     /*
      *  Security Config의 변수 설명 - 필요한 것
      *  (1) JwtUtil                  : Jwt 토큰 발급, 검증 등의 로직 담당
      *  (2) AuthenticationEntryPoint : 인증 실패 시 예외 처리
      *  (3) AccessDeniedHandler      : 해당 경로를 요청할 권한이 없을 때 예외 처리
      */
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     private final String[] whiteList = {
         "/ws-stomp/**", // * 웹 소켓 연결 및 테스팅이 완료되면 삭제
@@ -81,10 +99,23 @@ public class SecurityConfig {
                     auth                                        // (8)
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()   // 비동기 접근 열어주기
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // FORWARD REDIRECTING 열어주기
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/**", "/api/member/login/kakao", "/login/oauth2/code/kakao").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .requestMatchers(whiteList).permitAll()
-                        .anyRequest().permitAll()
-            );
+                        .anyRequest().authenticated())
+                .oauth2Login(login -> login
+                        .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/member/login"))
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2MemberService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler))
+                .addFilterBefore(new JwtFilter(jwtUtil, tokenService, memberService), UsernamePasswordAuthenticationFilter.class);;
+
+        http
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                );
         return http.build();
     }
 
