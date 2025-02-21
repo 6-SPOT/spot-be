@@ -68,7 +68,7 @@ public class PayService {
         if(payReadyResponse.getTid() == null) throw new GlobalException(ErrorCode.FAIL_PAY_READY);
 
         savePayHistory(memberNickname, "", amount, point);
-        return new PayReadyResponseDto(payReadyResponse.getTid(), payReadyResponse.getNext_redirect_pc_url());
+        return new PayReadyResponseDto(payReadyResponse.getNext_redirect_pc_url(), payReadyResponse.getNext_redirect_mobile_url());
     }
 
     //결제 승인(결제)
