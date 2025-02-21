@@ -17,7 +17,7 @@ import spot.spot.global.response.format.GlobalException;
 
 @Slf4j
 @RestController
-@RequestMapping("/health")
+@RequestMapping("/api/health")
 public class HealthCheckController {
 
     // 예외 발생 테스트 (정의된 예외)
@@ -34,7 +34,7 @@ public class HealthCheckController {
 
     //  ResponseEntity<T> 직접 반환 (ResponseBodyAdvice가 적용되지 않아야 함)
     @Logging
-    @GetMapping("/response-entity")
+    @GetMapping("/ok")
     public ResponseEntity<SampleDto> getResponseEntity() {
         return ResponseEntity.ok(new SampleDto(2, "ResponseEntity 사용"));
     }
