@@ -26,7 +26,6 @@ public class TestDataInitializerConfig {
                     .lng(126.9780)
                     .account("testAccount")
                     .point(100)
-                    .deletedAt(null)
                     .build();
 
                 // 멤버 저장 후, 실제 저장된 ID 확인
