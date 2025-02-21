@@ -8,13 +8,14 @@ import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
+import spot.spot.global.auditing.entitiy.Deleted;
 
 @Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Member {
+public class Member extends Deleted {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +45,8 @@ public class Member {
     private MemberRole memberRole;
 
     private LocalDateTime deletedAt; //삭제일자
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Worker worker;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;

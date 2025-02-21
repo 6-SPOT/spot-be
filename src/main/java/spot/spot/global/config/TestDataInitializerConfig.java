@@ -25,7 +25,6 @@ public class TestDataInitializerConfig {
                     .lat(37.5665)
                     .lng(126.9780)
                     .point(100)
-                    .deletedAt(null)
                     .build();
 
                 // 멤버 저장 후, 실제 저장된 ID 확인
