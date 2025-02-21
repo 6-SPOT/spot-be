@@ -18,12 +18,11 @@ import spot.spot.global.logging.Logging;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/job")
+@RequestMapping(value = "/api/job")
 public class Job4ClientController implements Job4ClientDocs {
 
     private final Job4ClientService job4ClientService;
 
-    @Logging
     @PutMapping(value = "/register",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void registerJob(
         @RequestPart(value = "request")RegisterJobRequest request,
