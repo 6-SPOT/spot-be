@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 
@@ -39,6 +40,8 @@ public class Member {
     private String account;
 
     private int point;
+
+    private MemberRole memberRole;
 
     private LocalDateTime deletedAt; //삭제일자
 

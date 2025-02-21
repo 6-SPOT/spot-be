@@ -31,6 +31,8 @@ jobs:
 
   dev-test:
     runs-on: ubuntu-latest
+    env:
+      VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}  # Vault 토큰
     steps:
       - uses: actions/checkout@v4
 
@@ -40,10 +42,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
-
-
-      - name: Create Firebase service account file
-        run: echo '${{ secrets.FIREBASE_KEY }}' | jq '.' > src/main/resources/firebase-service-key.json
 
       - name: test with Gradle
         env:

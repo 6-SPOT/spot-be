@@ -39,3 +39,5 @@ out/
 application-local.yml
 application-key.yml
 firebase-service-key.json
+
+.DS*

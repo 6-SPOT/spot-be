@@ -49,7 +49,7 @@ public class SwaggerConfig {
             .addSecurityItem(addSecurityItem)
             .addServersItem(new Server().url("https://ilmatch.net/api")
                 .description("Default Server URL"))
-            .addServersItem(new Server().url("http://localhost:8080/api")
+            .addServersItem(new Server().url("http://localhost:8080")
                 .description("Local Development Server"))
             .info(info)
             .components(components)
