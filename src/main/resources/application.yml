@@ -30,6 +30,9 @@ spring:
     refresh:
       token: 86400000
     secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf
+  kafka:
+    admin:
+      operation-timeout:
 
 # 서버 설정
 server:
@@ -80,12 +83,6 @@ klaytn:
         api:
           url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
 
-vault:
-  connect:
-    url: https://infra.ilmatch.net/v1/
-
-# key 값에 본인의 vault pat 토큰 값을 입력하셔야합니다.
-github:
-  personal:
-    pat:
-      key:
+kakao:
+  pay:
+    partner_order_id: ilmatch
