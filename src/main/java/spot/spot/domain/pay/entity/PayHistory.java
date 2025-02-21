@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +26,8 @@ public class PayHistory {
     @Column(name = "depositor", nullable = false)
     private String depositor;
 
-    private Long memberId;
+    @Setter
+    private String worker;
 
     private LocalDateTime createAt;
 }
