@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 import spot.spot.global.auditing.entitiy.Deleted;

@@ -14,7 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import spot.spot.domain.member.entity.jwt.Token;
+import spot.spot.global.security.util.jwt.Token;
 
 @Configuration
 @RequiredArgsConstructor

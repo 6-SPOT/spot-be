@@ -1,4 +1,4 @@
-package spot.spot.domain.member.entity.jwt;
+package spot.spot.global.security.util.jwt;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

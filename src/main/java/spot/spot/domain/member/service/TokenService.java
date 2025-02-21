@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import spot.spot.domain.member.entity.jwt.Token;
+import spot.spot.global.security.util.jwt.Token;
 
 import java.util.LinkedHashMap;
 

@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.OAuth2Member;
-import spot.spot.domain.member.entity.dto.MemberRequest;
-import spot.spot.domain.member.entity.dto.OAuth2MemberResponse;
+import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.member.dto.response.OAuth2MemberResponse;
 
 @Service
 @RequiredArgsConstructor
