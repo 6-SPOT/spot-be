@@ -1,5 +1,6 @@
 package spot.spot.domain.pay.service;
 
+import com.klaytn.caver.wallet.keyring.SingleKeyring;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,11 +8,16 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.service.MemberService;
+import spot.spot.domain.pay.entity.KlayAboutJob;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.dto.*;
+import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
+import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
+import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.response.format.ResultResponse;
@@ -36,6 +42,9 @@ public class PayService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final MemberService memberService;
     private final PayHistoryRepository payHistoryRepository;
+    private final ExchangeRateByBithumbApi exchangeRateByBithumbApi;
+    private final ConnectToKlaytnNetwork connectToKlaytnNetwork;
+    private final KlayAboutJobRepository klayAboutJobRepository;
 
     //결제준비 (결제페이지로 이동)
     public PayReadyResponseDto payReady(String memberNickname, String title, int amount, int point) {
@@ -63,19 +72,31 @@ public class PayService {
     }
 
     //결제 승인(결제)
-    public PayApproveResponse payApprove(String memberId, String tid, String pgToken) {
+    @Transactional
+    public PayApproveResponse payApprove(String memberId, Job job, String pgToken, int totalAmount) {
         long parseMemberId = Long.parseLong(memberId);
         Member findMember = memberService.findById(parseMemberId);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("partner_order_id", domain);
         parameters.put("partner_user_id", findMember.getNickname());
-        parameters.put("tid", tid);
+        parameters.put("tid", job.getTid());
         parameters.put("pg_token", pgToken);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
 
         PayApproveResponse approve = payAPIRequest("approve", requestEntity, PayApproveResponse.class);
+
+        //결제 후 클레이튼 블록체인에 결제 translation 저장
+        double kaia = exchangeRateByBithumbApi.exchangeToKaia(totalAmount / 10000);
+        log.info("kaia = {}", kaia);
+        SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
+        double peb = kaia * 10000000;
+        connectToKlaytnNetwork.deposit((int) peb, singleKeyring.getAddress());
+
+        double changeRateCash = exchangeRateByBithumbApi.getChangeRateCash();
+        KlayAboutJob klayAboutJob = KlayAboutJob.builder().amtKlay(kaia).amtKrw(totalAmount).exchangeRate(changeRateCash).job(job).build();
+        klayAboutJobRepository.save(klayAboutJob);
 
         return approve;
     }
@@ -92,27 +113,45 @@ public class PayService {
     }
 
     //결제 취소(환불)
-    public PayCancelResponse payCancel(String tid, int amount){
+    @Transactional
+    public PayCancelResponse payCancel(Job job, int amount){
         String totalAmount = String.valueOf(amount);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
-        parameters.put("tid", tid);
+        parameters.put("tid", job.getTid());
         parameters.put("cancel_amount", totalAmount);
         parameters.put("cancel_tax_free_amount", "0");
         parameters.put("cancel_vat_amount", "0");
         parameters.put("cancel_available_amount", totalAmount);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
+        PayCancelResponse cancel = payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
 
-        return payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
+        //결제된 내역의 카이아를 다시 현금화한 후 환급
+        KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
+        double amtKlay = klayAboutJob.getAmtKlay();
+        amtKlay = exchangeRateByBithumbApi.exchangeToCash(amtKlay);
+        SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
+        String transfer = connectToKlaytnNetwork.transfer((int) amtKlay, singleKeyring.getAddress());
+        log.info("txHash = {}", transfer);
+
+//        klayAboutJobRepository.delete(klayAboutJob);
+        return cancel;
     }
 
     //일 완료 시 구직자에게 포인트 반환
-    public PaySuccessResponseDto payTransfer(Long workerId, int amount, String title) {
+    public PaySuccessResponseDto payTransfer(Long workerId, int amount, Job job) {
         Member worker = memberService.findById(workerId);
         int point = worker.getPoint();
         worker.setPoint(point + amount);
+
+        KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
+        double amtKlay = klayAboutJob.getAmtKlay();
+        SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
+        connectToKlaytnNetwork.transfer((int) amtKlay, singleKeyring.getAddress());
+
+        klayAboutJobRepository.delete(klayAboutJob);
 
         return new PaySuccessResponseDto(point + amount);
     }

@@ -25,6 +25,7 @@ public enum ErrorCode {
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "지우려는 파일이 S3 내부에 없습니다."),
     FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),
     EMPTY_POINT(HttpStatus.NOT_FOUND, "포인트가 모두 소멸되었습니다."),
+    PAY_SUCCESS_NOT_FOUND(HttpStatus.NOT_FOUND, "일 등록시 결제된 내역이 없습니다."),
     ;
     private final HttpStatus status;
     private final String message;
