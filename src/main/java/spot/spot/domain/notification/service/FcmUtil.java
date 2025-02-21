@@ -15,6 +15,7 @@ import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.repository.FcmTokenRepository;
 import spot.spot.global.logging.ColorLogger;
+import spot.spot.global.response.format.ErrorCode;
 
 @Slf4j
 @Component
@@ -32,7 +33,7 @@ public class FcmUtil  {
                     .map(FcmToken::getData)
                     .map(token -> makeMessage(token, fcmDTO))
                     .forEach(this::sendMessage),
-                () -> ColorLogger.red("❌ 이 회원은 FCM 토큰이 전무하네요! 오래 접속하지 않았거나, 탈퇴회원 입니다. ❌ : member_id {} ", receiver.getId())
+                () -> ColorLogger.red(ErrorCode.INVALID_FCM_TOKEN.getMessage(),": member_id {} ", receiver.getId())
             );
     }
 

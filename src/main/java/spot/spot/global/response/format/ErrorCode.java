@@ -27,6 +27,8 @@ public enum ErrorCode {
     ITS_NOT_DEFINED_ABILITY(HttpStatus.BAD_REQUEST, "유효하지 않은 WORKER의 능력 입니다."),
     // MAP
     INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다 이러다가 북한까지 볼 기세 ㄷㄷ (◞‸ ◟)"),
+    // ALRAM
+    INVALID_FCM_TOKEN(HttpStatus.NOT_ACCEPTABLE, "❌ 이 회원은 FCM 토큰이 전무하네요! 오래 접속하지 않았거나, 탈퇴회원 입니다. ❌ ")
     ;
     private final HttpStatus status;
     private final String message;
