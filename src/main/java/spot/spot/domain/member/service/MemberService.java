@@ -39,7 +39,7 @@ public class MemberService {
     public TokenDTO getDeveloperToken(long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
-        return TokenDTO.builder().accessToken(jwtUtil.createDeveloperToken(member,259200000 )).build();
+        return TokenDTO.builder().accessToken(jwtUtil.createDeveloperToken(member)).build();
     }
 
 
