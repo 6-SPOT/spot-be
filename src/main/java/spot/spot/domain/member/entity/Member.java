@@ -2,10 +2,8 @@ package spot.spot.domain.member.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
@@ -39,6 +37,7 @@ public class Member {
 
     private String account;
 
+    @Setter
     private int point;
 
     private MemberRole memberRole;

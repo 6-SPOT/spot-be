@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import spot.spot.global.response.format.GlobalException;
 
 @Slf4j
 @Component
+@Getter
 public class ExchangeRateByBithumbApi {
 
     @Value("${klaytn.bithumb.kaia.krw.api.url}")
