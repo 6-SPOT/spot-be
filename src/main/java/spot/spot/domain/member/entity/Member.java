@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
@@ -44,7 +43,6 @@ public class Member extends Deleted {
 
     private MemberRole memberRole;
 
-    private LocalDateTime deletedAt; //삭제일자
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Worker worker;
 
