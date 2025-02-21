@@ -14,8 +14,6 @@ import spot.spot.domain.job.repository.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.mapper.MemberMapper;
 import spot.spot.domain.member.repository.MemberRepository;
-import spot.spot.global.response.format.ErrorCode;
-import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
@@ -33,7 +31,7 @@ public class Job4ClientService {
     public void registerJob(RegisterJobRequest request, MultipartFile file ) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request));
-        Member client = userAccessUtil.getMember().orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        Member client = userAccessUtil.getMember();
         Matching matching = Matching.builder()
             .member(client)
             .job(newJob)
