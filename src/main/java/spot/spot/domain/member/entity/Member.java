@@ -23,19 +23,23 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String email;
 
+    @Setter
     private String nickname;
 
+    @Setter
     private String img;
 
+    @Setter
     private String phone;
 
+    @Setter
     private double lat; //위도
 
+    @Setter
     private double lng; //경도
-
-    private String account;
 
     @Setter
     private int point;

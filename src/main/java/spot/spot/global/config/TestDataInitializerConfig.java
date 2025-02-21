@@ -24,7 +24,6 @@ public class TestDataInitializerConfig {
                     .nickname("테스트유저")
                     .lat(37.5665)
                     .lng(126.9780)
-                    .account("testAccount")
                     .point(100)
                     .deletedAt(null)
                     .build();
