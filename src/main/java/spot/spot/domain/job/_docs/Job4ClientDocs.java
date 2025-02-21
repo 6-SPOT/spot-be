@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ public interface Job4ClientDocs {
                 (message : "의뢰자가 존재하지 않습니다.")
                 """, content = @Content),
     })
+    @PutMapping
     public void registerJob(
         @RequestPart(value = "request") RegisterJobRequest request,
         @RequestPart(value = "file", required = false ) MultipartFile file
