@@ -16,6 +16,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("🔥 OAuth2 로그인 실패: {}", exception.getMessage());
+        log.error("exception trace = {}", exception.getStackTrace());
         response.sendRedirect("/login?error=" + exception.getMessage());
     }
 }
