@@ -44,10 +44,8 @@ public class Member extends Deleted {
 
     private MemberRole memberRole;
 
-    private LocalDateTime deletedAt; //삭제일자
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Worker worker;
-
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;
 
