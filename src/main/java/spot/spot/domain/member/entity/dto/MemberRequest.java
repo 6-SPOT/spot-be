@@ -14,5 +14,6 @@ public class MemberRequest {
     public static class register{
         private String nickname;
         private String email;
+        private String img;
     }
 }

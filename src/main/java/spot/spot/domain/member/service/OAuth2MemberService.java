@@ -36,12 +36,14 @@ public class OAuth2MemberService extends DefaultOAuth2UserService {
     private MemberRequest.register extractUserInfo(String registrationId, OAuth2MemberResponse oAuth2MemberResponse) {
         String nickname = "";
         String email = "";
+        String img = "";
         log.info("registrationId : {}", registrationId);
 
         switch (registrationId) {
             case "kakao":
                 nickname = oAuth2MemberResponse.getKakaoNickname();
                 email = oAuth2MemberResponse.getKakaoEmail();
+                img = oAuth2MemberResponse.getKakaoProfileImage();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported registrationId: " + registrationId);
@@ -50,6 +52,7 @@ public class OAuth2MemberService extends DefaultOAuth2UserService {
         return MemberRequest.register.builder()
                 .email(email)
                 .nickname(nickname)
+                .img(img)
                 .build();
     }
 
