@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,16 +12,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.OAuth2Member;
+import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.member.service.MemberService;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 
 @Component
 public class JwtUtil {
 
     private final SecretKey secretKey;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @Value("${spring.jwt.access.token}")
     private long ACCESS_TOKEN_EXPIRE_TIME;
@@ -28,10 +32,11 @@ public class JwtUtil {
     @Value("${spring.jwt.refresh.token}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
 
-    public JwtUtil(@Value("${spring.jwt.secretKey}") String secretKey, MemberService memberService) {
+    public JwtUtil(@Value("${spring.jwt.secretKey}") String secretKey, MemberRepository memberRepository) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
-        this.memberService =memberService;
+        this.memberRepository = memberRepository;
     }
+
 
     //token생성
     public String createToken(OAuth2Member oAuth2Member, long expireTime){
@@ -44,12 +49,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String createDeveloperToken(Member member, long expireTime) {
+    public String createDeveloperToken(Member member) {
         return Jwts.builder()
             .setHeaderParam("typ", "JWT")
             .setSubject(member.getId().toString())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
             .signWith(secretKey)
             .compact();
     }
@@ -85,7 +90,8 @@ public class JwtUtil {
 
         // ✅ JWT의 subject를 Long 타입의 member ID로 변환하여 사용자 조회
         Long memberId = Long.parseLong(claims.getSubject());
-        Member findMember = memberService.findById(memberId);
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(
+            ErrorCode.MEMBER_NOT_FOUND));
         if (findMember == null) {
             throw new UsernameNotFoundException("일치하는 유저가 없습니다.");
         }
