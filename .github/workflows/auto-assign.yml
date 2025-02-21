@@ -29,13 +29,10 @@ jobs:
                   reviewers=("42kko" "dalcheonroadhead")
                   ;;
               42kko)
-                  reviewers=("dalcheonroadhead" "eunSoft")
+                  reviewers=("dalcheonroadhead")
                   ;;
               dalcheonroadhead)
-                  reviewers=("eunSoft" "hxcva1")
-                  ;;
-              eunSoft)
-                  reviewers=("hxcva1" "immyeong")
+                  reviewers=("hxcva1")
                   ;;
               hxcva1)
                   reviewers=("immyeong" "42kko")

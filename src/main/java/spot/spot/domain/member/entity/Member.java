@@ -27,6 +27,10 @@ public class Member {
 
     private String nickname;
 
+    private String img;
+
+    private String phone;
+
     private double lat; //위도
 
     private double lng; //경도
@@ -48,6 +52,5 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokenList;
-
 }
 

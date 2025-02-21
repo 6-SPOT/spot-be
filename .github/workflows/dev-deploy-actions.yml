@@ -1,24 +1,133 @@
-name: dev-deploy-phase
+name: Build and Push Docker Images to AWS ECR
+
 on:
   push:
     branches:
-      - develop
+      - develop # 필요하면 변경 가능
 
-#env:
-#  JASYPT_PASSWORD: ${{secrets.JASYPT_PASSWORD}}
+permissions:
+  id-token: write  # OIDC를 이용한 AWS 인증
+  contents: read   # actions/checkout을 위해 필요
 
 jobs:
-  dev-deploy:
+  build-and-push-app:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+          java-version: '17'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: ./gradlew build -Pprofile=dev
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test --no-daemon
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC 
+          role-session-name: GitHubActionsSession
+          aws-region: ap-northeast-2 
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Backend App Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_NAME: backend-repo
+        run: |
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest -f Dockerfile_be .
+          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+
+  build-and-push-db:
+    runs-on: ubuntu-latest
+    needs: build-and-push-app  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Check if DB schema has changed
+        id: check-schema
+        run: |
+          DB_IMAGE_TAG="db-init"
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+
+          # 기존 ECR 이미지 존재 여부 확인
+          if aws ecr describe-images --repository-name backend-db --image-ids imageTag=$DB_IMAGE_TAG >/dev/null 2>&1; then
+            echo "DB Image exists, checking if schema has changed..."
+            
+            # 기존 ECR 이미지의 digest 가져오기
+            EXISTING_DIGEST=$(aws ecr describe-images --repository-name backend-db --image-ids imageTag=$DB_IMAGE_TAG --query 'imageDetails[0].imageDigest' --output text)
+
+            # 현재 SQL 스키마 파일의 해시값 계산
+            CURRENT_SCHEMA_HASH=$(sha256sum schema/create_table.sql | awk '{print $1}')
+
+            # 스키마 변경 감지
+            if [[ "$CURRENT_SCHEMA_HASH" != "$EXISTING_DIGEST" ]]; then
+              echo "Schema has changed, rebuilding image."
+              echo "SKIP_BUILD=false" >> $GITHUB_ENV
+            else
+              echo "Schema has not changed, skipping build."
+              echo "SKIP_BUILD=true" >> $GITHUB_ENV
+            fi
+          else
+            echo "DB Image does not exist, proceeding with build."
+            echo "SKIP_BUILD=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build and Push DB Image
+        if: env.SKIP_BUILD == 'false'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          DB_IMAGE_NAME: backend-db
+        run: |
+          docker build -t $ECR_REGISTRY/$DB_IMAGE_NAME:db-init -f Dockerfile_db .
+          docker push $ECR_REGISTRY/$DB_IMAGE_NAME:db-init
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-app, build-and-push-db]  # ✅ 두 개의 빌드 완료 후 실행
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ap-northeast-2
+
+      - name: Trigger AWS CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name be \
+            --deployment-group-name be-server \
+            --s3-location bucket=testnet-spot-deploy,key=be.zip,bundleType=zip

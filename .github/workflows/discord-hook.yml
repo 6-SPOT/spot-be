@@ -25,7 +25,6 @@ jobs:
           # GitHub ID를 실제 이름으로 변환하는 매핑
           declare -A USER_MAP
           USER_MAP["42kko"]="고경훈"
-          USER_MAP["eunSoft"]="심정은"
           USER_MAP["immyeong"]="임명철"
           USER_MAP["dalcheonroadhead"]="전수민"
           USER_MAP["hxcva1"]="박문순"
@@ -50,9 +49,9 @@ jobs:
             ISSUE_CONTENT="Issue 내용이 없습니다."
           fi
 
-          # Issue 감지 후 다음 # 전까지 내용 추출
+          # Issue 감지 후 다음 # 전까지 모든 내용 추출
           if [ -n "$ISSUE_LINE" ]; then
-            ISSUE_CONTENT=$(echo "$PR_BODY" | sed -n "$((ISSUE_LINE + 1)),/^# /p" | sed '$d' | sed '/^$/d')
+            ISSUE_CONTENT=$(echo "$PR_BODY" | sed -n "$((ISSUE_LINE + 1)),/^# /p" | sed '/^# /d' | sed '/^$/d')
           fi
 
           echo "🟢 추출된 Issue 내용:"

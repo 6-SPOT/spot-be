@@ -3,7 +3,7 @@ spring:
   application:
     name: spot-be
   profiles:
-    active: local , key
+    active: local
   thymeleaf:
     check-template-location: false
   servlet:
@@ -11,6 +11,26 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  config:
+    import: vault://
+  cloud:
+    vault:
+      uri: https://infra.ilmatch.net
+      connection-timeout: 5000
+      read-timeout: 15000
+      authentication: TOKEN
+      token: ${VAULT_TOKEN}
+      kv:
+        backend: ms
+        default-context: spot-be
+        enabled: true
+  jwt:
+    access:
+      token: 10000000
+    refresh:
+      token: 86400000
+    secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf
+
 # 서버 설정
 server:
   port: 8080
@@ -24,6 +44,7 @@ server:
     threads:
       max: 200
     max-connections: 10000
+
 # SWAGGER
 springdoc:
   show-login-endpoint: true
@@ -33,8 +54,8 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /api/swagger-ui.html
-    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
-    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    tags-sorter: alpha # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    operations-sorter: alpha # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     display-request-duration: true
     disable-swagger-default-url: true # petStore default로 들어가는 것 끄기
     urls:
@@ -48,6 +69,9 @@ logging:
     org:
       springframework:
         security: DEBUG
+        vault: DEBUG
+        cloud:
+          vault: DEBUG
 
 klaytn:
   bithumb:
