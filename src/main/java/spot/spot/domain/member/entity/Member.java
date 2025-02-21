@@ -41,6 +41,7 @@ public class Member extends Deleted {
     @Setter
     private int point;
 
+    @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
