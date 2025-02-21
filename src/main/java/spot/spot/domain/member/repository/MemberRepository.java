@@ -18,8 +18,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             (6371*acos(
                     cos(radians(:lat)) * cos(radians(m.lat))
                     * cos(radians(m.lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(m.lat)))) AS distance
-    FROM Members m
-    INNER JOIN Worker w ON m.id = w.member_id
+    FROM member m
+    INNER JOIN worker w ON m.id = w.member_id
     HAVING distance < :dist
     ORDER BY distance
     """, nativeQuery = true)
