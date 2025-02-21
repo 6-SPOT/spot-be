@@ -1,4 +1,4 @@
-package spot.spot.domain.member.service;
+package spot.spot.global.security.util;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +11,9 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import spot.spot.domain.member.entity.OAuth2Member;
-import spot.spot.domain.member.entity.jwt.JwtUtil;
-import spot.spot.domain.member.entity.jwt.Token;
+import spot.spot.domain.member.service.TokenService;
+import spot.spot.global.security.util.jwt.JwtUtil;
+import spot.spot.global.security.util.jwt.Token;
 
 import java.io.IOException;
 import java.net.URLEncoder;

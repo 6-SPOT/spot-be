@@ -1,4 +1,4 @@
-package spot.spot.domain.member.entity.jwt;
+package spot.spot.global.security.util.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -42,6 +42,16 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public String createDeveloperToken(Member member, long expireTime) {
+        return Jwts.builder()
+            .setHeaderParam("typ", "JWT")
+            .setSubject(member.getId().toString())
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+            .signWith(secretKey)
+            .compact();
     }
 
     //accessToken생성
