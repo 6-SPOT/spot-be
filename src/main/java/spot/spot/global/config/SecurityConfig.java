@@ -49,7 +49,6 @@ public class SecurityConfig {
 
     private final String[] whiteList = {
         "/ws-stomp/**", // * 웹 소켓 연결 및 테스팅이 완료되면 삭제
-        "/api/**",
         "/swagger-ui.html", "/swagger-ui/**", "/api-docs/**", "/swagger-resources/**",
         "/webjars/**", "/error",
     };
@@ -99,7 +98,7 @@ public class SecurityConfig {
                     auth                                        // (8)
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()   // 비동기 접근 열어주기
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // FORWARD REDIRECTING 열어주기
-                        .requestMatchers("/api/**", "/api/member/login/kakao", "/login/oauth2/code/kakao").permitAll()
+                        .requestMatchers("/api/member/login/kakao", "/api/login/oauth2/code/kakao").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated())
