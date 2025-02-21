@@ -1,21 +1,19 @@
-package spot.spot.domain.member._docs;
-
+package spot.spot.domain.job._docs;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import spot.spot.domain.member.dto.response.TokenDTO;
+import org.springframework.web.bind.annotation.PutMapping;
+import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 
-@Tag(name = "member", description = "회원 공통 API")
-public interface MemberDocs {
+@Tag(name = "Job4Worker", description = "해결사를 위한 API 모음")
+public interface Job4WorkerDocs {
 
-    @Operation(summary = "개발자 용 토큰 발급기",
+    @Operation(summary = "구직 등록하기",
         description = """
-        Oauth2 매번 하기가 번거로울 거 같아서 만들었습니다. DB에 있는 회원 중 한 명의 id를 입력하면 accessToken을 줍니다.
+        자신의 프로필과 강점을 입력해주세요. (강점은 Enum 고르기) Contnet-Type은 multipart/form-data로 해주십쇼,
         """,
         responses = {
             @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
@@ -24,7 +22,7 @@ public interface MemberDocs {
                 (message : "의뢰자가 존재하지 않습니다.")
                 """, content = @Content),
         })
-    @GetMapping("/developer-get-token")
-    public TokenDTO getToken4Developer(@RequestParam long id);
+    @PutMapping
+    public void registerWorker(RegisterWorkerRequest request);
 
 }
