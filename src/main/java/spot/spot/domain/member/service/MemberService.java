@@ -46,16 +46,12 @@ public class MemberService {
     @Transactional
     public Member findByNickname(String nickname) {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
-        if(findMember.isEmpty()) return null;
-
-        return findMember.get();
+        return findMember.orElse(null);
     }
 
     @Transactional
     public Member findById(Long id) {
         Optional<Member> findMember = memberRepository.findById(id);
-        if(findMember.isEmpty()) return null;
-
-        return findMember.get();
+        return findMember.orElse(null);
     }
 }
