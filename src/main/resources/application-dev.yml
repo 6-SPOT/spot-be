@@ -30,7 +30,7 @@ spring:
               - profile_image
               - account_email
             client-name: Kakao
-            redirect-uri: https://ilmatch.net/api/login/oauth2/code/kakao
+            redirect-uri: https://ilmatch.net/login/oauth2/code/kakao
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
