@@ -10,14 +10,14 @@ public enum AbilityType {
     DRIVING("운전"),
     CHILD_CARE("아이 돌봄"),
     PET_CARE("반려동물 돌봄"),
-    HANDYMAN("간단한 수리 & 허드렛일 가능 가능"),
+    HANDY_MAN("간단한 수리 & 허드렛일 가능 가능"),
     TRANSLATION("번역 / 통역"),
     PHOTOGRAPHY("사진 / 영상 촬영"),
     TYPING("빠른 타이핑"),
 
     // Soft Skills
     PUNCTUALITY("시간 엄수"),
-    TEAMWORK("팀워크"),
+    TEAM_WORK("팀워크"),
     FAST_LEARNING("빠른 학습 능력"),
     COMMUNICATION("의사소통 능력"),
     RESPONSIBILITY("책임감"),
