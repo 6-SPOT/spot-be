@@ -36,9 +36,9 @@ public class JobQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
             .where(
                 job.startedAt.isNull(),
                 job.lat.between(lat - (dist / 111.045), lat + (dist / 111.045)),
-                job.lng.between(lng - rangeFilter, lng + rangeFilter)
+                job.lng.between(lng - rangeFilter, lng + rangeFilter),
+                distanceExpression.lt(dist)
             )
-            .having(distanceExpression.lt(dist))
             .orderBy(distanceExpression.asc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1) // 한 개 더 확인해서 다음 페이지가 있는지 확인
