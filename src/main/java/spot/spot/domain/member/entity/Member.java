@@ -14,6 +14,7 @@ import spot.spot.global.auditing.entitiy.Deleted;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "members")
 public class Member extends Deleted {
 
     @Id
