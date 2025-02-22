@@ -33,7 +33,7 @@ public class Job4ClientController implements Job4ClientDocs {
     public List<NearByWorkersResponse> nearByWorkersResponseList (
         @RequestParam(required = true) double lat,
         @RequestParam(required = true) double lng,
-        @RequestParam(required = true, defaultValue = "21") int zoom
+        @RequestParam(required = false, defaultValue = "21") Integer zoom
     ) {
         return job4ClientService.findNearByWorkers(lat, lng, zoom);
     }

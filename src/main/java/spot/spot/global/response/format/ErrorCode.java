@@ -30,6 +30,7 @@ public enum ErrorCode {
     FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),
     EMPTY_POINT(HttpStatus.NOT_FOUND, "포인트가 모두 소멸되었습니다."),
     PAY_SUCCESS_NOT_FOUND(HttpStatus.NOT_FOUND, "일 등록시 결제된 내역이 없습니다."),
+    INVALID_SEARCH_METHOD(HttpStatus.BAD_REQUEST, "요청하신 이름의 구현 매소드를 찾을 수 없습니다."),
     // ALRAM
     INVALID_FCM_TOKEN(HttpStatus.NOT_ACCEPTABLE, "❌ 이 회원은 FCM 토큰이 전무하네요! 오래 접속하지 않았거나, 탈퇴회원 입니다. ❌ ")
     ;

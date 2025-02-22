@@ -69,7 +69,7 @@ public interface Job4ClientDocs {
     public List<NearByWorkersResponse> nearByWorkersResponseList (
         @RequestParam(required = true) double lat,
         @RequestParam(required = true) double lng,
-        @RequestParam(required = true, defaultValue = "21") int zoom
+        @RequestParam(required = true, defaultValue = "21") Integer zoom
     );
 
 }
