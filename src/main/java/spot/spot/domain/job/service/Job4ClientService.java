@@ -9,8 +9,8 @@ import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.mapper.Job4ClientMapper;
-import spot.spot.domain.job.repository.JobRepository;
-import spot.spot.domain.job.repository.MatchingRepository;
+import spot.spot.domain.job.repository.jpa.JobRepository;
+import spot.spot.domain.job.repository.jpa.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.mapper.MemberMapper;
 import spot.spot.domain.member.repository.MemberRepository;
@@ -21,6 +21,7 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @RequiredArgsConstructor
 public class Job4ClientService {
     private final UserAccessUtil userAccessUtil;
+    private final JobUtil jobUtil;
     private final Job4ClientMapper job4ClientMapper;
     private final MemberMapper memberMapper;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
@@ -42,24 +43,6 @@ public class Job4ClientService {
     }
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
-        return memberMapper.toDtoList(memberRepository.findWorkersNearByMember(lat, lng, convertZoomToRadius(zoomLevel)));
+        return memberMapper.toDtoList(memberRepository.findWorkersNearByMember(lat, lng, jobUtil.convertZoomToRadius(zoomLevel)));
     }
-
-    private double convertZoomToRadius(int zoom_level) {
-        return switch (zoom_level) {
-            case 21 -> 0.05;
-            case 20 -> 0.1;
-            case 19 -> 0.2;
-            case 18 -> 0.5;
-            case 17 -> 1;
-            case 16 -> 2;
-            case 15 -> 5;
-            case 14 -> 10;
-            case 13 -> 20;
-            case 12 -> 50;
-            default -> 100;
-        };
-    }
-
-
 }
