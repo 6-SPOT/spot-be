@@ -47,6 +47,7 @@ public class Job4WorkerService {
     private final JobSearchJPQLService jobSearchJPQLService;
     private final JobSearchNativeQueryService jobSearchNativeService;
     private final JobSearchQueryDSLService jobSearchQueryDSLService;
+    private final JobRepository jobRepository;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -56,7 +57,11 @@ public class Job4WorkerService {
         workerAbilityRepository.saveAll(job4WorkerMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
 
-    public Slice<NearByJobResponse> getNearByJobList(String impl, double lat, double lng, int zoom, Pageable pageable) {
+    public Slice<NearByJobResponse> getNearByJobList(String impl, Double lat, Double lng, int zoom, Pageable pageable) {
+        Member member = userAccessUtil.getMember();
+        lat = lat == null? member.getLat() : lat;
+        lng = lng == null? member.getLng() : lng;
+
         JobSearchService service = switch (impl.toLowerCase()) {
             case "jpql" -> jobSearchJPQLService;
             case "native" -> jobSearchNativeService;
@@ -66,4 +71,7 @@ public class Job4WorkerService {
         return service.findNearByJobs(lat, lng, zoom, pageable);
     }
 
+    public NearByJobResponse getOneJob (long jobId) {
+        return job4WorkerMapper.toNearByJobResponse(jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
+    }
 }

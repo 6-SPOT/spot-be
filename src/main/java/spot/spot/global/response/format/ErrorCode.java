@@ -25,7 +25,8 @@ public enum ErrorCode {
     // MEMBER
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 멤버가 존재하지 않습니다."),
     ITS_NOT_DEFINED_ABILITY(HttpStatus.BAD_REQUEST, "유효하지 않은 WORKER의 능력 입니다."),
-    // MAP
+    // JOB
+    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 일은 존재하지 않습니다."),
     INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다 이러다가 북한까지 볼 기세 ㄷㄷ (◞‸ ◟)"),
     FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),
     EMPTY_POINT(HttpStatus.NOT_FOUND, "포인트가 모두 소멸되었습니다."),

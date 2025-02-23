@@ -109,6 +109,11 @@ public interface Job4WorkerDocs {
         Pageable pageable
     );
 
+    @GetMapping
+    public NearByJobResponse getOneJob(
+        @RequestParam long id
+    );
+
 
 
 }
