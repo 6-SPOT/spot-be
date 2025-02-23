@@ -8,6 +8,7 @@ import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.mapper.Job4ClientMapper;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
@@ -36,8 +37,7 @@ public class Job4ClientService {
         Matching matching = Matching.builder()
             .member(client)
             .job(newJob)
-            .role(0)
-            .isDone(false)
+            .status(MatchingStatus.OWNER)
             .build();
         matchingRepository.save(matching);
     }

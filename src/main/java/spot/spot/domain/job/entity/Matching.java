@@ -3,6 +3,8 @@ package spot.spot.domain.job.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,8 +42,8 @@ public class Matching {
     @Column(name = "role", nullable = false)
     private Integer role;
 
-    @Column(name = "is_done", nullable = false)
-    private Boolean isDone;
+    @Enumerated(EnumType.STRING)
+    private MatchingStatus status;
 
     @OneToMany(mappedBy = "matching", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Certification> certificationList;
