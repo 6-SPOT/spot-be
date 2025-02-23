@@ -77,7 +77,22 @@ public interface Job4WorkerDocs {
                      			"dist": 1,
                      			"tid" : 1235
                      		},
-                     	]
+                     	],
+                     	        "pageable": {
+                                          "pageNumber": 0,
+                                          "pageSize": 50,
+                                          "sort": [],
+                                          "offset": 0,
+                                          "paged": true,
+                                          "unpaged": false
+                                      },
+                                      "size": 50,
+                                      "number": 0,
+                                      "sort": [],
+                                      "first": true,
+                                      "last": false,
+                                      "numberOfElements": 50,
+                                      "empty": false
              }
         ]
         """,
