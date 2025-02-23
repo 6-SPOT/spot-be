@@ -16,7 +16,7 @@ import spot.spot.domain.notification.entity.Notification;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="Members")
+@Table(name="members")
 public class Member {
 
     @Id
@@ -44,6 +44,7 @@ public class Member {
     @Setter
     private int point;
 
+    @Enumerated(value = EnumType.STRING)
     private MemberRole memberRole;
 
     private LocalDateTime deletedAt; //삭제일자
