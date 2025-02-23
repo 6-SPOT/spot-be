@@ -13,6 +13,7 @@ import spot.spot.domain.job.repository.JobRepository;
 import spot.spot.domain.job.repository.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.mapper.MemberMapper;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -28,7 +29,7 @@ public class Job4ClientService {
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
     public void registerJob(RegisterJobRequest request, MultipartFile file ) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -44,7 +45,7 @@ public class Job4ClientService {
     }
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
-        return memberMapper.toDtoList(memberRepository.findWorkersNearByMember(lat, lng, convertZoomToRadius(zoomLevel)));
+        return memberMapper.toDtoList(memberQueryRepository.findWorkerNearByMember(lat, lng, convertZoomToRadius(zoomLevel)));
     }
 
     private double convertZoomToRadius(int zoom_level) {
