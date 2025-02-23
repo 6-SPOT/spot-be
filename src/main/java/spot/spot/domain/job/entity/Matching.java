@@ -39,9 +39,6 @@ public class Matching {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @Column(name = "role", nullable = false)
-    private Integer role;
-
     @Enumerated(EnumType.STRING)
     private MatchingStatus status;
 
