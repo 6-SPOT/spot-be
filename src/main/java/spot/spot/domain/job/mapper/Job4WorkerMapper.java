@@ -59,7 +59,7 @@ public interface Job4WorkerMapper {
         return jobs.stream()
             .map(job -> {
                 NearByJobResponse response = toNearByJobResponse(job);
-                int distance = (int) JobUtil.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
+                double distance = JobUtil.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
                 return response.toBuilder().dist(distance).build(); // ✅ 기존 객체를 복사하면서 dist만 변경
             })
             .toList();

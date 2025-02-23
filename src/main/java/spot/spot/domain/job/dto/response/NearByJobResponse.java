@@ -22,7 +22,7 @@ public class NearByJobResponse {
     @Schema(description = "돈")
     private int money;
     @Schema(description = "일과 현 사용자가 보낸 위치간의 거리 차이(km 단위)")
-    private int dist;
+    private double dist;
     @Schema(description = "카카오페이 결제 번호")
     private int tid;
 }
