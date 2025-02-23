@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
                 String newAccessToken = jwtUtil.getAccessToken((OAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
                 log.info("AccessToken 재발급됨 = {}", newAccessToken);
-                tokenService.updateAccessToken(token1.getAccessToken(), newAccessToken);
+                tokenService.updateAccessToken(token1.getAccessToken(), token1.getRefreshToken(), newAccessToken);
                 response.setHeader("Authorization", "Bearer " + newAccessToken);
                 SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(newAccessToken));
             }else {

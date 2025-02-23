@@ -47,7 +47,7 @@ public class SwaggerConfig {
         return new OpenAPI()
             .components(components)
             .addSecurityItem(addSecurityItem)
-            .addServersItem(new Server().url("https://ilmatch.net/api")
+            .addServersItem(new Server().url("https://ilmatch.net")
                 .description("Default Server URL"))
             .addServersItem(new Server().url("http://localhost:8080")
                 .description("Local Development Server"))
