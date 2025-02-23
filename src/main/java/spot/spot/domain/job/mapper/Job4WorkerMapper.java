@@ -1,20 +1,17 @@
 package spot.spot.domain.job.mapper;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.core.Tuple;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import spot.spot.domain.job.dto.Location;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
+import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.JobUtil;
@@ -24,6 +21,8 @@ import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.entity.WorkerAbility;
 import spot.spot.domain.member.repository.AbilityRepository;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
@@ -37,7 +36,6 @@ public interface Job4WorkerMapper {
 
     @Mapping(target = "dist", ignore = true)
     NearByJobResponse toNearByJobResponse(Job job);
-
 
     // 해결사 입력시 선택한 자신의 능력과 해결사를 교차테이블로 연관관계 잇기 위한 default 함수
     default List<WorkerAbility> mapWorkerAbilities(List<AbilityType> strong, Worker worker, AbilityRepository abilityRepository) {
@@ -63,5 +61,22 @@ public interface Job4WorkerMapper {
                 return response.toBuilder().dist(distance).build(); // ✅ 기존 객체를 복사하면서 dist만 변경
             })
             .toList();
+    }
+
+    default JobWithOwnerAndErrorCodeResponse toJobWithOwnerAndErrorCodeResponse(Tuple tuple) {
+        return JobWithOwnerAndErrorCodeResponse.builder()
+            .ownerId(Optional.ofNullable(tuple.get(1, Long.class)).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND)))
+            .job(tuple.get(0, Job.class))
+            .errorcode(Optional.ofNullable(tuple.get(2, Integer.class)).map(this::mapErrorCode).orElse(null))
+            .build();
+    }
+
+    default  ErrorCode mapErrorCode(int code) {
+        return switch (code) {
+            case 1 -> ErrorCode.JOB_IS_ALREADY_STARTED;
+            case 2 -> ErrorCode.NOT_REGISTER_TO_WORKER_YET;
+            case 3 -> ErrorCode.ALREADY_ATTENDED;
+            default -> null;
+        };
     }
 }

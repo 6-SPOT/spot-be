@@ -45,7 +45,7 @@ public class Job4WorkerController implements Job4WorkerDocs {
     }
 
     @PostMapping("/request")
-    public void ask2ClientAboutGettingAnewJob(Ask2ClientGetANewJobRequest request) {
-        job4WorkerService.ask2ClientAboutGettingAnewJob(request);
+    public void ask2ClientAboutGettingAnewJob(@RequestBody Ask2ClientGetANewJobRequest request) {
+        job4WorkerService.ask2ClientAboutGettingANewJob(request);
     }
 }
