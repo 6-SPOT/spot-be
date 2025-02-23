@@ -109,10 +109,23 @@ public interface Job4WorkerDocs {
         Pageable pageable
     );
 
+    @Operation(summary = "일 하나 상세 확인",
+        description = """
+        일 하나에 대한 메타 데이터 제공
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @GetMapping
     public NearByJobResponse getOneJob(
         @RequestParam long id
     );
+
+
 
 
 
