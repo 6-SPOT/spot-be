@@ -13,5 +13,6 @@ import spot.spot.domain.member.entity.Member;
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
     List<Matching> findByMemberAndJobAndStatus(Member member, Job job, MatchingStatus status);
+    Optional<Matching> findByJobAndStatus(Job job, MatchingStatus status);
 
 }
