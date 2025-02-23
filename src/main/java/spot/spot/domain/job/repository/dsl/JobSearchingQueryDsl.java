@@ -14,7 +14,7 @@ import spot.spot.domain.job.entity.QJob;
 
 @Repository
 @RequiredArgsConstructor
-public class JobQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
+public class JobSearchingQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
 
     private final JPAQueryFactory queryFactory;
 

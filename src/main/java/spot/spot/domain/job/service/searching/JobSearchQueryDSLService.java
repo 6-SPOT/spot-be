@@ -10,14 +10,14 @@ import spot.spot.domain.job.dto.Location;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.mapper.Job4WorkerMapper;
-import spot.spot.domain.job.repository.dsl.JobQueryDsl;
+import spot.spot.domain.job.repository.dsl.JobSearchingQueryDsl;
 import spot.spot.domain.job.service.JobUtil;
 
 @Service
 @RequiredArgsConstructor
 public class JobSearchQueryDSLService implements JobSearchService{
 
-    private final JobQueryDsl jobQueryDsl;
+    private final JobSearchingQueryDsl jobQueryDsl;
     private final JobUtil jobUtil;
     private final Job4WorkerMapper job4WorkerMapper;
     @Override

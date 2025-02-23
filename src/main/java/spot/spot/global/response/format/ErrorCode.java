@@ -26,8 +26,11 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 멤버가 존재하지 않습니다."),
     ITS_NOT_DEFINED_ABILITY(HttpStatus.BAD_REQUEST, "유효하지 않은 WORKER의 능력 입니다."),
     // JOB
+    NOT_REGISTER_TO_WORKER_YET(HttpStatus.BAD_REQUEST, "해당 회원은 아직 해결사로 등록되지 않았습니다. 절차를 밟고 자격을 증명 하세요"),
     JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 일은 존재하지 않습니다."),
-    INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다 이러다가 북한까지 볼 기세 ㄷㄷ (◞‸ ◟)"),
+    WORKER_CANT_BE_HIS_OWN_JOBS_WORKER(HttpStatus.BAD_REQUEST, "해결사는 자신이 의뢰한 일을 자신이 맡을 수 없습니다."),
+    JOB_IS_ALREADY_STARTED(HttpStatus.NOT_FOUND, "신청 하시려는 일은 이미 시작되었습니다."),
+    INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다. (◞‸ ◟)"),
     FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),
     EMPTY_POINT(HttpStatus.NOT_FOUND, "포인트가 모두 소멸되었습니다."),
     PAY_SUCCESS_NOT_FOUND(HttpStatus.NOT_FOUND, "일 등록시 결제된 내역이 없습니다."),

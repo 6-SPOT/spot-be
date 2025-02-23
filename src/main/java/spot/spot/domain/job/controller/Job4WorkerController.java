@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job._docs.Job4WorkerDocs;
+import spot.spot.domain.job.dto.request.Ask2ClientGetANewJobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
@@ -40,5 +42,10 @@ public class Job4WorkerController implements Job4WorkerDocs {
     @GetMapping(value = "/get")
     public NearByJobResponse getOneJob(@RequestParam  long id) {
         return job4WorkerService.getOneJob(id);
+    }
+
+    @PostMapping("/request")
+    public void ask2ClientAboutGettingAnewJob(Ask2ClientGetANewJobRequest request) {
+        job4WorkerService.ask2ClientAboutGettingAnewJob(request);
     }
 }
