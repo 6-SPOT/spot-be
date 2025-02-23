@@ -25,21 +25,17 @@ public class FcmUtil  {
     private final FirebaseMessaging firebaseMessaging;
     // 회원 한 명과 관련된 FCM 토큰에 메시지를 보내는 기능
     @Async("taskExecutor")
-    public void singleFcmSend(Member receiver,  FcmDTO fcmDTO) {
-        fcmTokenRepository.fetchAll4Member(receiver)
-            .filter(tokens -> !tokens.isEmpty()) // 빈 리스트 인지 확인
-            .ifPresentOrElse(
-                tokens -> tokens.stream()
-                    .map(FcmToken::getData)
-                    .map(token -> makeMessage(token, fcmDTO))
-                    .forEach(this::sendMessage),
-                () -> ColorLogger.red(ErrorCode.INVALID_FCM_TOKEN.getMessage(),": member_id {} ", receiver.getId())
-            );
+    public void singleFcmSend(long receiverId,  FcmDTO fcmDTO) {
+        fcmTokenRepository.findAllByMember_Id(receiverId)
+            .stream()
+            .map(FcmToken::getData)
+            .map(token -> makeMessage(token, fcmDTO))
+            .forEach(this::sendMessage);
     }
 
     @Async("taskExecutor")
     public void multiFcmSend(List<Member> members, FcmDTO fcmDTO) {
-        members.forEach(member -> singleFcmSend(member, fcmDTO));
+        members.forEach(member -> singleFcmSend(member.getId(), fcmDTO));
     }
 
 
@@ -73,6 +69,10 @@ public class FcmUtil  {
             .title(title)
             .body(body)
             .build();
+    }
+
+    public String makeRequestingJobBody(String attenderName, String jobName){
+        return attenderName + "님이 " + jobName + "을 해결하길 원합니다!";
     }
 
 }
