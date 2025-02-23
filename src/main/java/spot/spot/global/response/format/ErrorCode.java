@@ -26,6 +26,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 멤버가 존재하지 않습니다."),
     ITS_NOT_DEFINED_ABILITY(HttpStatus.BAD_REQUEST, "유효하지 않은 WORKER의 능력 입니다."),
     // JOB
+    INVALID_MATCHING_STATUS(HttpStatus.BAD_REQUEST, "일의 상태가 현재 하려는 작업을 할 수 없는 상태 입니다."),
     OWNER_IS_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, "일의 주인이 없습니다. DB 오류"),
     NOT_REGISTER_TO_WORKER_YET(HttpStatus.BAD_REQUEST, "해당 회원은 아직 해결사로 등록되지 않았습니다. 절차를 밟고 자격을 증명 하세요"),
     JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 일은 존재하지 않습니다."),

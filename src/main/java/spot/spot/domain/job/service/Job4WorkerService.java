@@ -7,9 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.Ask2ClientGetANewJobRequest;
+import spot.spot.domain.job.dto.request.JobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
+import spot.spot.domain.job.dto.response.JobWithOwnerReponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
@@ -80,8 +81,7 @@ public class Job4WorkerService {
         return job4WorkerMapper.toNearByJobResponse(jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
     }
 
-    public void ask2ClientAboutGettingANewJob (Ask2ClientGetANewJobRequest request) {
-        log.info("{}", request.jobId());
+    public void askingJob (JobRequest request) {
         Member worker = userAccessUtil.getMember();
         JobWithOwnerAndErrorCodeResponse jobData = jobStatusQueryDsl.findJowWithOwnerAndErrorCode(
             worker.getId(), request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
@@ -93,13 +93,20 @@ public class Job4WorkerService {
             fcmUtil.makeRequestingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
     }
 
+    public void startJob (JobRequest request) {
+        Member worker = userAccessUtil.getMember();
+        JobWithOwnerReponse jobData = jobStatusQueryDsl.startJob(worker.getId(), request.jobId());
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmUtil.makeStartingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
+    }
+
 
 
 
     // 성능 비교를 위해 남겨놓은 과거의 잔재들
     // --------------------------------------------------------------------------------------------
     @Deprecated
-    public void ask2ClientAboutGettingANewJobWithBunchOfQuery (Ask2ClientGetANewJobRequest request) {
+    public void askingJobWithManyQuery (JobRequest request) {
         Member worker = userAccessUtil.getMember();
         workerRepository.findById(worker.getId()).orElseThrow(() -> new GlobalException(ErrorCode.NOT_REGISTER_TO_WORKER_YET));
         Job job = jobRepository.findByIdAndStartedAtIsNull(request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_IS_ALREADY_STARTED));

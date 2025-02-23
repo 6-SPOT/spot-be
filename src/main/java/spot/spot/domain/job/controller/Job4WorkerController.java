@@ -1,7 +1,6 @@
 package spot.spot.domain.job.controller;
 
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job._docs.Job4WorkerDocs;
-import spot.spot.domain.job.dto.request.Ask2ClientGetANewJobRequest;
+import spot.spot.domain.job.dto.request.JobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
@@ -45,7 +44,14 @@ public class Job4WorkerController implements Job4WorkerDocs {
     }
 
     @PostMapping("/request")
-    public void ask2ClientAboutGettingAnewJob(@RequestBody Ask2ClientGetANewJobRequest request) {
-        job4WorkerService.ask2ClientAboutGettingANewJob(request);
+    public void ask2ClientAboutGettingAnewJob(@RequestBody JobRequest request) {
+        job4WorkerService.askingJob(request);
     }
+
+    @PostMapping("/start")
+    public void startJob(@RequestBody JobRequest request) {
+        job4WorkerService.startJob(request);
+    }
+
+
 }

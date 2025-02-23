@@ -75,4 +75,8 @@ public class FcmUtil  {
         return attenderName + "님이 " + jobName + "을 해결하길 원합니다!";
     }
 
+    public String makeStartingJobBody(String attenderName, String jobName){
+        return attenderName + "님이 " + jobName + "을 시작합니다!";
+    }
+
 }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import spot.spot.domain.job.dto.request.Ask2ClientGetANewJobRequest;
+import spot.spot.domain.job.dto.request.JobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
@@ -130,7 +129,10 @@ public interface Job4WorkerDocs {
 
 
     @PostMapping
-    public void ask2ClientAboutGettingAnewJob(@RequestBody Ask2ClientGetANewJobRequest request);
+    public void ask2ClientAboutGettingAnewJob(@RequestBody JobRequest request);
+
+    @PostMapping
+    public void startJob(@RequestBody JobRequest request);
 
 
 
