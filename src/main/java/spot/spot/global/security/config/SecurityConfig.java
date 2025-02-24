@@ -101,7 +101,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()   // 비동기 접근 열어주기
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // FORWARD REDIRECTING 열어주기
                         .requestMatchers("/api/member/login/kakao", "/api/login/oauth2/code/kakao", "/api/**").permitAll()
-                        .requestMatchers("/api/swagger-ui.html", "/api/swagger-ui/**", "/api/v3/api-docs/**", "/api/swagger-resources/**").permitAll()
+                        .requestMatchers("/api/swagger-ui.html", "/api/swagger-ui/**", "/v3/api-docs/**", "/api/swagger-resources/**").permitAll()
                         .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(login -> login
