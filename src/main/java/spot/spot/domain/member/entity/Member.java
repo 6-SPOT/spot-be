@@ -46,8 +46,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
-    private LocalDateTime deletedAt; //삭제일자
-
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Worker worker;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
