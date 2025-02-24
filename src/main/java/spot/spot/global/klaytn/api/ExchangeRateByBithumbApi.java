@@ -27,25 +27,40 @@ public class ExchangeRateByBithumbApi {
 
     @PostConstruct
     public void coinChangeRate() {
-        ResponseEntity<String> response = restTemplate.getForEntity(bithumbApiURL, String.class);
-        ObjectMapper objectMapper = new ObjectMapper();
+        log.info("URL: {}", bithumbApiURL);
         try {
-            JsonNode rootArray = objectMapper.readTree(response.getBody());
-            if (rootArray.isArray() && !rootArray.isEmpty()) {
-                JsonNode firstObject = rootArray.get(0);
-                JsonNode tradePriceNode = firstObject.get("trade_price");
-                if (tradePriceNode != null) {
-                    changeRateCash = tradePriceNode.asDouble();
-                    double tradePrice = tradePriceNode.asDouble();
-                    changeRateCoin = 1.0 / tradePrice;
-                } else {
-                    throw new GlobalException(ErrorCode.FIELD_NOT_FOUND);
-                }
-            } else {
+            ResponseEntity<String> response = restTemplate.getForEntity(bithumbApiURL, String.class);
+
+            if (response.getBody() == null) {
                 throw new GlobalException(ErrorCode.EMPTY_RESPONSE);
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootArray = objectMapper.readTree(response.getBody());
+
+            if (!rootArray.isArray() || rootArray.isEmpty()) {
+                log.error("API response is empty or not an array.");
+                throw new GlobalException(ErrorCode.EMPTY_RESPONSE);
+            }
+
+            JsonNode firstObject = rootArray.get(0);
+            JsonNode tradePriceNode = firstObject.get("trade_price");
+
+            if (tradePriceNode == null) {
+                log.error("Missing field: trade_price");
+                throw new GlobalException(ErrorCode.FIELD_NOT_FOUND);
+            }
+
+            changeRateCash = tradePriceNode.asDouble();
+            changeRateCoin = 1.0 / changeRateCash;
+
+            log.info("Exchange rate updated: 1 KAIA = {} KRW, 1 KRW = {} KAIA", changeRateCash, changeRateCoin);
+        } catch (Exception e) {
+            log.error("Failed to fetch exchange rate. Using default values. Error: {}", e.getMessage());
+
+            // 기본값 설정 (API가 실패해도 앱이 실행되도록)
+            changeRateCash = 1.0;
+            changeRateCoin = 1.0;
         }
     }
 

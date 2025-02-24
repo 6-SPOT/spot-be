@@ -6,12 +6,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import spot.spot.domain.job.dto.request.Client2JobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
@@ -108,6 +110,29 @@ public interface Job4WorkerDocs {
         @RequestParam Integer zoom,
         Pageable pageable
     );
+
+    @Operation(summary = "일 하나 상세 확인",
+        description = """
+        일 하나에 대한 메타 데이터 제공
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @GetMapping
+    public NearByJobResponse getOneJob(
+        @RequestParam long id
+    );
+
+
+    @PostMapping
+    public void ask2ClientAboutGettingAnewJob(@RequestBody Client2JobRequest request);
+
+    @PostMapping
+    public void startJob(@RequestBody Client2JobRequest request);
 
 
 
