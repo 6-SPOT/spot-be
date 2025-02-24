@@ -19,7 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 @Slf4j
 @Configuration
 public class FireBaseConfig {
-    //
+
     @Value("${firebase.credentials}")
     private String firebaseCredentials;
 

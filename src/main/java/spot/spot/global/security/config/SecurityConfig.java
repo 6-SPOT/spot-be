@@ -1,4 +1,4 @@
-package spot.spot.global.config;
+package spot.spot.global.security.config;
 
 import jakarta.servlet.DispatcherType;
 
@@ -21,8 +21,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import spot.spot.domain.member.service.*;
-import spot.spot.domain.member.entity.jwt.JwtFilter;
-import spot.spot.domain.member.entity.jwt.JwtUtil;
+import spot.spot.global.security.util.OAuth2FailureHandler;
+import spot.spot.global.security.util.OAuth2SuccessHandler;
+import spot.spot.global.security.util.jwt.JwtFilter;
+import spot.spot.global.security.util.jwt.JwtUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -99,7 +101,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()   // 비동기 접근 열어주기
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // FORWARD REDIRECTING 열어주기
                         .requestMatchers("/api/member/login/kakao", "/api/login/oauth2/code/kakao", "/api/**").permitAll()
-                        .requestMatchers("/api/swagger-ui.html", "/api/swagger-ui/**", "/api/v3/api-docs/**", "/api/swagger-resources/**").permitAll()
+                        .requestMatchers("/api/swagger-ui.html", "/api/swagger-ui/**", "/v3/api-docs/**", "/api/swagger-resources/**").permitAll()
                         .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(login -> login
@@ -124,7 +126,6 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(
             List.of("*"));
-//            Arrays.asList("http://localhost:5173", "https://ilmatch.com"));
         configuration.addAllowedMethod(CorsConfiguration.ALL); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader(CorsConfiguration.ALL); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정

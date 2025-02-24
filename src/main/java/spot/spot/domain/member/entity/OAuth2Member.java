@@ -29,11 +29,8 @@ public class OAuth2Member implements OAuth2User {
     }
 
     @Override
-    public String getName() {
-        return member.getId().toString();
-    }
+    public String getName() { return member.getId().toString(); }
 
-    public String getNickName() {
-        return member.getNickname();
-    }
+    public String getNickName() { return member.getNickname(); }
+
 }

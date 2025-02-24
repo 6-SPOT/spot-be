@@ -25,8 +25,7 @@ public class FcmService {
     private final MemberRepository memberRepository;
 
     public void saveFcmToken(UpdateFcmTokenRequest request) {
-        Member member = userAccessUtil.getMember()
-            .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = userAccessUtil.getMember();
         fcmTokenRepository.findByMemberAndData(member, request.fcmToken())
             .orElseGet(() -> fcmTokenRepository.save(FcmToken.builder()
                 .member(member)
@@ -35,11 +34,9 @@ public class FcmService {
     }
 
     public void testSending(FcmTestRequest request) {
-        Member sender = userAccessUtil.getMember()
-            .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Member receiver = memberRepository.findById(request.receiver_id())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-        fcmUtil.singleFcmSend(receiver,
+        fcmUtil.singleFcmSend(receiver.getId(),
             FcmDTO.builder().title(String.valueOf(receiver.getId())).body(request.content()).build());
     }
 }

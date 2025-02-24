@@ -1,4 +1,4 @@
-package spot.spot.domain.member.entity.dto;
+package spot.spot.domain.member.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
