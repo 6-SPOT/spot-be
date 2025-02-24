@@ -40,13 +40,7 @@ public class ChangeJobStatusDsl {
                         .where(matching.job.id.eq(job_id)
                             .and(matching.member.id.eq(worker_id))
                             .and(matching.status.eq(expected_status)))
-                        .exists(),
-                    JPAExpressions.selectOne()  // 중복 매칭 검증
-                        .from(matching)
-                        .where(matching.job.id.eq(job_id), matching.member.id.eq(worker_id))
-                        .groupBy(matching.job.id, matching.member.id)
-                        .having(matching.id.count().gt(1))
-                        .notExists()
+                        .exists()
                 )
                 .fetchOne()
         ).orElseThrow(() -> new GlobalException(ErrorCode.DIDNT_PASS_VALIDATION));
@@ -70,12 +64,6 @@ public class ChangeJobStatusDsl {
                             matching.member.id.eq(worker_id),
                             matching.status.eq(MatchingStatus.OWNER)
                         )
-                        .notExists(),
-                    JPAExpressions.selectOne()  // 중복 매칭 검증
-                        .from(matching)
-                        .where(matching.job.id.eq(job_id), matching.member.id.eq(worker_id))
-                        .groupBy(matching.job.id, matching.member.id)
-                        .having(matching.id.count().gt(1))
                         .notExists()
                 )
                 .fetchOne()
