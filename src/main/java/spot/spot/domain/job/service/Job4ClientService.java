@@ -84,7 +84,7 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(request.attenderId(), request.jobId());
-        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
+        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.REQUEST).build();
         matchingRepository.save(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
