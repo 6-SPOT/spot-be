@@ -43,6 +43,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        response.sendRedirect("https://ilmatch.net/oauth2/redirect?accessToken=" + accessToken + "&nickname=" + encodedNickname);
+        response.sendRedirect("https://ilmatch.net/oauth2/redirect?accessToken=" + accessToken + "&refreshToken=" + refreshToken +"&nickname=" + encodedNickname);
     }
 }

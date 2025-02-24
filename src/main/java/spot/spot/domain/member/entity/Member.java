@@ -2,20 +2,21 @@ package spot.spot.domain.member.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+
 import lombok.*;
+
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
-import spot.spot.global.auditing.entitiy.Deleted;
 
 @Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "members")
-public class Member extends Deleted {
+@Table(name="members")
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +56,5 @@ public class Member extends Deleted {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokenList;
-
 }
 

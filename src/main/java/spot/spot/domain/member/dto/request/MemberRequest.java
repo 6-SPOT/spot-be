@@ -16,4 +16,17 @@ public class MemberRequest {
         private String email;
         private String img;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class modify {
+        private String nickname;
+        private String email;
+        private String img;
+        private String phone;
+        private double lat; //위도
+        private double lng; //경도
+    }
 }
