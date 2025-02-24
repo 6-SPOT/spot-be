@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.Worker2JobRequest;
+import spot.spot.domain.job.dto.request.Job2ClientRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.pay.entity.dto.PayReadyResponseDto;
@@ -159,7 +161,29 @@ public interface Job4ClientDocs {
         })
     @PostMapping
     public void askJob2Worker (
-        @RequestBody Worker2JobRequest request
+        @RequestBody Job2ClientRequest request
+    );
+
+    @Operation(summary = "너 일해라",
+        description = """
+        일을 하겠다고 자원한 해결사 중 한명의 요청을 승낙하기 - 너 일해라
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @PostMapping
+    public void acceptJobRequestOfWorker (
+        @RequestBody YesOrNo2WorkersRequest request
+    );
+
+
+    @PostMapping
+    public void requestWithdrawal (
+        @RequestBody Job2WorkerRequest request
     );
 
 

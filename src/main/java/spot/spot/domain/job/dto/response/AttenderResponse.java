@@ -20,5 +20,5 @@ public record AttenderResponse(
     @Schema(description = "자기 소개", example = "한다면 한다")
     String introduction,
     @Schema(description = "강점 리스트")
-    List<WorkerAbility> workerAbilities
+    List<String> abilities
 ) {}

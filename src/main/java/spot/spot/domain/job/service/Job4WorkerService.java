@@ -7,10 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.Client2JobRequest;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
-import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
-import spot.spot.domain.job.dto.response.JobWithOwnerReponse;
+import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
@@ -26,7 +25,6 @@ import spot.spot.domain.job.service.searching.JobSearchService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.repository.AbilityRepository;
-import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.member.repository.WorkerAbilityRepository;
 import spot.spot.domain.member.repository.WorkerRepository;
 import spot.spot.domain.notification.dto.response.FcmDTO;
@@ -66,7 +64,7 @@ public class Job4WorkerService {
         workerRepository.save(worker);
         workerAbilityRepository.saveAll(job4WorkerMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
-
+    // 구직자 근처 일 리스트 반환
     public Slice<NearByJobResponse> getNearByJobList(String impl, Double lat, Double lng, int zoom, Pageable pageable) {
         Member member = userAccessUtil.getMember();
         lat = lat == null? member.getLat() : lat;
@@ -80,29 +78,37 @@ public class Job4WorkerService {
         };
         return service.findNearByJobs(lat, lng, zoom, pageable);
     }
-
+    // 일 하나 상세 확인
     public NearByJobResponse getOneJob (long jobId) {
         return job4WorkerMapper.toNearByJobResponse(
                 jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
     }
-
-    public void askingJob (Client2JobRequest request) {
+    // 일 신청하기
+    public void askingJob2Client(Job2WorkerRequest request) {
         Member worker = userAccessUtil.getMember();
-        JobWithOwnerAndErrorCodeResponse jobData = changeJobStatusDsl.findJowWithOwnerAndErrorCode(
-            worker.getId(), request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
-        Optional.ofNullable(jobData.errorcode()).ifPresent(errorCode -> {throw new GlobalException(errorCode);});
-
-        Matching matching = Matching.builder().job(jobData.job()).member(worker).status(MatchingStatus.ATTENDER).build();
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId());
+        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
         matchingRepository.save(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
-            fcmUtil.makeRequestingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
+            fcmUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
+    }
+    // 일 시작하기
+    @Transactional
+    public void startJob (Job2WorkerRequest request) {
+        Member worker = userAccessUtil.getMember();
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
+        payService.updatePayHistory(job.getPayment(), PayStatus.PROCESS, worker.getNickname());
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+                fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 
-    public void startJob (Client2JobRequest request) {
+    @Transactional
+    public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
         Member worker = userAccessUtil.getMember();
-        JobWithOwnerReponse jobData = changeJobStatusDsl.startJob(worker.getId(), request.jobId());
-        payService.updatePayHistory(jobData.job().getPayment(), PayStatus.PROCESS, worker.getNickname());
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-            fcmUtil.makeStartingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
+            fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 }

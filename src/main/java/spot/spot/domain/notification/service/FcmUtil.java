@@ -9,13 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.repository.FcmTokenRepository;
 import spot.spot.global.logging.ColorLogger;
-import spot.spot.global.response.format.ErrorCode;
 
 @Slf4j
 @Component
@@ -71,12 +69,20 @@ public class FcmUtil  {
             .build();
     }
 
-    public String makeRequestingJobBody(String attenderName, String jobName){
+    public String askRequest2ClientMsg(String attenderName, String jobName){
         return attenderName + "님이 " + jobName + "을 해결하길 원합니다!";
     }
 
-    public String makeStartingJobBody(String attenderName, String jobName){
+    public String askRequest2WorkerMsg(String workerName, String jobName) {
+        return workerName + "님! " + jobName + "을 해결해 주십쇼!";
+    }
+
+    public String getStartedJobMsg(String attenderName, String jobName){
         return attenderName + "님이 " + jobName + "을 시작합니다!";
+    }
+
+    public String requestAcceptedBody (String owner_name, String attender_name, String jobName){
+        return owner_name + "님이 " + jobName + "에 대한 " + attender_name + "님의 요청을 승낙하셨습니다!";
     }
 
 }
