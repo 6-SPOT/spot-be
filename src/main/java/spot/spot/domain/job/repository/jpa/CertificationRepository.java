@@ -1,4 +1,4 @@
-package spot.spot.domain.job.repository;
+package spot.spot.domain.job.repository.jpa;
 
 import org.springframework.stereotype.Repository;
 

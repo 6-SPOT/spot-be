@@ -15,6 +15,7 @@ spring:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
     open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   security:
     oauth2:

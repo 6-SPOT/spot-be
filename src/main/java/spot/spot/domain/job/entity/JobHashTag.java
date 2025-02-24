@@ -1,4 +1,4 @@
-package spot.spot.domain.member.entity;
+package spot.spot.domain.job.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,30 +10,25 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "worker_ability")
-public class WorkerAbility {
+@NoArgsConstructor
+@Builder
+@Table(name ="job_hash_tag")
+public class JobHashTag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Worker worker;
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id", nullable = false)
+    private Job job;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ability_id", nullable = false)
-    private Ability ability;
-
-    @ColumnDefault("0")
-    private Integer level;
+    @JoinColumn(name = "hash_tag_id", nullable = false)
+    private HashTag hashTag;
 
 }
