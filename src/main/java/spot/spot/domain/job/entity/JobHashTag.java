@@ -1,7 +1,7 @@
-package spot.spot.domain.member.entity;
+package spot.spot.domain.job.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,22 +13,22 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name= "work_day")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkDay {
+@Builder
+@Table(name ="job_hash_tag")
+public class JobHashTag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
 
-    @Column(name = "start_hour")
-    private Long startHour;
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id", nullable = false)
+    private Job job;
 
-    @Column(name = "end_hour")
-    private Long endHour;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hash_tag_id", nullable = false)
+    private HashTag hashTag;
 
 }

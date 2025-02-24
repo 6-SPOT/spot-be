@@ -24,5 +24,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     ORDER BY distance
     """, nativeQuery = true)
     List<Member> findWorkersNearByMember(@Param("lat") double lat, @Param("lng") double lng, @Param("dist") double dist);
+
+
     Optional<Member> findByNickname(String nickname);
 }
