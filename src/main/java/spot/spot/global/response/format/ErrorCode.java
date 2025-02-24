@@ -31,6 +31,7 @@ public enum ErrorCode {
     NOT_REGISTER_TO_WORKER_YET(HttpStatus.BAD_REQUEST, "해당 회원은 아직 해결사로 등록되지 않았습니다. 절차를 밟고 자격을 증명 하세요"),
     JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 일은 존재하지 않습니다."),
     ALREADY_ATTENDED(HttpStatus.ALREADY_REPORTED, "이미 해당 일을 신청한 상태 입니다."),
+    NOT_ATTENDED_TO_THIS_JOB(HttpStatus.BAD_REQUEST, "해당 일을 신청한 사람이 아닙니다."),
     WORKER_CANT_BE_HIS_OWN_JOBS_WORKER(HttpStatus.BAD_REQUEST, "해결사는 자신이 의뢰한 일을 자신이 맡을 수 없습니다."),
     JOB_IS_ALREADY_STARTED(HttpStatus.NOT_FOUND, "신청 하시려는 일은 이미 시작되었습니다."),
     INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다. (◞‸ ◟)"),
