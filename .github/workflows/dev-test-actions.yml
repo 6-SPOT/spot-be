@@ -44,8 +44,6 @@ jobs:
           cache: gradle
 
       - name: test with Gradle
-        env:
-          SPRING_PROFILES_ACTIVE: local
         run: ./gradlew test --no-daemon
 
       - name: Upload test report
