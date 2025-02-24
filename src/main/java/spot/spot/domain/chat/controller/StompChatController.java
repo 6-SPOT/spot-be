@@ -3,6 +3,7 @@ package spot.spot.domain.chat.controller;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,9 @@ public class StompChatController {
 	private final ChatService chatService;
 
 	@MessageMapping("/{roomId}") // roomId로 메세지 보내기
-	public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto) {
-		chatService.saveMessage(roomId, chatMessageDto);
+	public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto, Authentication authentication) {
+		Long memberId = Long.parseLong(authentication.getName());
+		chatService.saveMessage(roomId, chatMessageDto, memberId);
 		messageTemplate.convertAndSend("/topic/" + roomId, chatMessageDto);
 	}
 }

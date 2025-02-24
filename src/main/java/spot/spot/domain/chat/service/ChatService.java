@@ -40,13 +40,11 @@ public class ChatService {
 
 
 	@Transactional
-	public void saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto) {
+	public void saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
-			// TODO: 추후 에러 처리 변경
 			() -> new EntityNotFoundException("room cannot find")
 		);
 
-		// TODO: 뭘 가지고 멤버를 가져 올것인지
 		Member sender = memberRepository.findById(1L).orElseThrow(
 			() -> new EntityNotFoundException("member cannot find")
 		);
@@ -73,16 +71,15 @@ public class ChatService {
 	}
 
 	// 이전 메시지 가져오기
-	public List<ChatMessageResponse> getChatHistory(Long roomId) {
+	public List<ChatMessageResponse> getChatHistory(Long roomId, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.findById(roomId)
 			.orElseThrow(() -> new EntityNotFoundException("room not found"));
 
-		// TODO: 나중에 본인의 아이디값 가져오는 것으로
-		Long myMemberId = 1L;
-		Member member = memberRepository.findById(myMemberId)
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 
 		List<ChatParticipant> participants = chatParticipantRepository.findByChatRoom(chatRoom);
+		// 채팅방 참여자인지 체크
 		boolean isRoomMember = participants.stream()
 			.anyMatch(chatParticipant -> chatParticipant.getMember().equals(member));
 		if (!isRoomMember) {
@@ -100,24 +97,20 @@ public class ChatService {
 
 	// 메시지 읽음 처리
 	@Transactional
-	public void messageRead(Long roomId) {
+	public void messageRead(Long roomId, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.findById(roomId)
 			.orElseThrow(() -> new EntityNotFoundException("room not found"));
 
-		Long myMemberId = 1L;
-		Member member = memberRepository.findById(myMemberId)
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 		List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndMember(chatRoom, member);
-		readStatuses.stream().forEach(readStatus -> readStatus.setRead(true));
+		readStatuses.forEach(readStatus -> readStatus.setRead(true));
 	}
 
 	// 내 채팅방 목록 가져오기
-	public List<ChatListResponse> getMyChatRooms() {
-
-		Long myMemberId = 1L;
-		Member member = memberRepository.findById(myMemberId)
+	public List<ChatListResponse> getMyChatRooms(Long memberId) {
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
-
 		List<ChatParticipant> chatParticipants = chatParticipantRepository.findAllByMember(member);
 		return new ArrayList<>(chatParticipants.stream()
 			.map(c -> {
@@ -132,9 +125,8 @@ public class ChatService {
 	}
 
 	@Transactional
-	public Long getOrCreateChatRoom(ChatRoomCreateRequest chatRoomCreateRequest) {
-		Long myMemberId = 1L;
-		Member member = memberRepository.findById(myMemberId)
+	public Long getOrCreateChatRoom(ChatRoomCreateRequest chatRoomCreateRequest, Long memberId) {
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 
 		Member otherMember = memberRepository.findById(chatRoomCreateRequest.otherMemberId())
