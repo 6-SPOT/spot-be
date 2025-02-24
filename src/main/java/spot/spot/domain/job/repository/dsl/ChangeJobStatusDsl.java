@@ -56,15 +56,7 @@ public class ChangeJobStatusDsl {
                     JPAExpressions.selectOne()
                         .from(worker)
                         .where(worker.member.id.eq(worker_id))
-                        .exists(),// 구직자 등록 되었는가?
-                    JPAExpressions.selectOne()
-                        .from(matching)
-                        .where(
-                            matching.job.id.eq(job_id),
-                            matching.member.id.eq(worker_id),
-                            matching.status.eq(MatchingStatus.OWNER)
-                        )
-                        .notExists()
+                        .exists()// 구직자 등록 되었는가?
                 )
                 .fetchOne()
         ).orElseThrow(() -> new GlobalException(ErrorCode.DIDNT_PASS_VALIDATION));
