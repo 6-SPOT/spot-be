@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.Job4WorkerRequest;
+import spot.spot.domain.job.dto.request.Job2ClientRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
@@ -158,7 +159,7 @@ public interface Job4ClientDocs {
         })
     @PostMapping
     public void askJob2Worker (
-        @RequestBody Job4WorkerRequest request
+        @RequestBody Job2ClientRequest request
     );
 
     @Operation(summary = "너 일해라",
@@ -175,6 +176,12 @@ public interface Job4ClientDocs {
     @PostMapping
     public void acceptJobRequestOfWorker (
         @RequestBody YesOrNo2WorkersRequest request
+    );
+
+
+    @PostMapping
+    public void requestWithdrawal (
+        @RequestBody Job2WorkerRequest request
     );
 
 

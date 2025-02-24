@@ -6,10 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.Job4ClientRequest;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
-import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
@@ -82,7 +81,7 @@ public class Job4WorkerService {
                 jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
     }
     // 일 신청하기
-    public void askingJob2Client(Job4ClientRequest request) {
+    public void askingJob2Client(Job2WorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
@@ -92,7 +91,7 @@ public class Job4WorkerService {
     }
     // 일 시작하기
     @Transactional
-    public void startJob (Job4ClientRequest request) {
+    public void startJob (Job2WorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);

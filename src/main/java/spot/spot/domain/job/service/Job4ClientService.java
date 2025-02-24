@@ -8,7 +8,8 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import spot.spot.domain.job.dto.request.Job4WorkerRequest;
+import spot.spot.domain.job.dto.request.Job2ClientRequest;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
@@ -74,7 +75,7 @@ public class Job4ClientService {
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
 
-    public void askingJob2Worker (Job4WorkerRequest request) {
+    public void askingJob2Worker (Job2ClientRequest request) {
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
@@ -95,6 +96,18 @@ public class Job4ClientService {
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.ATTENDER);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+    }
+    // 일 취소 요창
+    @Transactional
+    public void requestWithdrawal(Job2ClientRequest request) {
+        Member owner = userAccessUtil.getMember();
+        Member worker = memberRepository
+            .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
+                ErrorCode.MEMBER_NOT_FOUND));
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 }
