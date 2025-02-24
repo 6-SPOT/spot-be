@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import spot.spot.domain.job.dto.request.Job4ClientRequest;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
@@ -130,10 +130,10 @@ public interface Job4WorkerDocs {
 
 
     @PostMapping
-    public void askingJob2Client(@RequestBody Job4ClientRequest request);
+    public void askingJob2Client(@RequestBody Job2WorkerRequest request);
 
     @PostMapping
-    public void startJob(@RequestBody Job4ClientRequest request);
+    public void startJob(@RequestBody Job2WorkerRequest request);
 
     @PostMapping
     public void acceptJobRequestOfClient (

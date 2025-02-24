@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4ClientDocs;
-import spot.spot.domain.job.dto.request.Job4WorkerRequest;
+import spot.spot.domain.job.dto.request.Job2ClientRequest;
+import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
@@ -54,13 +55,18 @@ public class Job4ClientController implements Job4ClientDocs {
 
 
     @PostMapping("/choice")
-    public void askJob2Worker(@RequestBody  Job4WorkerRequest request) {
+    public void askJob2Worker(@RequestBody Job2ClientRequest request) {
         job4ClientService.askingJob2Worker(request);
     }
 
     @PostMapping("/yes-or-no")
     public void acceptJobRequestOfWorker(@RequestBody YesOrNo2WorkersRequest request) {
         job4ClientService.yesOrNo2RequestOfWorker(request);
+    }
+
+    @PostMapping("/withdrawal")
+    public void requestWithdrawal(Job2WorkerRequest request) {
+
     }
 
 }
