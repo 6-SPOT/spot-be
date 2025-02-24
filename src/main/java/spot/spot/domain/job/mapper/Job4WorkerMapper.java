@@ -12,6 +12,7 @@ import org.mapstruct.ReportingPolicy;
 import spot.spot.domain.job.dto.Location;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
+import spot.spot.domain.job.dto.response.JobWithOwnerReponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.JobUtil;
@@ -68,6 +69,13 @@ public interface Job4WorkerMapper {
             .ownerId(Optional.ofNullable(tuple.get(1, Long.class)).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND)))
             .job(tuple.get(0, Job.class))
             .errorcode(Optional.ofNullable(tuple.get(2, Integer.class)).map(this::mapErrorCode).orElse(null))
+            .build();
+    }
+
+    default JobWithOwnerReponse toJobWithOwnerReponse(Tuple tuple) {
+        return JobWithOwnerReponse.builder()
+            .ownerId(Optional.ofNullable(tuple.get(1, Long.class)).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND)))
+            .job(tuple.get(0, Job.class))
             .build();
     }
 
