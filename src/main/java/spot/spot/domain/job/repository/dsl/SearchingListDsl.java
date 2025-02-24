@@ -1,5 +1,6 @@
 package spot.spot.domain.job.repository.dsl;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -15,6 +16,7 @@ import spot.spot.domain.job.entity.QJob;
 import spot.spot.domain.job.entity.QMatching;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
+import spot.spot.domain.member.entity.QWorkerAbility;
 import spot.spot.domain.member.entity.Worker;
 
 @Repository
@@ -23,6 +25,7 @@ public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방
 
     private final JPAQueryFactory queryFactory;
     private final QWorker worker = QWorker.worker;
+    private final QWorkerAbility workerAbility = QWorkerAbility.workerAbility;
     private final QMatching matching = QMatching.matching;
     private final QMember member = QMember.member;
 
@@ -70,13 +73,16 @@ public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방
             .selectFrom(worker)
             .join(worker.member, member).fetchJoin()
             .join(matching).on(matching.member.eq(member))
+            .leftJoin(worker.workerAbilities, workerAbility)
             .where(
                 matching.job.id.eq(jobId),
                 matching.status.eq(MatchingStatus.ATTENDER)
             )
+            .distinct() // ✅ 중복 제거
             .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1) // Slice 처리를 위해 +1
+            .limit(pageable.getPageSize() + 1)
             .fetch();
+
 
         boolean hasNext = workers.size() > pageable.getPageSize();
         if (hasNext) {
