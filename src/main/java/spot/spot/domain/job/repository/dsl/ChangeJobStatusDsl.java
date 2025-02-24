@@ -1,19 +1,15 @@
 package spot.spot.domain.job.repository.dsl;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
-import spot.spot.domain.job.dto.response.JobWithOwnerReponse;
+import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.entity.QJob;
 import spot.spot.domain.job.entity.QMatching;
-import spot.spot.domain.job.mapper.Job4WorkerMapper;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -24,76 +20,54 @@ import spot.spot.global.response.format.GlobalException;
 public class ChangeJobStatusDsl {
 
     private final JPAQueryFactory queryFactory;
-    private final Job4WorkerMapper job4WorkerMapper;
     private final QJob job = QJob.job;
-    private  final QMatching ownerMatching = new QMatching("ownerMatching") ;
+    private final QWorker worker = QWorker.worker;
+    private final QMatching matching = QMatching.matching;
 
-    public Optional<JobWithOwnerAndErrorCodeResponse> findJowWithOwnerAndErrorCode (long attenderId, long jobId) {
-
-        return Optional.ofNullable(queryFactory
-                .select(
-                    job,
-                    ownerMatching.member.id,
-                    new CaseBuilder()
-                        .when(job.startedAt.isNotNull()).then(1) // 해당 일은 이미 시작함
-                        .when(JPAExpressions.selectOne()
-                            .from(QWorker.worker)
-                            .where(QWorker.worker.member.id.eq(attenderId))
-                            .exists().not())
-                        .then(2)
-                        .when(JPAExpressions.selectOne()
-                            .from(QMatching.matching)
-                            .where(QMatching.matching.job.id.eq(jobId)
-                                .and(QMatching.matching.member.id.eq(attenderId))
-                                .and(QMatching.matching.status.eq(MatchingStatus.ATTENDER)))
-                            .exists()).then(3) // 이미 해당 일의 참여자로 있음.
-                        .otherwise(4)
-                )
+    public Job findJobWithValidation(long worker_id, long job_id, MatchingStatus expected_status) {
+        return Optional.ofNullable(
+            queryFactory
+                .select(job)
                 .from(job)
-                .leftJoin(ownerMatching)
-                .on(ownerMatching.job.eq(job).and(ownerMatching.status.eq(MatchingStatus.OWNER)))   // 해당 일의 주인임
-                .where(job.id.eq(jobId))
-                .fetchOne())
-            .map(job4WorkerMapper::toJobWithOwnerAndErrorCodeResponse);
+                .where(
+                    job.id.eq(job_id),
+                    JPAExpressions.selectOne()   // 구직자로 등록되어졌는지
+                        .from(worker)
+                        .where(worker.member.id.eq(worker_id))
+                        .exists(),
+                    JPAExpressions.selectOne()  // 예상하는 전 단계가 맞는지
+                        .from(matching)
+                        .where(matching.job.id.eq(job_id)
+                            .and(matching.member.id.eq(worker_id))
+                            .and(matching.status.eq(expected_status)))
+                        .exists()
+                )
+                .fetchOne()
+        ).orElseThrow(() -> new GlobalException(ErrorCode.DIDNT_PASS_VALIDATION));
     }
 
-    public JobWithOwnerReponse startJob (long attenderId, long jobId) {
+    public Job findJobWithValidation(long worker_id, long job_id) {
+        return Optional.ofNullable(
+            queryFactory
+                .select(job)
+                .from(job)
+                .where(
+                    job.id.eq(job_id),
+                    JPAExpressions.selectOne()
+                        .from(worker)
+                        .where(worker.member.id.eq(worker_id))
+                        .exists()// 구직자 등록 되었는가?
+                )
+                .fetchOne()
+        ).orElseThrow(() -> new GlobalException(ErrorCode.DIDNT_PASS_VALIDATION));
+    }
 
-        Tuple result = queryFactory
-            .select(
-                job,
-                ownerMatching.member.id
-            )
-            .from(job)
-            .leftJoin(ownerMatching)
-            .on(ownerMatching.job.eq(job)
-                .and(ownerMatching.status.eq(MatchingStatus.OWNER)))
-            .where(job.id.eq(jobId)
-                .and(JPAExpressions.selectOne()
-                    .from(QWorker.worker)
-                    .where(QWorker.worker.member.id.eq(attenderId))
-                    .exists())
-                .and(JPAExpressions.selectOne()
-                    .from(QMatching.matching)
-                    .where(QMatching.matching.job.id.eq(jobId)
-                        .and(QMatching.matching.member.id.eq(attenderId))
-                        .and(QMatching.matching.status.eq(MatchingStatus.YES)))
-                    .exists())
-            )
-            .fetchOne();
-
-        if (result == null) {
-            throw new GlobalException(ErrorCode.INVALID_MATCHING_STATUS);
+    public  void updateMatchingStatus(long worker_id, long job_id, MatchingStatus next) {
+        if (queryFactory.update(matching)
+            .set(matching.status, next)
+            .where(matching.job.id.eq(job_id), matching.member.id.eq(worker_id))
+            .execute() == 0) {
+            throw new GlobalException(ErrorCode.FAILED_2_UPDATE_JOB_STATUS);
         }
-
-        // Matching 업데이트
-        queryFactory.update(QMatching.matching)
-            .set(QMatching.matching.status, MatchingStatus.START)
-            .where(QMatching.matching.job.id.eq(jobId)
-                .and(QMatching.matching.member.id.eq(attenderId))
-                .and(QMatching.matching.status.eq(MatchingStatus.YES)))
-            .execute();
-
-        return job4WorkerMapper.toJobWithOwnerReponse(result);
     }
 }
