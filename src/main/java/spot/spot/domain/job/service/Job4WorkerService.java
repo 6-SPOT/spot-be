@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.dto.request.Job4ClientRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
@@ -94,6 +96,14 @@ public class Job4WorkerService {
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
+    }
+
+    public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
+        Member worker = userAccessUtil.getMember();
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
             fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 }
