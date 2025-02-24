@@ -34,10 +34,9 @@ public class FcmService {
     }
 
     public void testSending(FcmTestRequest request) {
-        Member sender = userAccessUtil.getMember();
         Member receiver = memberRepository.findById(request.receiver_id())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-        fcmUtil.singleFcmSend(receiver,
+        fcmUtil.singleFcmSend(receiver.getId(),
             FcmDTO.builder().title(String.valueOf(receiver.getId())).body(request.content()).build());
     }
 }

@@ -39,13 +39,15 @@ public class Matching {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @Column(name = "role", nullable = false)
-    private Integer role;
-
     @Enumerated(EnumType.STRING)
     private MatchingStatus status;
 
     @OneToMany(mappedBy = "matching", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Certification> certificationList;
+
+
+    public void updateStatus(MatchingStatus newStatus) {
+        this.status = newStatus;
+    }
 
 }

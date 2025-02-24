@@ -2,6 +2,8 @@ package spot.spot.domain.job.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,9 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4ClientDocs;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.dto.request.Worker2JobRequest;
+import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
-import spot.spot.global.logging.Logging;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +39,18 @@ public class Job4ClientController implements Job4ClientDocs {
         @RequestParam(required = false, defaultValue = "21") Integer zoom
     ) {
         return job4ClientService.findNearByWorkers(lat, lng, zoom);
+    }
+
+    @GetMapping("/search-list")
+    public Slice<AttenderResponse> getAttenderList(
+        @RequestParam long id,
+        Pageable pageable) {
+        return job4ClientService.findJobAttenderList(id, pageable);
+    }
+
+    @Override
+    public void askJob2Worker(Worker2JobRequest request) {
+
     }
 
 }
