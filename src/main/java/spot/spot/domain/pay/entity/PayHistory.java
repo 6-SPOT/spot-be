@@ -29,5 +29,9 @@ public class PayHistory {
     @Setter
     private String worker;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private PayStatus payStatus;
+
     private LocalDateTime createAt;
 }

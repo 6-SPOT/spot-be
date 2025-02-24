@@ -2,6 +2,7 @@ package spot.spot.domain.job.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -21,11 +22,18 @@ import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.mapper.MemberMapper;
 import spot.spot.domain.member.repository.MemberQueryRepository;
+import spot.spot.domain.member.service.MemberService;
+import spot.spot.domain.pay.entity.PayHistory;
+import spot.spot.domain.pay.entity.dto.PayReadyResponseDto;
+import spot.spot.domain.pay.service.PayService;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class Job4ClientService {
     private final UserAccessUtil userAccessUtil;
     private final Job4ClientMapper job4ClientMapper;
@@ -37,17 +45,26 @@ public class Job4ClientService {
     private final JobUtil jobUtil;
     // query dsl
     private final SearchingListDsl searchingListDsl;
+    private final MemberService memberService;
+    private final PayService payService;
 
-    public void registerJob(RegisterJobRequest request, MultipartFile file ) {
-        String url = awsS3ObjectStorage.uploadFile(file);
-        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request));
+    public PayReadyResponseDto registerJob(RegisterJobRequest request) {
+//        String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
+        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
+        String tid = payReadyResponseDto.tid();
+        PayHistory payHistory = payReadyResponseDto.payHistory();
+
+        log.info("redirect_pc_url = {}, redirect_mobile_url = {}", payReadyResponseDto.redirectPCUrl(), payReadyResponseDto.redirectMobileUrl());
+        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob("", request, tid, payHistory));
+
         Matching matching = Matching.builder()
             .member(client)
             .job(newJob)
             .status(MatchingStatus.OWNER)
             .build();
         matchingRepository.save(matching);
+        return payReadyResponseDto;
     }
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
@@ -60,5 +77,7 @@ public class Job4ClientService {
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
 
-
+    public Job findByTid(String jobTitle) {
+        return jobRepository.findByTitle(jobTitle).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
+    }
 }

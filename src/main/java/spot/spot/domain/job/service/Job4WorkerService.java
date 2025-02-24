@@ -31,6 +31,8 @@ import spot.spot.domain.member.repository.WorkerAbilityRepository;
 import spot.spot.domain.member.repository.WorkerRepository;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
+import spot.spot.domain.pay.entity.PayStatus;
+import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
@@ -55,6 +57,7 @@ public class Job4WorkerService {
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
     private final ChangeJobStatusDsl changeJobStatusDsl;
+    private final PayService payService;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -98,6 +101,7 @@ public class Job4WorkerService {
     public void startJob (Client2JobRequest request) {
         Member worker = userAccessUtil.getMember();
         JobWithOwnerReponse jobData = changeJobStatusDsl.startJob(worker.getId(), request.jobId());
+        payService.updatePayHistory(jobData.job().getPayment(), PayStatus.PROCESS, worker.getNickname());
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmUtil.makeStartingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
     }

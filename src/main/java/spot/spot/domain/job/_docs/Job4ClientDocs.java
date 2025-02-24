@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +20,7 @@ import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.Worker2JobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
+import spot.spot.domain.pay.entity.dto.PayReadyResponseDto;
 
 @Tag(name = "Job4ClientDocs", description = "일 의뢰자를 위한 API 모음")
 public interface Job4ClientDocs {
@@ -39,7 +41,7 @@ public interface Job4ClientDocs {
                 """, content = @Content),
     })
     @PutMapping
-    public void registerJob(
+    public PayReadyResponseDto registerJob(
         @RequestPart(value = "request") RegisterJobRequest request,
         @RequestPart(value = "file", required = false ) MultipartFile file
     );

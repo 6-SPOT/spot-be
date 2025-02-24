@@ -9,6 +9,8 @@ public record RegisterJobRequest(
     String content,
     @Schema(description = "일의 보상금액(단위- 만원)", example = "10000")
     int money,
+    @Schema(description = "포인트 사용여부(단위- 백원)", example = "500")
+    int point,
     @Schema(description = "위도", example = "123.2324225")
     double lat,
     @Schema(description = "경도", example = "245.2242557")

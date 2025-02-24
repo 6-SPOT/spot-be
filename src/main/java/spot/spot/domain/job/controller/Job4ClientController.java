@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import spot.spot.domain.job.dto.request.Worker2JobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
+import spot.spot.domain.pay.entity.dto.PayReadyResponseDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,10 +29,10 @@ public class Job4ClientController implements Job4ClientDocs {
     private final Job4ClientService job4ClientService;
 
     @PutMapping(value = "/register",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void registerJob(
+    public PayReadyResponseDto registerJob(
         @RequestPart(value = "request")RegisterJobRequest request,
         @RequestPart(value = "file", required = false )MultipartFile file
-    ) { job4ClientService.registerJob(request, file);}
+    ) { return job4ClientService.registerJob(request);}
 
     @GetMapping("/near-by")
     public List<NearByWorkersResponse> nearByWorkersResponseList (
