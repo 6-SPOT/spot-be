@@ -102,7 +102,7 @@ public class Job4WorkerService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
                 fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
-
+    // 의뢰인이 보낸 요청 승낙하기 혹은 거절하기
     @Transactional
     public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
         Member worker = userAccessUtil.getMember();

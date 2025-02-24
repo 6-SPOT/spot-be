@@ -67,8 +67,8 @@ public class Job4ClientController implements Job4ClientDocs {
     }
 
     @PostMapping("/withdrawal")
-    public void requestWithdrawal(Job2WorkerRequest request) {
-
+    public void requestWithdrawal(Job2ClientRequest request) {
+        job4ClientService.requestWithdrawal(request);
     }
 
 }

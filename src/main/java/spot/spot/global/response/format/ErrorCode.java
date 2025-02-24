@@ -29,6 +29,7 @@ public enum ErrorCode {
     FAILED_2_UPDATE_JOB_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "상태 변경에 실패했습니다."),
     DIDNT_PASS_VALIDATION(HttpStatus.BAD_REQUEST, "요청이 유효성 검증을 통과하지 못했습니다. (1. 구직자 등록 x, 2. 매칭 상태가 현재 요청을 이룰 수 없음, 3. 이미 해당 일을 진행하는 사람임"),
     JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 일은 존재하지 않습니다."),
+    MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "찾으시는 매칭이 존재하지 않습니다."),
     JOB_IS_ALREADY_STARTED(HttpStatus.NOT_FOUND, "신청 하시려는 일은 이미 시작되었습니다."),
     INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "지도 축소가 너무 과합니다. (◞‸ ◟)"),
     FAIL_PAY_READY(HttpStatus.BAD_GATEWAY, "카카오페이 API 요청이 실패하였습니다."),

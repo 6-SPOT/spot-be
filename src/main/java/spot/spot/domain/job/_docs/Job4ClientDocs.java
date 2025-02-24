@@ -181,9 +181,20 @@ public interface Job4ClientDocs {
     );
 
 
+    @Operation(summary = "일 철회 요청",
+        description = """
+        잠수탄 놈에 대해 일 철회 요청
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @PostMapping
     public void requestWithdrawal (
-        @RequestBody Job2WorkerRequest request
+        @RequestBody Job2ClientRequest request
     );
 
 
