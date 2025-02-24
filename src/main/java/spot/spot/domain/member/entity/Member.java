@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 
@@ -44,11 +43,13 @@ public class Member {
     @Setter
     private int point;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
     private LocalDateTime deletedAt; //삭제일자
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Worker worker;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;
 

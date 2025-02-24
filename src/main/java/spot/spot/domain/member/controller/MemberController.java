@@ -1,21 +1,20 @@
 package spot.spot.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import spot.spot.domain.member.entity.dto.MemberRequest;
+import spot.spot.domain.member._docs.MemberDocs;
+import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.dto.TokenResponse;
-import spot.spot.domain.member.entity.jwt.Token;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.member.service.TokenService;
-
-import java.util.UUID;
+import spot.spot.global.security.util.jwt.Token;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-public class MemberController {
+public class MemberController implements MemberDocs {
 
     private final MemberService memberService;
     private final TokenService tokenService;
@@ -32,4 +31,8 @@ public class MemberController {
         return new TokenResponse(byRefreshToken.getAccessToken());
     }
 
+    @GetMapping("/developer-get-token")
+    public TokenDTO getToken4Developer(@RequestParam long id) {
+        return memberService.getDeveloperToken(id);
+    }
 }
