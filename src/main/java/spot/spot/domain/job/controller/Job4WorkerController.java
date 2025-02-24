@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job._docs.Job4WorkerDocs;
-import spot.spot.domain.job.dto.request.Client2JobRequest;
+import spot.spot.domain.job.dto.request.Job4ClientRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
@@ -44,12 +44,12 @@ public class Job4WorkerController implements Job4WorkerDocs {
     }
 
     @PostMapping("/request")
-    public void ask2ClientAboutGettingAnewJob(@RequestBody Client2JobRequest request) {
-        job4WorkerService.askingJob(request);
+    public void askingJob2Client(@RequestBody Job4ClientRequest request) {
+        job4WorkerService.askingJob2Client(request);
     }
 
     @PostMapping("/start")
-    public void startJob(@RequestBody Client2JobRequest request) {
+    public void startJob(@RequestBody Job4ClientRequest request) {
         job4WorkerService.startJob(request);
     }
 

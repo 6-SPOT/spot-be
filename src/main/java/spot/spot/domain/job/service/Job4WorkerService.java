@@ -1,13 +1,12 @@
 package spot.spot.domain.job.service;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.Client2JobRequest;
+import spot.spot.domain.job.dto.request.Job4ClientRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
@@ -81,20 +80,20 @@ public class Job4WorkerService {
                 jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
     }
     // 일 신청하기
-    public void askingJob (Client2JobRequest request) {
+    public void askingJob2Client(Job4ClientRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
         matchingRepository.save(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
-            fcmUtil.makeRequestingJobBody(worker.getNickname(), job.getTitle())).build());
+            fcmUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
     // 일 시작하기
-    public void startJob (Client2JobRequest request) {
+    public void startJob (Job4ClientRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-            fcmUtil.makeStartingJobBody(worker.getNickname(), job.getTitle())).build());
+            fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 }
