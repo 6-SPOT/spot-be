@@ -28,29 +28,27 @@ import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
 @Service
 @RequiredArgsConstructor
 public class Job4ClientService {
-    // util
     private final UserAccessUtil userAccessUtil;
-    private final JobUtil jobUtil;
-    private final AwsS3ObjectStorage awsS3ObjectStorage;
-    // mapper
     private final Job4ClientMapper job4ClientMapper;
     private final MemberMapper memberMapper;
-    // jpa repo
+    private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
+    private final JobUtil jobUtil;
     // query dsl
     private final SearchingListDsl searchingListDsl;
     private final ChangeJobStatusDsl changeJobStatusDsl;
     private final FcmUtil fcmUtil;
 
-    public void registerJob(RegisterJobRequest request, MultipartFile file) {
+    public void registerJob(RegisterJobRequest request, MultipartFile file ) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request));
         Member client = userAccessUtil.getMember();
@@ -63,8 +61,7 @@ public class Job4ClientService {
     }
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
-        return memberMapper.toDtoList(memberRepository
-            .findWorkersNearByMember(lat, lng, jobUtil.convertZoomToRadius(zoomLevel)));
+        return memberMapper.toDtoList(memberQueryRepository.findWorkerNearByMember(lat, lng, jobUtil.convertZoomToRadius(zoomLevel)));
     }
 
     @Transactional(readOnly = true)

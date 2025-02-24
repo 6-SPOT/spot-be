@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.entity.MemberRole;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
 
 import java.util.Optional;
@@ -21,6 +22,7 @@ import spot.spot.global.security.util.jwt.JwtUtil;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -42,16 +44,24 @@ public class MemberService {
         return TokenDTO.builder().accessToken(jwtUtil.createDeveloperToken(member)).build();
     }
 
-
     @Transactional
     public Member findByNickname(String nickname) {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
-        return findMember.orElse(null);
+        if(findMember.isEmpty()) return null;
+
+        return findMember.get();
     }
 
     @Transactional
     public Member findById(Long id) {
         Optional<Member> findMember = memberRepository.findById(id);
-        return findMember.orElse(null);
+        if(findMember.isEmpty()) return null;
+
+        return findMember.get();
+    }
+
+    public void modify(MemberRequest.modify modify, String memberId) {
+        Long parseMemberId = Long.parseLong(memberId);
+        memberQueryRepository.updateMember(parseMemberId, modify);
     }
 }
