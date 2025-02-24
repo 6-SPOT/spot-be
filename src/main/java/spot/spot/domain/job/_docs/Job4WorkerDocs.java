@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import spot.spot.domain.job.dto.request.Job4ClientRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
 @Tag(name = "Job4Worker", description = "해결사를 위한 API 모음")
@@ -134,6 +135,10 @@ public interface Job4WorkerDocs {
     @PostMapping
     public void startJob(@RequestBody Job4ClientRequest request);
 
+    @PostMapping
+    public void acceptJobRequestOfClient (
+        @RequestBody YesOrNo2ClientsRequest request
+    );
 
 
 }

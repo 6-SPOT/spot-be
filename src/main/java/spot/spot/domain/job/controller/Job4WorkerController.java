@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job._docs.Job4WorkerDocs;
 import spot.spot.domain.job.dto.request.Job4ClientRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
 
@@ -51,6 +52,11 @@ public class Job4WorkerController implements Job4WorkerDocs {
     @PostMapping("/start")
     public void startJob(@RequestBody Job4ClientRequest request) {
         job4WorkerService.startJob(request);
+    }
+
+    @PostMapping("/yes-or-no")
+    public void acceptJobRequestOfClient(YesOrNo2ClientsRequest request) {
+        job4WorkerService.yesOrNo2RequestOfClient(request);
     }
 
 

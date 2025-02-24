@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job4WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.YesOrNoOfClientRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.entity.Job;
@@ -30,12 +30,6 @@ import spot.spot.domain.notification.service.FcmUtil;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.domain.member.repository.MemberQueryRepository;
-import spot.spot.domain.member.repository.MemberRepository;
-import spot.spot.domain.member.repository.WorkerRepository;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.domain.notification.service.FcmUtil;
-import spot.spot.global.response.format.ErrorCode;
-import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
@@ -93,7 +87,7 @@ public class Job4ClientService {
 
 
     @Transactional
-    public void acceptRequestOfWorker(YesOrNoOfClientRequest request) {
+    public void yesOrNo2RequestOfWorker(YesOrNo2WorkersRequest request) {
         Member owner = userAccessUtil.getMember();
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(

@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4ClientDocs;
 import spot.spot.domain.job.dto.request.Job4WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.YesOrNoOfClientRequest;
+import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
@@ -58,9 +58,9 @@ public class Job4ClientController implements Job4ClientDocs {
         job4ClientService.askingJob2Worker(request);
     }
 
-    @PostMapping("/accept")
-    public void acceptJobRequestOfWorker(@RequestBody YesOrNoOfClientRequest request) {
-        job4ClientService.acceptRequestOfWorker(request);
+    @PostMapping("/yes-or-no")
+    public void acceptJobRequestOfWorker(@RequestBody YesOrNo2WorkersRequest request) {
+        job4ClientService.yesOrNo2RequestOfWorker(request);
     }
 
 }
