@@ -10,13 +10,21 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.entity.QJob;
+import spot.spot.domain.job.entity.QMatching;
+import spot.spot.domain.member.entity.QMember;
+import spot.spot.domain.member.entity.QWorker;
+import spot.spot.domain.member.entity.Worker;
 
 @Repository
 @RequiredArgsConstructor
-public class JobSearchingQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
+public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방법
 
     private final JPAQueryFactory queryFactory;
+    private final QWorker worker = QWorker.worker;
+    private final QMatching matching = QMatching.matching;
+    private final QMember member = QMember.member;
 
     public Slice<Job> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
         QJob job = QJob.job;
@@ -47,10 +55,35 @@ public class JobSearchingQueryDsl {  // java 코드로 쿼리문을 build 하는
         // 다음 페이지가 있는지 계산
         // QueryDsl은 page 객체는 자동 지원하지만, Slice 객체는 지원하지 않음.
         // 우리는 APP 용 무한 스크롤을 구현해야함으로, Slice를 사용해야함.
-        boolean hasNext = jobs.size() > pageable.getPageSize(); // N+1개가 불러와진다. -> 다음이 존재한다. N개 이하로 불러와진다. -> 다음 페이지가 없다.
+        // N+1개가 불러와진다. -> 다음이 존재한다. N개 이하로 불러와진다. -> 다음 페이지가 없다.
+        boolean hasNext = jobs.size() > pageable.getPageSize();
         if(hasNext) {
-            jobs = jobs.subList(0, pageable.getPageSize()); // 다음 페이지가 있으면 찾은 게 11개니 10개로 짤라서 반환
+            // 다음 페이지가 있으면 찾은 게 11개니 10개로 짤라서 반환
+            jobs = jobs.subList(0, pageable.getPageSize());
         }
-        return new SliceImpl<>(jobs, pageable, hasNext); // Slice 인터페이스의 구현체 (JPA에서 제공). <내용물, pageable 객체, 다음이 있는지 여부>를 주면 된다.
+        // Slice 인터페이스의 구현체 (JPA에서 제공). <내용물, pageable 객체, 다음이 있는지 여부>를 주면 된다.
+        return new SliceImpl<>(jobs, pageable, hasNext);
+    }
+
+    public Slice<Worker> findWorkersByJobIdAndStatus(Long jobId, Pageable pageable) {
+        List<Worker> workers = queryFactory
+            .selectFrom(worker)
+            .join(worker.member, member).fetchJoin()
+            .join(matching).on(matching.member.eq(member))
+            .where(
+                matching.job.id.eq(jobId),
+                matching.status.eq(MatchingStatus.ATTENDER)
+            )
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize() + 1) // Slice 처리를 위해 +1
+            .fetch();
+
+        boolean hasNext = workers.size() > pageable.getPageSize();
+        if (hasNext) {
+            // Slice에서 마지막 요소 제거
+            workers.remove(workers.size() - 1);
+        }
+
+        return new SliceImpl<>(workers, pageable, hasNext);
     }
 }

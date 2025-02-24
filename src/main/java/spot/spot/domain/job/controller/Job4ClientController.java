@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4ClientDocs;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.dto.request.Worker2JobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
@@ -45,6 +46,11 @@ public class Job4ClientController implements Job4ClientDocs {
         @RequestParam long id,
         Pageable pageable) {
         return job4ClientService.findJobAttenderList(id, pageable);
+    }
+
+    @Override
+    public void askJob2Worker(Worker2JobRequest request) {
+
     }
 
 }
