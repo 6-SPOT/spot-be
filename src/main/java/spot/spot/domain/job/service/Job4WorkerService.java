@@ -91,6 +91,7 @@ public class Job4WorkerService {
             fcmUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
     // 일 시작하기
+    @Transactional
     public void startJob (Job4ClientRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
@@ -99,6 +100,7 @@ public class Job4WorkerService {
             fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 
+    @Transactional
     public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
