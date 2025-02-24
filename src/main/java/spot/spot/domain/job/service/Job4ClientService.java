@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job2ClientRequest;
-import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
@@ -25,12 +24,17 @@ import spot.spot.domain.job.repository.jpa.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.mapper.MemberMapper;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
+import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
+import spot.spot.domain.pay.entity.PayHistory;
+import spot.spot.domain.pay.entity.PayStatus;
+import spot.spot.domain.pay.entity.dto.PayReadyResponseDto;
+import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
-import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
@@ -43,25 +47,31 @@ public class Job4ClientService {
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
-    private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
     private final JobUtil jobUtil;
     // query dsl
     private final SearchingListDsl searchingListDsl;
     private final ChangeJobStatusDsl changeJobStatusDsl;
     private final FcmUtil fcmUtil;
+    private final PayService payService;
+    private final MemberRepository memberRepository;
 
 
-    public void registerJob(RegisterJobRequest request, MultipartFile file ) {
+    public PayReadyResponseDto registerJob(RegisterJobRequest request,MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
-        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request));
         Member client = userAccessUtil.getMember();
+        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
+        String tid = payReadyResponseDto.tid();
+        PayHistory payHistory = payReadyResponseDto.payHistory();
+        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, tid, payHistory));
+
         Matching matching = Matching.builder()
             .member(client)
             .job(newJob)
             .status(MatchingStatus.OWNER)
             .build();
         matchingRepository.save(matching);
+        return payReadyResponseDto;
     }
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
@@ -75,6 +85,9 @@ public class Job4ClientService {
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
 
+    public Job findByTid(String jobTitle) {
+        return jobRepository.findByTitle(jobTitle).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
+    }
     public void askingJob2Worker (Job2ClientRequest request) {
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(

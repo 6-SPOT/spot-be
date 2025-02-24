@@ -3,21 +3,20 @@ package spot.spot.domain.job.mapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.ReportingPolicy;
+
+import org.mapstruct.*;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.member.entity.Ability;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.entity.WorkerAbility;
+import spot.spot.domain.pay.entity.PayHistory;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface Job4ClientMapper {
-    Job registerRequestToJob (String img, RegisterJobRequest request);
+    @Mapping(source = "tid", target = "tid")
+    @Mapping(source = "payHistory", target = "payment")
+    Job registerRequestToJob (String img, RegisterJobRequest request, String tid, PayHistory payHistory);
 
     @Mapping(source = "member.id", target = "id")
     @Mapping(source = "member.nickname", target = "name")

@@ -1,5 +1,6 @@
 package spot.spot.domain.job.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,8 @@ import spot.spot.domain.member.repository.WorkerAbilityRepository;
 import spot.spot.domain.member.repository.WorkerRepository;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
+import spot.spot.domain.pay.entity.PayStatus;
+import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
@@ -52,8 +55,8 @@ public class Job4WorkerService {
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
     private final ChangeJobStatusDsl changeJobStatusDsl;
+    private final PayService payService;
 
-    // 일반 회원 -> 구직자
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
         Member member = userAccessUtil.getMember();
@@ -94,9 +97,10 @@ public class Job4WorkerService {
     public void startJob (Job2WorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
+        payService.updatePayHistory(job.getPayment(), PayStatus.PROCESS, worker.getNickname());
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-            fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
+                fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional

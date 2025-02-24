@@ -24,8 +24,7 @@ public class PayController {
 
     @PostMapping("/deposit")
     public ResponseEntity<PayApproveResponse> payApprove(@RequestBody @Valid PayApproveRequestDto request, Authentication auth) {
-        //JobService에서 유저 아이디와 request.jobTitle()값으로 job의 tid값을 가져와야함
-        Job job = new Job();
+        Job job = job4ClientService.findByTid(request.jobTitle());
         PayApproveResponse approve = payService.payApprove(auth.getName(),
                 job,
                 request.pgToken(),
