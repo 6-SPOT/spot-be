@@ -1,5 +1,6 @@
 package spot.spot.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +33,7 @@ public class Worker extends Created {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "member_id")
+    @JsonBackReference
     private Member member;
 
     private String introduction;

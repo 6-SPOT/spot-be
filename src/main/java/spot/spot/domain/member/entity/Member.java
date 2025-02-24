@@ -1,5 +1,6 @@
 package spot.spot.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 import lombok.*;
@@ -46,6 +47,7 @@ public class Member extends Deleted {
     private MemberRole memberRole;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Worker worker;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;

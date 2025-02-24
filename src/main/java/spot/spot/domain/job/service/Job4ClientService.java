@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
@@ -58,6 +59,7 @@ public class Job4ClientService {
             .findWorkersNearByMember(lat, lng, jobUtil.convertZoomToRadius(zoomLevel)));
     }
 
+    @Transactional(readOnly = true)
     public Slice<AttenderResponse> findJobAttenderList(long jobId, Pageable pageable) {
         Slice<Worker> workers = searchingListDsl.findWorkersByJobIdAndStatus(jobId, pageable);
         List<AttenderResponse> responseList = job4ClientMapper.toResponseList(workers.getContent());
