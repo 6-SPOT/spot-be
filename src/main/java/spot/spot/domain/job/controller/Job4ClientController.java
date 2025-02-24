@@ -1,11 +1,13 @@
 package spot.spot.domain.job.controller;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4ClientDocs;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.Worker2JobRequest;
+import spot.spot.domain.job.dto.request.Job4WorkerRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
@@ -48,9 +50,8 @@ public class Job4ClientController implements Job4ClientDocs {
         return job4ClientService.findJobAttenderList(id, pageable);
     }
 
-    @Override
-    public void askJob2Worker(Worker2JobRequest request) {
-
+    @PostMapping("/choice")
+    public void askJob2Worker(@RequestBody  Job4WorkerRequest request) {
+        job4ClientService.askingJob2Worker(request);
     }
-
 }
