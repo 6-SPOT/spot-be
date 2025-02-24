@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,13 +20,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import spot.spot.domain.member.entity.Member;
+import spot.spot.global.auditing.entitiy.Updated;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Matching {
+public class Matching extends Updated {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
