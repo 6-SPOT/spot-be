@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.Job4WorkerRequest;
+import spot.spot.domain.job.dto.request.YesOrNoOfClientRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 
@@ -173,7 +174,7 @@ public interface Job4ClientDocs {
         })
     @PostMapping
     public void acceptJobRequestOfWorker (
-        @RequestBody Job4WorkerRequest request
+        @RequestBody YesOrNoOfClientRequest request
     );
 
 
