@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.JobRequest;
+import spot.spot.domain.job.dto.request.Client2JobRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.response.JobWithOwnerAndErrorCodeResponse;
 import spot.spot.domain.job.dto.response.JobWithOwnerReponse;
@@ -16,7 +16,7 @@ import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.mapper.Job4WorkerMapper;
-import spot.spot.domain.job.repository.dsl.JobStatusQueryDsl;
+import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.service.searching.JobSearchJPQLService;
@@ -40,20 +40,21 @@ import spot.spot.global.security.util.UserAccessUtil;
 @RequiredArgsConstructor
 public class Job4WorkerService {
 
-    private final UserAccessUtil userAccessUtil;
-    private final FcmUtil fcmUtil;
-    private final WorkerRepository workerRepository;
-    private final Job4WorkerMapper job4WorkerMapper;
-    private final AbilityRepository abilityRepository;
-    private final WorkerAbilityRepository workerAbilityRepository;
-    private final JobRepository jobRepository;
-    private final MatchingRepository matchingRepository;
     // 거리 계산용 3가지
     private final JobSearchJPQLService jobSearchJPQLService;
     private final JobSearchNativeQueryService jobSearchNativeService;
     private final JobSearchQueryDSLService jobSearchQueryDSLService;
-    private final MemberRepository memberRepository;
-    private final JobStatusQueryDsl jobStatusQueryDsl;
+    // Util
+    private final UserAccessUtil userAccessUtil;
+    private final FcmUtil fcmUtil;
+    private final Job4WorkerMapper job4WorkerMapper;
+    // Repo
+    private final WorkerRepository workerRepository;
+    private final AbilityRepository abilityRepository;
+    private final WorkerAbilityRepository workerAbilityRepository;
+    private final JobRepository jobRepository;
+    private final MatchingRepository matchingRepository;
+    private final ChangeJobStatusDsl changeJobStatusDsl;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -78,12 +79,13 @@ public class Job4WorkerService {
     }
 
     public NearByJobResponse getOneJob (long jobId) {
-        return job4WorkerMapper.toNearByJobResponse(jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
+        return job4WorkerMapper.toNearByJobResponse(
+                jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
     }
 
-    public void askingJob (JobRequest request) {
+    public void askingJob (Client2JobRequest request) {
         Member worker = userAccessUtil.getMember();
-        JobWithOwnerAndErrorCodeResponse jobData = jobStatusQueryDsl.findJowWithOwnerAndErrorCode(
+        JobWithOwnerAndErrorCodeResponse jobData = changeJobStatusDsl.findJowWithOwnerAndErrorCode(
             worker.getId(), request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
         Optional.ofNullable(jobData.errorcode()).ifPresent(errorCode -> {throw new GlobalException(errorCode);});
 
@@ -93,25 +95,10 @@ public class Job4WorkerService {
             fcmUtil.makeRequestingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
     }
 
-    public void startJob (JobRequest request) {
+    public void startJob (Client2JobRequest request) {
         Member worker = userAccessUtil.getMember();
-        JobWithOwnerReponse jobData = jobStatusQueryDsl.startJob(worker.getId(), request.jobId());
+        JobWithOwnerReponse jobData = changeJobStatusDsl.startJob(worker.getId(), request.jobId());
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmUtil.makeStartingJobBody(worker.getNickname(), jobData.job().getTitle())).build());
-    }
-
-
-
-
-    // 성능 비교를 위해 남겨놓은 과거의 잔재들
-    // --------------------------------------------------------------------------------------------
-    @Deprecated
-    public void askingJobWithManyQuery (JobRequest request) {
-        Member worker = userAccessUtil.getMember();
-        workerRepository.findById(worker.getId()).orElseThrow(() -> new GlobalException(ErrorCode.NOT_REGISTER_TO_WORKER_YET));
-        Job job = jobRepository.findByIdAndStartedAtIsNull(request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_IS_ALREADY_STARTED));
-        if(matchingRepository.findByMemberAndJobAndStatus(worker, job, MatchingStatus.OWNER).isEmpty()) throw new GlobalException(ErrorCode.WORKER_CANT_BE_HIS_OWN_JOBS_WORKER);
-        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
-        matchingRepository.save(matching);
     }
 }

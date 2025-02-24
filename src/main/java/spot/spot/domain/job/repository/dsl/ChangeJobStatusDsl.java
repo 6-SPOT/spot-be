@@ -21,7 +21,7 @@ import spot.spot.global.response.format.GlobalException;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class JobStatusQueryDsl {
+public class ChangeJobStatusDsl {
 
     private final JPAQueryFactory queryFactory;
     private final Job4WorkerMapper job4WorkerMapper;
@@ -95,9 +95,5 @@ public class JobStatusQueryDsl {
             .execute();
 
         return job4WorkerMapper.toJobWithOwnerReponse(result);
-
-
     }
-
-
 }
