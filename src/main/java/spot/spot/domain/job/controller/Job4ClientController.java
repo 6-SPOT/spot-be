@@ -32,7 +32,7 @@ public class Job4ClientController implements Job4ClientDocs {
     public PayReadyResponseDto registerJob(
         @RequestPart(value = "request")RegisterJobRequest request,
         @RequestPart(value = "file", required = false )MultipartFile file
-    ) { return job4ClientService.registerJob(request);}
+    ) { return job4ClientService.registerJob(request, file);}
 
     @GetMapping("/near-by")
     public List<NearByWorkersResponse> nearByWorkersResponseList (

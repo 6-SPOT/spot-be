@@ -48,15 +48,15 @@ public class Job4ClientService {
     private final MemberService memberService;
     private final PayService payService;
 
-    public PayReadyResponseDto registerJob(RegisterJobRequest request) {
-//        String url = awsS3ObjectStorage.uploadFile(file);
+    public PayReadyResponseDto registerJob(RegisterJobRequest request,MultipartFile file) {
+        String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
         PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
         String tid = payReadyResponseDto.tid();
         PayHistory payHistory = payReadyResponseDto.payHistory();
 
         log.info("redirect_pc_url = {}, redirect_mobile_url = {}", payReadyResponseDto.redirectPCUrl(), payReadyResponseDto.redirectMobileUrl());
-        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob("", request, tid, payHistory));
+        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, tid, payHistory));
 
         Matching matching = Matching.builder()
             .member(client)
