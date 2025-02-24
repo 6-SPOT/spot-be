@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job4WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.dto.request.YesOrNoOfClientRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.entity.Job;
@@ -29,6 +30,12 @@ import spot.spot.domain.notification.service.FcmUtil;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.domain.member.repository.MemberQueryRepository;
+import spot.spot.domain.member.repository.MemberRepository;
+import spot.spot.domain.member.repository.WorkerRepository;
+import spot.spot.domain.notification.dto.response.FcmDTO;
+import spot.spot.domain.notification.service.FcmUtil;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
@@ -41,12 +48,14 @@ public class Job4ClientService {
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
+    private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
     private final JobUtil jobUtil;
     // query dsl
     private final SearchingListDsl searchingListDsl;
     private final ChangeJobStatusDsl changeJobStatusDsl;
     private final FcmUtil fcmUtil;
+
 
     public void registerJob(RegisterJobRequest request, MultipartFile file ) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -76,9 +85,22 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(request.attenderId(), request.jobId());
-        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
+        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.REQUEST).build();
         matchingRepository.save(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
+    }
+
+
+    @Transactional
+    public void acceptRequestOfWorker(YesOrNoOfClientRequest request) {
+        Member owner = userAccessUtil.getMember();
+        Member worker = memberRepository
+            .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
+            ErrorCode.MEMBER_NOT_FOUND));
+        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.ATTENDER);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 }

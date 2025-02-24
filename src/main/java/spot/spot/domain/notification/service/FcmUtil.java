@@ -81,4 +81,8 @@ public class FcmUtil  {
         return attenderName + "님이 " + jobName + "을 시작합니다!";
     }
 
+    public String requestAcceptedBody (String owner_name, String attender_name, String jobName){
+        return owner_name + "님이 " + jobName + "에 대한 " + attender_name + "님의 요청을 승낙하셨습니다!";
+    }
+
 }
