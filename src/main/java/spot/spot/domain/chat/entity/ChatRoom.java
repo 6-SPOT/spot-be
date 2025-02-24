@@ -38,19 +38,14 @@ public class ChatRoom {
 	@Comment("채팅방 제목")
 	private String title;
 
-
 	@Comment("채팅방 썸네일 사진")
 	private String thumbnailImageUrl;
-
 
 	@Comment("생성 시간")
 	private LocalDateTime createdAt;
 
 	@Comment("업데이트 시간")
 	private LocalDateTime updatedAt;
-
-	@Comment("그룹챗 여부")
-	private String isGroupChat;
 
 	@Builder
 	public ChatRoom(Job job, String title, String thumbnailImageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {

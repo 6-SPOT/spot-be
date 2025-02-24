@@ -3,6 +3,7 @@ package spot.spot.domain.chat.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ public class ChatService {
 			() -> new EntityNotFoundException("room cannot find")
 		);
 
-		Member sender = memberRepository.findById(1L).orElseThrow(
+		Member sender = memberRepository.findById(memberId).orElseThrow(
 			() -> new EntityNotFoundException("member cannot find")
 		);
 
@@ -59,7 +60,7 @@ public class ChatService {
 
 		// 본인을 제외한 나머지 안읽음 처리
 		List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-		chatParticipants.stream().forEach(chatParticipant -> {
+		chatParticipants.forEach(chatParticipant -> {
 			ReadStatus readStatus = ReadStatus.builder()
 				.chatRoom(chatRoom)
 				.member(chatParticipant.getMember())
@@ -135,9 +136,10 @@ public class ChatService {
 		Job job = jobRepository.findById(chatRoomCreateRequest.jobId())
 			.orElseThrow(() -> new EntityNotFoundException("job not found"));
 
-		// TODO: 이미 둘과 일에 대한 채팅방이 존재하는지 확인하고 존재하면 룸 id 리턴 아니면 생성
-
-
+		Optional<Long> chatRoomId = chatRoomRepository.findChatRoomId(memberId, otherMember.getId(), job.getId());
+		if (chatRoomId.isPresent()) {
+			return chatRoomId.get();
+		}
 		// 생성
 		ChatRoom chatRoom = ChatRoom.builder()
 			.job(job)
