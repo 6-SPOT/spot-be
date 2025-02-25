@@ -173,5 +173,18 @@ public interface Job4WorkerDocs {
         @RequestBody YesOrNo2ClientsRequest request
     );
 
+    @Operation(summary = "일 재개 응답",
+        description = """
+        취소 예약이 들어간 유저가 일을 재개하겠다는 응답을 합니다.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @PostMapping
+    public void continueJob (Job2WorkerRequest request);
 
 }
