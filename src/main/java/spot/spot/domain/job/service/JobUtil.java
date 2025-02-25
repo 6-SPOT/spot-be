@@ -76,8 +76,6 @@ public class JobUtil {
 
         scheduledTasks.put(matching_id, future);
         ColorLogger.green("Matching-{}는 10분 후 취소 예약 설정 되었습니다. SIGN-OK ", matching_id);
-
-
     }
 
     public void executeCancel(long matching_id) {
@@ -100,7 +98,7 @@ public class JobUtil {
         ScheduledFuture<?> future = scheduledTasks.remove(matchingId);  // 맵에서 해당 Future 객체 삭제
         if(future != null) {    // 맵에 있었다면 future는 null이 아님.
             future.cancel(false);   // 해당 Future 객체의 예약 취소
-            log.info("Matching-id: {}를 취소 예약이 철회되었습니다.", matchingId);
+            ColorLogger.green("Matching-id: {}를 취소 예약이 철회되었습니다.", matchingId);
         }
     }
 }

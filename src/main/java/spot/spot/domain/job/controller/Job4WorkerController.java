@@ -60,7 +60,7 @@ public class Job4WorkerController implements Job4WorkerDocs {
     }
 
     @PostMapping("/continue")
-    public void continueJob(Job2WorkerRequest request) {
+    public void continueJob(@RequestBody Job2WorkerRequest request) {
         job4WorkerService.contiuneJob(request);
     }
 

@@ -116,7 +116,8 @@ public class Job4WorkerService {
     @Transactional
     public void contiuneJob(Job2WorkerRequest request) {
         Member worker = userAccessUtil.getMember();
-        jobUtil.withdrawalExistingScheduledTask(request.jobId());
+        Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
+        jobUtil.withdrawalExistingScheduledTask(matching.getId());
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
     }
 }
