@@ -2,15 +2,19 @@ package spot.spot.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.member.entity.dto.MemberRequest;
-import spot.spot.domain.member.entity.dto.MemberRole;
+import spot.spot.domain.member.entity.MemberRole;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
 
 import java.util.Optional;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.GlobalException;
+import spot.spot.global.security.util.jwt.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public void register(MemberRequest.register register) {
@@ -30,6 +36,12 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+    }
+
+    public TokenDTO getDeveloperToken(long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new GlobalException(
+            ErrorCode.MEMBER_NOT_FOUND));
+        return TokenDTO.builder().accessToken(jwtUtil.createDeveloperToken(member)).build();
     }
 
     @Transactional
@@ -46,5 +58,10 @@ public class MemberService {
         if(findMember.isEmpty()) return null;
 
         return findMember.get();
+    }
+
+    public void modify(MemberRequest.modify modify, String memberId) {
+        Long parseMemberId = Long.parseLong(memberId);
+        memberQueryRepository.updateMember(parseMemberId, modify);
     }
 }

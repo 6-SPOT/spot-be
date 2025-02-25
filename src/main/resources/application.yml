@@ -3,7 +3,8 @@ spring:
   application:
     name: spot-be
   profiles:
-    active: local
+    active: dev
+    include: default
   thymeleaf:
     check-template-location: false
   servlet:
@@ -71,10 +72,12 @@ logging:
   level:
     org:
       springframework:
+        web: ERROR
         security: DEBUG
         vault: DEBUG
         cloud:
           vault: DEBUG
+    root: INFO
 
 klaytn:
   bithumb:

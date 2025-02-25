@@ -1,5 +1,6 @@
 package spot.spot.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -7,7 +8,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.member.entity.dto.MemberRole;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 
@@ -16,7 +16,7 @@ import spot.spot.domain.notification.entity.Notification;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="Members")
+@Table(name="members")
 public class Member {
 
     @Id
@@ -44,10 +44,12 @@ public class Member {
     @Setter
     private int point;
 
+    @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
-    private LocalDateTime deletedAt; //삭제일자
-
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Worker worker;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Matching> matchingList;
 

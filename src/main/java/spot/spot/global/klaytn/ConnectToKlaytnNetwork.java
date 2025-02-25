@@ -107,7 +107,7 @@ public class ConnectToKlaytnNetwork {
     private BigInteger getNonce(String toAddress) {
         BigInteger nonce = null;
         try {
-            nonce = caver.rpc.klay.getTransactionCount(toAddress, DefaultBlockParameterName.LATEST).send().getValue();
+            nonce = caver.rpc.klay.getTransactionCount(toAddress, DefaultBlockParameterName.PENDING).send().getValue();
         } catch (IOException e) {
             throw new GlobalException(ErrorCode.NOT_ALLOW_FROM_ADDRESS);
         }

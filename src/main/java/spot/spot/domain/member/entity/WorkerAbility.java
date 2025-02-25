@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -31,5 +32,8 @@ public class WorkerAbility {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ability_id", nullable = false)
     private Ability ability;
+
+    @ColumnDefault("0")
+    private Integer level;
 
 }

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.entity.FcmToken;
@@ -24,21 +23,17 @@ public class FcmUtil  {
     private final FirebaseMessaging firebaseMessaging;
     // 회원 한 명과 관련된 FCM 토큰에 메시지를 보내는 기능
     @Async("taskExecutor")
-    public void singleFcmSend(Member receiver,  FcmDTO fcmDTO) {
-        fcmTokenRepository.fetchAll4Member(receiver)
-            .filter(tokens -> !tokens.isEmpty()) // 빈 리스트 인지 확인
-            .ifPresentOrElse(
-                tokens -> tokens.stream()
-                    .map(FcmToken::getData)
-                    .map(token -> makeMessage(token, fcmDTO))
-                    .forEach(this::sendMessage),
-                () -> ColorLogger.red("❌ 이 회원은 FCM 토큰이 전무하네요! 오래 접속하지 않았거나, 탈퇴회원 입니다. ❌ : member_id {} ", receiver.getId())
-            );
+    public void singleFcmSend(long receiverId,  FcmDTO fcmDTO) {
+        fcmTokenRepository.findAllByMember_Id(receiverId)
+            .stream()
+            .map(FcmToken::getData)
+            .map(token -> makeMessage(token, fcmDTO))
+            .forEach(this::sendMessage);
     }
 
     @Async("taskExecutor")
     public void multiFcmSend(List<Member> members, FcmDTO fcmDTO) {
-        members.forEach(member -> singleFcmSend(member, fcmDTO));
+        members.forEach(member -> singleFcmSend(member.getId(), fcmDTO));
     }
 
 
@@ -72,6 +67,22 @@ public class FcmUtil  {
             .title(title)
             .body(body)
             .build();
+    }
+
+    public String askRequest2ClientMsg(String attenderName, String jobName){
+        return attenderName + "님이 " + jobName + "을 해결하길 원합니다!";
+    }
+
+    public String askRequest2WorkerMsg(String workerName, String jobName) {
+        return workerName + "님! " + jobName + "을 해결해 주십쇼!";
+    }
+
+    public String getStartedJobMsg(String attenderName, String jobName){
+        return attenderName + "님이 " + jobName + "을 시작합니다!";
+    }
+
+    public String requestAcceptedBody (String owner_name, String attender_name, String jobName){
+        return owner_name + "님이 " + jobName + "에 대한 " + attender_name + "님의 요청을 승낙하셨습니다!";
     }
 
 }

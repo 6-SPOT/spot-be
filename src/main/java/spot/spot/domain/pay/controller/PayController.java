@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.Job4ClientService;
-import spot.spot.domain.pay.entity.dto.PayApproveRequestDto;
-import spot.spot.domain.pay.entity.dto.PayApproveResponse;
+import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
+import spot.spot.domain.pay.entity.dto.response.PayApproveResponse;
 import spot.spot.domain.pay.service.PayService;
 
 @RestController
@@ -24,8 +24,7 @@ public class PayController {
 
     @PostMapping("/deposit")
     public ResponseEntity<PayApproveResponse> payApprove(@RequestBody @Valid PayApproveRequestDto request, Authentication auth) {
-        //JobService에서 유저 아이디와 request.jobTitle()값으로 job의 tid값을 가져와야함
-        Job job = new Job();
+        Job job = job4ClientService.findByTid(request.jobTitle());
         PayApproveResponse approve = payService.payApprove(auth.getName(),
                 job,
                 request.pgToken(),

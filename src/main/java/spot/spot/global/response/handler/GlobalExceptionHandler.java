@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ResultResponse;
 import spot.spot.global.response.format.GlobalException;
 
@@ -22,6 +23,7 @@ public class GlobalExceptionHandler {
     // 사용자가 예측 가능한 에러 발생 시
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<ResultResponse<Object>> handleGlobalException ( GlobalException globalException) {
+        ColorLogger.red("{}",globalException.getMessage());
         return ResponseEntity
             .status(globalException.getErrorCode().getStatus())
             .headers(jsonHeaders)
@@ -31,6 +33,9 @@ public class GlobalExceptionHandler {
     // 예기치 못한 에러 발생 시 (일단 에러 내용이 front 한테도 보이게 뒀습니다. 배포할 때 고치겠습니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultResponse<Object>> handleUnExpectException (Exception e) {
+        ColorLogger.red("{},", e.getCause());
+        ColorLogger.red("{}",e.getMessage());
+
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .headers(jsonHeaders)
