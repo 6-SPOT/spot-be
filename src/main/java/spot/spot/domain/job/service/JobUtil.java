@@ -72,7 +72,7 @@ public class JobUtil {
 
         ScheduledFuture<?> future = taskScheduler.schedule(
             () -> executeCancel(matching_id),
-            Instant.now().plusSeconds(600));
+            Instant.now().plusSeconds(60));
 
         scheduledTasks.put(matching_id, future);
         ColorLogger.green("Matching-{}는 10분 후 취소 예약 설정 되었습니다. SIGN-OK ", matching_id);
