@@ -38,19 +38,21 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     );
 
     @Query(value = """
-    SELECT j.*, 
-           (6371 * acos(
-               cos(radians(:lat)) * cos(radians(j.lat)) *
-               cos(radians(j.lng) - radians(:lng)) +
-               sin(radians(:lat)) * sin(radians(j.lat))
-           )) AS distance
-    FROM Job j
-    WHERE j.startedAt IS NULL
-      AND j.lat BETWEEN :lat - (:dist / 111.045) AND :lat + (:dist / 111.045)
-      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat))))
+    SELECT j.*
+    FROM job j
+    WHERE j.started_at IS NULL
+      AND j.lat BETWEEN :lat - (:dist / 111.045) 
+                   AND :lat + (:dist / 111.045)
+      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat)))) 
                    AND :lng + (:dist / (111.045 * cos(radians(:lat))))
-    HAVING distance < :dist
-    ORDER BY distance
+      AND ST_Distance_Sphere(
+               point(j.lng, j.lat),
+               point(:lng, :lat)
+           ) / 1000 < :dist -- 미터 단위이므로 km로 변환
+    ORDER BY ST_Distance_Sphere(
+                 point(j.lng, j.lat),
+                 point(:lng, :lat)
+             ) ASC
     LIMIT :pageSize OFFSET :offset
     """, nativeQuery = true)
     List<Job> findNearByJobWithNativeQuery(
@@ -61,7 +63,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
         @Param("offset") int offset
     );
 
-    Optional<Job> findByIdAndStartedAtIsNull(long id);
 
     Optional<Job> findByTitle(String title);
 }

@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResultResponse<Object>> handleUnExpectException (Exception e) {
         ColorLogger.red("{},", e.getCause());
         ColorLogger.red("{}",e.getMessage());
-
+        e.printStackTrace();
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .headers(jsonHeaders)

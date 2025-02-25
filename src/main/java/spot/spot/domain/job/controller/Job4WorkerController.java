@@ -17,6 +17,7 @@ import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
+import spot.spot.global.logging.Logging;
 
 @RestController
 @RequestMapping("/api/job/worker")
@@ -32,11 +33,12 @@ public class Job4WorkerController implements Job4WorkerDocs {
 
     @GetMapping(value = "/search")
     public Slice<NearByJobResponse> nearByJobs(
+        @RequestParam(required = false) String type,
         @RequestParam(required = false) Double lat,
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return job4WorkerService.getNearByJobList("dsl", lat, lng, zoom, pageable);
+        return job4WorkerService.getNearByJobList(type, lat, lng, zoom, pageable);
     }
 
     @GetMapping(value = "/get")
