@@ -1,5 +1,6 @@
 package spot.spot.domain.chat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -30,23 +31,18 @@ public class ChatController {
 	public ResponseEntity<?> getMyChatRooms(Authentication authentication) {
 		Long memberId = Long.parseLong(authentication.getName());
 		List<ChatListResponse> chatListResponses = chatService.getMyChatRooms(memberId);
-		return new ResponseEntity<>(chatListResponses, HttpStatus.OK);
-	}
 
-	@GetMapping("/my/rooms/test")
-	public ResponseEntity<?> getMyChatRoomsTest() {
+		// 테스트 데이터 추가
+		// TODO: 나중에 지우기
 		ChatListResponse chatListResponse1 = ChatListResponse.builder()
 			.title("채팅방제목입니다")
 			.roomId(1L)
 			.build();
-		ChatListResponse chatListResponse2 = ChatListResponse.builder()
-			.title("채팅방제목2입니다")
-			.roomId(2L)
-			.build();
-		List<ChatListResponse> chatListResponses = List.of(chatListResponse1,chatListResponse2);
-		// List<ChatListResponse> chatListResponses = chatService.getMyChatRooms(memberId);
+		chatListResponses.add(chatListResponse1);
+
 		return new ResponseEntity<>(chatListResponses, HttpStatus.OK);
 	}
+
 
 	// 채팅 신청
 	@PostMapping("/room/create")
@@ -60,20 +56,18 @@ public class ChatController {
 	// 이전 메시지 조회
 	@GetMapping("/history/{roomId}")
 	public ResponseEntity<?> getChatHistory(@PathVariable Long roomId, Authentication authentication) {
-		Long memberId = Long.parseLong(authentication.getName());
-		List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
-		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
-	}
-
-	// 이전 메시지 조회 테스트
-	@GetMapping("/history/{roomId}/test")
-	public ResponseEntity<?> getChatHistoryTest(@PathVariable Long roomId) {
-		ChatMessageResponse chatMessageResponse = ChatMessageResponse.builder()
-			.sender("보낸이")
-			.content("되었으면 좋겠습니다.")
-			.build();
-		List<ChatMessageResponse> chatMessageResponses = List.of(chatMessageResponse);
+		// Long memberId = Long.parseLong(authentication.getName());
 		// List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
+
+		// 테스트 데이터 추가
+		// TODO: 나중에 지우기
+		List<ChatMessageResponse> chatMessageResponses = new ArrayList<>();
+		ChatMessageResponse chatMessageResponse1 = ChatMessageResponse.builder()
+			.sender("보낸이입니다")
+			.content("내용입니다.")
+			.build();
+		chatMessageResponses.add(chatMessageResponse1);
+
 		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
 	}
 

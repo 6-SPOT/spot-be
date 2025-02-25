@@ -6,18 +6,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class StompEventListener {
 
 	@EventListener
 	public void connectionHandle(SessionConnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		System.out.println("connect session Id" + accessor.getSessionId());
+		log.info("connect session Id" + accessor.getSessionId());
 	}
 
 	@EventListener
 	public void disconnectionHandle(SessionDisconnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		System.out.println("disconnect session Id" + accessor.getSessionId());
+		log.info("disconnect session Id" + accessor.getSessionId());
 	}
 }
