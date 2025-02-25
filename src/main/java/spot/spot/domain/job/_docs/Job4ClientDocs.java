@@ -183,7 +183,7 @@ public interface Job4ClientDocs {
 
     @Operation(summary = "일 철회 요청",
         description = """
-        잠수탄 놈에 대해 일 철회 요청
+        잠수탄 놈에 대해 일 철회 요청 (SLEEP 처리 -> 10분 후 CANCEL로 조절)
         """,
         responses = {
             @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
