@@ -15,4 +15,6 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     List<Point> findByPointCodeAndIsValidTrue(String pointCode);
 
     void deleteByPointCode(String pointCode);
+
+    Optional<Point> findFirstByPointCode(String pointCode);
 }

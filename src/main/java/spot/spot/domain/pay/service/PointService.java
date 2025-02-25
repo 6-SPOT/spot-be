@@ -65,8 +65,16 @@ public class PointService {
         }
     }
 
-    //쿠폰 삭제
+    //쿠폰 하나삭제
+    public void deletePointOnce(String pointCode) {
+        Optional<Point> firstByPointCode = pointRepository.findFirstByPointCode(pointCode);
+        firstByPointCode.ifPresent(pointRepository::delete);
+    }
+
+    //포인트코드가 같은 포인트 전체 삭제
     public void deletePoint(String pointCode) {
         pointRepository.deleteByPointCode(pointCode);
     }
+
+
 }
