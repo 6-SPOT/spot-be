@@ -12,7 +12,7 @@ import spot.spot.domain.member.entity.Member;
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
-    List<Matching> findByMemberAndJobAndStatus(Member member, Job job, MatchingStatus status);
+    Optional<Matching> findByMemberAndJob_Id(Member member, long job_id);
     Optional<Matching> findByJobAndStatus(Job job, MatchingStatus status);
 
 }

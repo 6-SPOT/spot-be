@@ -59,5 +59,10 @@ public class Job4WorkerController implements Job4WorkerDocs {
         job4WorkerService.yesOrNo2RequestOfClient(request);
     }
 
+    @PostMapping("/continue")
+    public void continueJob(@RequestBody Job2WorkerRequest request) {
+        job4WorkerService.contiuneJob(request);
+    }
+
 
 }
