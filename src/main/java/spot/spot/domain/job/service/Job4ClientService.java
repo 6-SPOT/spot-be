@@ -97,7 +97,6 @@ public class Job4ClientService {
             fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
     }
 
-
     @Transactional
     public void yesOrNo2RequestOfWorker(YesOrNo2WorkersRequest request) {
         Member owner = userAccessUtil.getMember();
@@ -117,6 +116,8 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        int payAmountByJob = payService.getPayAmountByJob(job);
+        payService.payCancel(job, payAmountByJob);
         Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         jobUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(

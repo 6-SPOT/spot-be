@@ -18,6 +18,7 @@ import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.response.*;
 import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
+import spot.spot.domain.pay.repository.PayQueryRepository;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
@@ -30,9 +31,11 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class PayService {
 
     private final MatchingDsl matchingDsl;
+    private final PayQueryRepository payQueryRepository;
     @Value("${kakao.pay.cid}")
     private String cid;
 
@@ -70,12 +73,11 @@ public class PayService {
         PayReadyResponse payReadyResponse = payAPIRequest("ready", requestEntity, PayReadyResponse.class);
         if(payReadyResponse.getTid() == null) throw new GlobalException(ErrorCode.FAIL_PAY_READY);
 
-        PayHistory payHistory = savePayHistory(memberNickname, "", amount, point);
+        PayHistory payHistory = savePayHistory(memberNickname, amount, point);
         return new PayReadyResponseDto(payReadyResponse.getNext_redirect_pc_url(), payReadyResponse.getNext_redirect_mobile_url(), payReadyResponse.getTid(), payHistory);
     }
 
     //결제 승인(결제)
-    @Transactional
     public PayApproveResponse payApprove(String memberId, Job job, String pgToken, int totalAmount) {
         long parseMemberId = Long.parseLong(memberId);
         Member findMember = memberService.findById(parseMemberId);
@@ -94,7 +96,7 @@ public class PayService {
         if(workerNicknameByJob.isPresent()) {
             worker = workerNicknameByJob.get();
         }
-        updatePayHistory(job.getPayment(), PayStatus.PENDING, worker);
+        updatePayHistory(job.getPayment(), PayStatus.PROCESS, worker);
         //결제 후 클레이튼 블록체인에 결제 translation 저장
         double kaia = exchangeRateByBithumbApi.exchangeToKaia(totalAmount / 100);
         log.info("kaia = {}", kaia);
@@ -103,7 +105,13 @@ public class PayService {
         connectToKlaytnNetwork.deposit((int) peb, singleKeyring.getAddress());
 
         double changeRateCash = exchangeRateByBithumbApi.getChangeRateCash();
-        KlayAboutJob klayAboutJob = KlayAboutJob.builder().amtKlay(kaia).amtKrw(totalAmount).exchangeRate(changeRateCash).job(job).build();
+        KlayAboutJob klayAboutJob = KlayAboutJob.builder()
+                .amtKlay(kaia)
+                .amtKrw(totalAmount)
+                .exchangeRate(changeRateCash)
+                .job(job)
+                .payStatus(PayStatus.PROCESS)
+                .build();
         klayAboutJobRepository.save(klayAboutJob);
 
         return approve;
@@ -121,8 +129,10 @@ public class PayService {
     }
 
     //결제 취소(등록 취소 시)
-    @Transactional
     public PayCancelResponse payCancel(Job job, int amount){
+        if(job.getPayment().getPayStatus().equals(PayStatus.FAIL)) {
+            throw new GlobalException(ErrorCode.ALREADY_PAY_FAIL);
+        }
         String totalAmount = String.valueOf(amount);
 
         Map<String, String> parameters = new HashMap<>();
@@ -135,7 +145,6 @@ public class PayService {
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayCancelResponse cancel = payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
-        updatePayHistory(job.getPayment(), PayStatus.FAIL, "");
 
         //결제된 내역의 카이아를 다시 현금화한 후 환급
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -145,12 +154,24 @@ public class PayService {
         String transfer = connectToKlaytnNetwork.transfer((int) amtKlay, singleKeyring.getAddress());
         log.info("txHash = {}", transfer);
 
-//        klayAboutJobRepository.delete(klayAboutJob);
+        //결제 시 사용한 현금
+        int amtKrw = klayAboutJob.getAmtKrw();
+        //포인트로 반환
+        String depositor = job.getPayment().getDepositor();
+        Member findMember = memberService.findByNickname(depositor);
+        findMember.setPoint(findMember.getPoint() + amtKrw);
+
+        //카이아 현금 결제 내역 삭제
+        klayAboutJobRepository.delete(klayAboutJob);
+        klayAboutJob.setPayStatus(PayStatus.FAIL);
+        //결제내역에 결제 취소 정보 입력
+        updatePayHistory(job.getPayment(), PayStatus.FAIL, job.getPayment().getWorker());
         return cancel;
     }
 
     //일 완료 시 구직자에게 포인트 반환
     public PaySuccessResponseDto payTransfer(Long workerId, int amount, Job job) {
+
         Member worker = memberService.findById(workerId);
         int point = worker.getPoint();
         worker.setPoint(point + amount);
@@ -161,19 +182,17 @@ public class PayService {
         SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
         connectToKlaytnNetwork.transfer((int) amtKlay, singleKeyring.getAddress());
 
-        klayAboutJobRepository.delete(klayAboutJob);
-
+        klayAboutJob.setPayStatus(PayStatus.SUCCESS);
         return new PaySuccessResponseDto(point + amount);
     }
 
     //일 등록 시 payHistory에 저장
-    @Transactional
-    protected PayHistory savePayHistory(String depositor, String worker, int payAmount, int point) {
+    protected PayHistory savePayHistory(String depositor, int payAmount, int point) {
         PayHistory payHistory = PayHistory.builder()
                 .payAmount(payAmount)
                 .payPoint(point)
                 .depositor(depositor)
-                .worker(worker)
+                .worker("")
                 .payStatus(PayStatus.PENDING)
                 .build();
 
@@ -181,10 +200,13 @@ public class PayService {
     }
 
     //매칭 시 PayHistory에 worker 업데이트
-    @Transactional
     public void updatePayHistory(PayHistory payHistory, PayStatus payStatus, String worker) {
         payHistory.setWorker(worker);
         payHistory.setPayStatus(payStatus);
+    }
+
+    public int getPayAmountByJob(Job job) {
+        return payQueryRepository.findPayAmountByPayHistory(job.getId());
     }
 
     private <T> T payAPIRequest(String url, HttpEntity<Map<String, String>> requestEntity, Class<T> responseType) {
