@@ -109,7 +109,7 @@ public class Job4ClientService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
-    // 일 취소 요창
+    // 일 철회 요청
     @Transactional
     public void requestWithdrawal(Job2ClientRequest request) {
         Member owner = userAccessUtil.getMember();
@@ -117,7 +117,8 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
-        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        jobUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
