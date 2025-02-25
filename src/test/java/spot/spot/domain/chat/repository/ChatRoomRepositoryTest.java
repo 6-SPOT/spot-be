@@ -17,7 +17,7 @@ import jnr.a64asm.Mem;
 import spot.spot.domain.chat.entity.ChatParticipant;
 import spot.spot.domain.chat.entity.ChatRoom;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.JobRepository;
+import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.global.auditing.config.JpaAuditingConfig;
