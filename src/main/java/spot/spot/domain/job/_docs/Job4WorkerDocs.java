@@ -128,13 +128,46 @@ public interface Job4WorkerDocs {
         @RequestParam long id
     );
 
-
+    @Operation(summary = "일을 자신이 하겠다고 일 올린 사람한테 요청하기",
+        description = """
+        일 요청
+        요청이 성공되면 매칭 테이블의 새로운 교차 레코드가 생기고, STATUS가 ATTENDER로 생성됩니다.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @PostMapping
     public void askingJob2Client(@RequestBody Job2WorkerRequest request);
 
+    @Operation(summary = "일을 시작하기",
+        description = """
+        MatchingStatus가 YES인 일의 상태를 START로 바꿉니다.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @PostMapping
     public void startJob(@RequestBody Job2WorkerRequest request);
 
+    @Operation(summary = "의뢰인이 요청한 일 수락 혹은 거절",
+        description = """
+        의뢰인이 요청한 일에 대해 YES or NO를 설정합니다.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @PostMapping
     public void acceptJobRequestOfClient (
         @RequestBody YesOrNo2ClientsRequest request
