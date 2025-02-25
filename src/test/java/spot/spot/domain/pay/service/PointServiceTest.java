@@ -6,8 +6,11 @@
  import org.junit.jupiter.api.Test;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.test.context.SpringBootTest;
+ import org.springframework.test.context.ActiveProfiles;
  import org.springframework.transaction.annotation.Transactional;
  import spot.spot.domain.member.dto.request.MemberRequest;
+ import spot.spot.domain.member.entity.Member;
+ import spot.spot.domain.member.repository.MemberRepository;
  import spot.spot.domain.member.service.MemberService;
  import spot.spot.domain.pay.entity.Point;
  import spot.spot.domain.pay.entity.dto.request.PointServeRequestDto;
@@ -19,6 +22,7 @@
 
  @SpringBootTest
  @Transactional
+ @ActiveProfiles("local")
  @Slf4j
  class PointServiceTest {
 
@@ -33,8 +37,13 @@
 
      List<PointServeResponseDto> responseDtos = new ArrayList<>();
 
+     @Autowired
+     private MemberRepository memberRepository;
+
      @BeforeEach
      void before() {
+         memberRepository.deleteAll(); // ✅ 기존 데이터 삭제
+         pointRepository.deleteAll();
          MemberRequest.register build = MemberRequest.register.builder()
                  .nickname("테스트유저1")
                  .email("test@test.com")
@@ -69,11 +78,12 @@
 
      @Test
      void registerPoint() {
+         Member findMember = memberService.findByNickname("테스트유저1");
          for (int i = 0; i < responseDtos.size(); i++) {
             String pointCode = responseDtos.get(i).pointCode();
             List<Point> byPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
             int beforePointCount = byPointCodeAndIsValidTrue.size();
-            pointService.registerPoint(pointCode, "1");
+            pointService.registerPoint(pointCode, String.valueOf(findMember.getId()));
              List<Point> afterByPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
              int afterRegisterPoint = afterByPointCodeAndIsValidTrue.size();
 
