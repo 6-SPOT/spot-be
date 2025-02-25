@@ -7,6 +7,8 @@
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.test.context.SpringBootTest;
  import org.springframework.transaction.annotation.Transactional;
+ import spot.spot.domain.member.dto.request.MemberRequest;
+ import spot.spot.domain.member.service.MemberService;
  import spot.spot.domain.pay.entity.Point;
  import spot.spot.domain.pay.entity.dto.request.PointServeRequestDto;
  import spot.spot.domain.pay.entity.dto.response.PointServeResponseDto;
@@ -26,10 +28,19 @@
      @Autowired
      PointRepository pointRepository;
 
+     @Autowired
+     MemberService memberService;
+
      List<PointServeResponseDto> responseDtos = new ArrayList<>();
 
      @BeforeEach
      void before() {
+         MemberRequest.register build = MemberRequest.register.builder()
+                 .nickname("테스트유저1")
+                 .email("test@test.com")
+                 .img("img")
+                 .build();
+         memberService.register(build);
          PointServeRequestDto serveCountPoint = new PointServeRequestDto("포인트1", 1000, 3);
          PointServeRequestDto serveCountPoint2 = new PointServeRequestDto("포인트2", 1000, 5);
 
@@ -71,12 +82,12 @@
      }
 
      @Test
-     void deletePoint() {
+     void deletePointOnce() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
              List<Point> byPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
              int beforePointCount = byPointCodeAndIsValidTrue.size();
-             pointService.deletePoint(pointCode);
+             pointService.deletePointOnce(pointCode);
              List<Point> afterByPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
              int afterRegisterPoint = afterByPointCodeAndIsValidTrue.size();
 
@@ -87,5 +98,21 @@
          List<Point> all = pointRepository.findAll();
 
          Assertions.assertThat(all.size()).isEqualTo(6);
+     }
+
+     @Test
+     void deletePoint() {
+         for (int i = 0; i < responseDtos.size(); i++) {
+             String pointCode = responseDtos.get(i).pointCode();
+             pointService.deletePoint(pointCode);
+             List<Point> afterByPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
+             int afterRegisterPoint = afterByPointCodeAndIsValidTrue.size();
+
+             Assertions.assertThat(afterRegisterPoint).isEqualTo(0);
+         }
+
+         List<Point> all = pointRepository.findAll();
+
+         Assertions.assertThat(all.size()).isEqualTo(0);
      }
  }
