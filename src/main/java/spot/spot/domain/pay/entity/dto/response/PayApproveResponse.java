@@ -1,4 +1,4 @@
-package spot.spot.domain.pay.entity.dto;
+package spot.spot.domain.pay.entity.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

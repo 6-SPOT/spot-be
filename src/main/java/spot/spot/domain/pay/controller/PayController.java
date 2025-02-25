@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.Job4ClientService;
-import spot.spot.domain.pay.entity.dto.PayApproveRequestDto;
-import spot.spot.domain.pay.entity.dto.PayApproveResponse;
+import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
+import spot.spot.domain.pay.entity.dto.response.PayApproveResponse;
 import spot.spot.domain.pay.service.PayService;
 
 @RestController
