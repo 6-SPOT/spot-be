@@ -1,4 +1,4 @@
-package spot.spot.domain.pay.entity.dto;
+package spot.spot.domain.pay.entity.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import spot.spot.domain.pay.entity.PayHistory;
