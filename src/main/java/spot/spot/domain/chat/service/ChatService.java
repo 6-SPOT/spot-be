@@ -91,7 +91,7 @@ public class ChatService {
 		return new ArrayList<>(chatMessages.stream()
 			.map(chatMessage -> ChatMessageResponse.builder()
 				.content(chatMessage.getContent())
-				.senderNickname(chatMessage.getMember().getNickname())
+				.sender(chatMessage.getMember().getNickname())
 				.build())
 			.toList());
 	}

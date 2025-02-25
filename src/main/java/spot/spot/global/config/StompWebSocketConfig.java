@@ -16,7 +16,8 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/connect")
+		registry.addEndpoint("/api/connect")
+			.setAllowedOrigins("*")
 			.withSockJS();
 	}
 
@@ -24,10 +25,10 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 
 		// 메세지가 발행되면 @Controller 객체의 @MessageMapping 메서드로 라우팅
-		registry.setApplicationDestinationPrefixes("/publish");
+		registry.setApplicationDestinationPrefixes("/api/publish");
 
 		// 메세지를 수신해야 함을 설정
-		registry.enableSimpleBroker("/topic");
+		registry.enableSimpleBroker("/api/topic");
 	}
 
 	@Override

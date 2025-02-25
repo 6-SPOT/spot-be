@@ -17,10 +17,17 @@ public class StompChatController {
 	private final SimpMessageSendingOperations messageTemplate;
 	private final ChatService chatService;
 
-	@MessageMapping("/{roomId}") // roomId로 메세지 보내기
-	public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto, Authentication authentication) {
-		Long memberId = Long.parseLong(authentication.getName());
+	// @MessageMapping("/api/chat/{roomId}") // roomId로 메세지 보내기
+	// public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto, Authentication authentication) {
+	// 	Long memberId = Long.parseLong(authentication.getName());
+	// 	chatService.saveMessage(roomId, chatMessageDto, memberId);
+	// 	messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageDto);
+	// }
+
+	@MessageMapping("/api/chat/{roomId}/test") // roomId로 메세지 보내기
+	public void sendMessageTest(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto) {
+		Long memberId = 1L;
 		chatService.saveMessage(roomId, chatMessageDto, memberId);
-		messageTemplate.convertAndSend("/topic/" + roomId, chatMessageDto);
+		messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageDto);
 	}
 }

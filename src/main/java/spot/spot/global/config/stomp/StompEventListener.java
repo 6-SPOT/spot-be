@@ -11,11 +11,13 @@ public class StompEventListener {
 
 	@EventListener
 	public void connectionHandle(SessionConnectEvent event) {
-		// 연결 된 경우
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+		System.out.println("connect session Id" + accessor.getSessionId());
 	}
 
 	@EventListener
 	public void disconnectionHandle(SessionDisconnectEvent event) {
-		// 연결을 끊는 경우
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+		System.out.println("disconnect session Id" + accessor.getSessionId());
 	}
 }

@@ -20,7 +20,7 @@ import spot.spot.domain.chat.service.ChatService;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 public class ChatController {
 
 	private final ChatService chatService;
@@ -30,6 +30,21 @@ public class ChatController {
 	public ResponseEntity<?> getMyChatRooms(Authentication authentication) {
 		Long memberId = Long.parseLong(authentication.getName());
 		List<ChatListResponse> chatListResponses = chatService.getMyChatRooms(memberId);
+		return new ResponseEntity<>(chatListResponses, HttpStatus.OK);
+	}
+
+	@GetMapping("/my/rooms/test")
+	public ResponseEntity<?> getMyChatRoomsTest() {
+		ChatListResponse chatListResponse1 = ChatListResponse.builder()
+			.title("채팅방제목입니다")
+			.roomId(1L)
+			.build();
+		ChatListResponse chatListResponse2 = ChatListResponse.builder()
+			.title("채팅방제목2입니다")
+			.roomId(2L)
+			.build();
+		List<ChatListResponse> chatListResponses = List.of(chatListResponse1,chatListResponse2);
+		// List<ChatListResponse> chatListResponses = chatService.getMyChatRooms(memberId);
 		return new ResponseEntity<>(chatListResponses, HttpStatus.OK);
 	}
 
@@ -47,6 +62,18 @@ public class ChatController {
 	public ResponseEntity<?> getChatHistory(@PathVariable Long roomId, Authentication authentication) {
 		Long memberId = Long.parseLong(authentication.getName());
 		List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
+		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
+	}
+
+	// 이전 메시지 조회 테스트
+	@GetMapping("/history/{roomId}/test")
+	public ResponseEntity<?> getChatHistoryTest(@PathVariable Long roomId) {
+		ChatMessageResponse chatMessageResponse = ChatMessageResponse.builder()
+			.sender("보낸이")
+			.content("되었으면 좋겠습니다.")
+			.build();
+		List<ChatMessageResponse> chatMessageResponses = List.of(chatMessageResponse);
+		// List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
 		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
 	}
 
