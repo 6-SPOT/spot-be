@@ -42,8 +42,17 @@ public class PayService {
     @Value("${kakao.pay.admin-key}")
     private String adminKey;
 
-    @Value("${kakao.pay.partner-order-id}")
+    @Value("${kakao.pay.partner_order_id}")
     private String domain;
+
+    @Value("${kakao.pay.approval_url}")
+    private String approvalUrl;
+
+    @Value("${kakao.pay.fail_url}")
+    private String failUrl;
+
+    @Value("${kakao.pay.cancel_url}")
+    private String cancelUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final MemberService memberService;
@@ -65,9 +74,9 @@ public class PayService {
         parameters.put("total_amount", totalAmount);
         parameters.put("vat_amount", "0");
         parameters.put("tax_free_amount", "0");
-        parameters.put("approval_url", "https://ilmatch.net/payment/success");
-        parameters.put("fail_url", "https://ilmatch.net/payment/fail");
-        parameters.put("cancel_url", "https://ilmatch.net/payment/cancel");
+        parameters.put("approval_url", approvalUrl);
+        parameters.put("fail_url", failUrl);
+        parameters.put("cancel_url", cancelUrl);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayReadyResponse payReadyResponse = payAPIRequest("ready", requestEntity, PayReadyResponse.class);
