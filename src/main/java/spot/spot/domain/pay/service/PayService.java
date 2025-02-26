@@ -42,7 +42,7 @@ public class PayService {
     @Value("${kakao.pay.admin-key}")
     private String adminKey;
 
-    @Value("${kakao.pay.partner-order-id}")
+    @Value("${kakao.pay.partner_order_id}")
     private String domain;
 
     @Value("${kakao.pay.approval_url}")
@@ -51,7 +51,7 @@ public class PayService {
     @Value("${kakao.pay.fail_url}")
     private String failUrl;
 
-    @Value("${kakao.pay.cancel.url}")
+    @Value("${kakao.pay.cancel_url}")
     private String cancelUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
