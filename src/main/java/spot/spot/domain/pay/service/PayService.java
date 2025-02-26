@@ -65,9 +65,9 @@ public class PayService {
         parameters.put("total_amount", totalAmount);
         parameters.put("vat_amount", "0");
         parameters.put("tax_free_amount", "0");
-        parameters.put("approval_url", "http://localhost:8080/payment/success");
-        parameters.put("fail_url", "http://localhost:8080/payment/fail");
-        parameters.put("cancel_url", "http://localhost:8080/payment/cancel");
+        parameters.put("approval_url", "https://ilmatch.net/payment/success");
+        parameters.put("fail_url", "https://ilmatch.net/payment/fail");
+        parameters.put("cancel_url", "https://ilmatch.net/payment/cancel");
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayReadyResponse payReadyResponse = payAPIRequest("ready", requestEntity, PayReadyResponse.class);
@@ -130,7 +130,8 @@ public class PayService {
 
     //결제 취소(등록 취소 시)
     public PayCancelResponse payCancel(Job job, int amount){
-        if(job.getPayment().getPayStatus().equals(PayStatus.FAIL)) {
+        PayHistory payHistory = job.getPayment();
+        if(payHistory.getPayStatus().equals(PayStatus.FAIL)) {
             throw new GlobalException(ErrorCode.ALREADY_PAY_FAIL);
         }
         String totalAmount = String.valueOf(amount);
@@ -155,17 +156,17 @@ public class PayService {
         log.info("txHash = {}", transfer);
 
         //결제 시 사용한 현금
-        int amtKrw = klayAboutJob.getAmtKrw();
+        int paybackAmount = payHistory.getPayAmount() + payHistory.getPayPoint();
         //포인트로 반환
-        String depositor = job.getPayment().getDepositor();
+        String depositor = payHistory.getDepositor();
         Member findMember = memberService.findByNickname(depositor);
-        findMember.setPoint(findMember.getPoint() + amtKrw);
+        findMember.setPoint(findMember.getPoint() + paybackAmount);
 
         //카이아 현금 결제 내역 삭제
         klayAboutJobRepository.delete(klayAboutJob);
         klayAboutJob.setPayStatus(PayStatus.FAIL);
         //결제내역에 결제 취소 정보 입력
-        updatePayHistory(job.getPayment(), PayStatus.FAIL, job.getPayment().getWorker());
+        updatePayHistory(payHistory, PayStatus.FAIL, payHistory.getWorker());
         return cancel;
     }
 
