@@ -106,7 +106,6 @@ public interface Job4WorkerDocs {
         })
     @GetMapping
     public Slice<NearByJobResponse> nearByJobs(
-        @RequestParam(required = false) String type,
         @RequestParam Double lat,
         @RequestParam Double lng,
         @RequestParam Integer zoom,

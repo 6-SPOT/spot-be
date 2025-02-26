@@ -33,12 +33,11 @@ public class Job4WorkerController implements Job4WorkerDocs {
 
     @GetMapping(value = "/search")
     public Slice<NearByJobResponse> nearByJobs(
-        @RequestParam(required = false) String type,
         @RequestParam(required = false) Double lat,
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return job4WorkerService.getNearByJobList(type, lat, lng, zoom, pageable);
+        return job4WorkerService.getNearByJobList("dsl", lat, lng, zoom, pageable);
     }
 
     @GetMapping(value = "/get")

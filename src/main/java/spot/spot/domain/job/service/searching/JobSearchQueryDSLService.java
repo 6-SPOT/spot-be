@@ -23,7 +23,7 @@ public class JobSearchQueryDSLService implements JobSearchService{
     @Override
     public Slice<NearByJobResponse> findNearByJobs(double lat, double lng, int zoom, Pageable pageable) {
         double dist = jobUtil.convertZoomToRadius(zoom);
-        Slice<Job> jobs = jobQueryDsl.findNearByJobsWithQueryDSL(lat, lng,dist, pageable);
+        Slice<Job> jobs = jobQueryDsl.findNearByJobsWithQueryDSL(lat, lng, dist, pageable);
         List<NearByJobResponse> responseList = job4WorkerMapper
             .toNearByJobResponseList(jobs.getContent(), Location.builder().lat(lat).lng(lng).build());
         return new SliceImpl<>(responseList, pageable, jobs.hasNext());
