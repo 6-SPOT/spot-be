@@ -60,6 +60,7 @@ public class PayService {
     private final ExchangeRateByBithumbApi exchangeRateByBithumbApi;
     private final ConnectToKlaytnNetwork connectToKlaytnNetwork;
     private final KlayAboutJobRepository klayAboutJobRepository;
+    private final PayAPIRequestService payAPIRequestService;
 
     //결제준비 (결제페이지로 이동)
     public PayReadyResponseDto payReady(String memberNickname, String title, int amount, int point) {
@@ -79,7 +80,7 @@ public class PayService {
         parameters.put("cancel_url", cancelUrl);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayReadyResponse payReadyResponse = payAPIRequest("ready", requestEntity, PayReadyResponse.class);
+        PayReadyResponse payReadyResponse = payAPIRequestService.payAPIRequest("ready", requestEntity, PayReadyResponse.class);
         if(payReadyResponse.getTid() == null) throw new GlobalException(ErrorCode.FAIL_PAY_READY);
 
         PayHistory payHistory = savePayHistory(memberNickname, amount, point);
@@ -99,7 +100,7 @@ public class PayService {
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
 
-        PayApproveResponse approve = payAPIRequest("approve", requestEntity, PayApproveResponse.class);
+        PayApproveResponse approve = payAPIRequestService.payAPIRequest("approve", requestEntity, PayApproveResponse.class);
         Optional<String> workerNicknameByJob = matchingDsl.findWorkerNicknameByJob(job);
         String worker = "";
         if(workerNicknameByJob.isPresent()) {
@@ -134,7 +135,7 @@ public class PayService {
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
 
-        return payAPIRequest("order", requestEntity, PayOrderResponse.class);
+        return payAPIRequestService.payAPIRequest("order", requestEntity, PayOrderResponse.class);
     }
 
     //결제 취소(등록 취소 시)
@@ -154,7 +155,7 @@ public class PayService {
         parameters.put("cancel_available_amount", totalAmount);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayCancelResponse cancel = payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
+        PayCancelResponse cancel = payAPIRequestService.payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
 
         //결제된 내역의 카이아를 다시 현금화한 후 환급
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -217,21 +218,6 @@ public class PayService {
 
     public int getPayAmountByJob(Job job) {
         return payQueryRepository.findPayAmountByPayHistory(job.getId());
-    }
-
-    private <T> T payAPIRequest(String url, HttpEntity<Map<String, String>> requestEntity, Class<T> responseType) {
-        try {
-            ResponseEntity<T> response = restTemplate.exchange(
-                    "https://open-api.kakaopay.com/online/v1/payment/" + url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    responseType
-            );
-            return response.getBody(); // ✅ 응답 객체 반환
-        } catch (Exception e) {
-            log.error("카카오페이 API 요청 실패: {}", url, e);
-            throw new GlobalException(ErrorCode.FAIL_PAY_READY);
-        }
     }
 
     private HttpHeaders getHeaders() {

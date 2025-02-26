@@ -1,5 +1,6 @@
 package spot.spot.domain.pay.entity.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class PayOrderResponse {
     private String tid;
     private String cid;
@@ -28,6 +30,7 @@ public class PayOrderResponse {
 
     @Getter
     @Setter
+    @Builder
     public static class Amount {
         private int total;
         private int tax_free;
@@ -39,6 +42,7 @@ public class PayOrderResponse {
 
     @Getter
     @Setter
+    @Builder
     public static class SelectedCardInfo {
         private String card_bin;
         private String card_type;
@@ -48,6 +52,7 @@ public class PayOrderResponse {
 
     @Getter
     @Setter
+    @Builder
     public static class PaymentActionDetail {
         private String aid;
         private String approved_at;

@@ -63,5 +63,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     Optional<Job> findByIdAndStartedAtIsNull(long id);
 
-    Optional<Job> findByTitle(String title);
+    Optional<Job> findByTid(String tid);
 }

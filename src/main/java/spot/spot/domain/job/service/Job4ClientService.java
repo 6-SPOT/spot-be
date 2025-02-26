@@ -55,7 +55,7 @@ public class Job4ClientService {
     private final MemberRepository memberRepository;
 
 
-    public PayReadyResponseDto registerJob(RegisterJobRequest request,MultipartFile file) {
+    public PayReadyResponseDto registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
         PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
@@ -83,9 +83,10 @@ public class Job4ClientService {
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
 
-    public Job findByTid(String jobTitle) {
-        return jobRepository.findByTitle(jobTitle).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
+    public Job findByTid(String tid) {
+        return jobRepository.findByTid(tid).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
     }
+
     public void askingJob2Worker (Job2ClientRequest request) {
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
