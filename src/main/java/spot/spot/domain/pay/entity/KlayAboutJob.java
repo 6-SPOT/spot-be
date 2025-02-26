@@ -1,10 +1,7 @@
 package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import spot.spot.domain.job.entity.Job;
 
 @Entity
@@ -30,4 +27,6 @@ public class KlayAboutJob {
     @Column(name = "exchange_rate", nullable = false)
     private double exchangeRate;
 
+    @Setter
+    private PayStatus payStatus;
 }

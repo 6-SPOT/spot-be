@@ -38,7 +38,8 @@ public enum ErrorCode {
     INVALID_SEARCH_METHOD(HttpStatus.BAD_REQUEST, "요청하신 이름의 구현 매소드를 찾을 수 없습니다."),
     // ALRAM
     INVALID_FCM_TOKEN(HttpStatus.NOT_ACCEPTABLE, "❌ 이 회원은 FCM 토큰이 전무하네요! 오래 접속하지 않았거나, 탈퇴회원 입니다. ❌ "),
-    INVALID_TITLE(HttpStatus.NOT_ACCEPTABLE, "❌ 조회하신 일이 존재하지않습니다.! 결제준비된 상품인지 확인해주세요 ❌ ")
+    INVALID_TITLE(HttpStatus.NOT_ACCEPTABLE, "❌ 조회하신 일이 존재하지않습니다.! 결제준비된 상품인지 확인해주세요 ❌ "),
+    ALREADY_PAY_FAIL(HttpStatus.BAD_REQUEST, "이미 결제 취소된 내역입니다.")
     ;
     private final HttpStatus status;
     private final String message;
