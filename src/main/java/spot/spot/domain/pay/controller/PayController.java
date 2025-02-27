@@ -24,7 +24,7 @@ public class PayController {
 
     @PostMapping("/deposit")
     public ResponseEntity<PayApproveResponse> payApprove(@RequestBody @Valid PayApproveRequestDto request, Authentication auth) {
-        Job job = job4ClientService.findByTid(request.jobTitle());
+        Job job = job4ClientService.findByTid(request.tid());
         PayApproveResponse approve = payService.payApprove(auth.getName(),
                 job,
                 request.pgToken(),
