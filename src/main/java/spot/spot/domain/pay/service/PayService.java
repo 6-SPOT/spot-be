@@ -62,14 +62,14 @@ public class PayService {
     private final KlayAboutJobRepository klayAboutJobRepository;
 
     //결제준비 (결제페이지로 이동)
-    public PayReadyResponseDto payReady(String memberNickname, String title, int amount, int point) {
+    public PayReadyResponseDto payReady(String memberNickname, String content, int amount, int point) {
         String totalAmount = String.valueOf(amount - point);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("partner_order_id", domain);
         parameters.put("partner_user_id", memberNickname);
-        parameters.put("item_name", title);
+        parameters.put("item_name", content);
         parameters.put("quantity", "1");
         parameters.put("total_amount", totalAmount);
         parameters.put("vat_amount", "0");
