@@ -1,4 +1,4 @@
-package spot.spot.global.config;
+package spot.spot.global.stomp;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
