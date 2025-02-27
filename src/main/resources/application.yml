@@ -46,7 +46,7 @@ server:
     context-path: /
   tomcat:
     threads:
-      max: 200
+      max: 500
     max-connections: 10000
 
 # SWAGGER
