@@ -31,5 +31,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         AuthenticationException authException) throws IOException, ServletException {
         log.error(authException.getMessage());
         filterResponse.error(response, authException.getMessage());
+        return;
     }
 }
