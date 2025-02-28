@@ -32,7 +32,7 @@ public class Job extends CreatedAndDeleted {
 
     private Integer money;
 
-    @Column(length =  1000)
+    @Column(length =  1000, nullable = true)
     private String img;
 
     private String tid;

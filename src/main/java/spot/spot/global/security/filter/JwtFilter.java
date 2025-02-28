@@ -36,6 +36,10 @@ public class JwtFilter extends OncePerRequestFilter {
         @NotNull HttpServletResponse response,
         @NotNull FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtil.separateBearer(request.getHeader(AUTHORIZATION));
+        if(token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // 유효성 검사
         ErrorCode error  = jwtUtil.validateToken(token);
         if(error != null) {
