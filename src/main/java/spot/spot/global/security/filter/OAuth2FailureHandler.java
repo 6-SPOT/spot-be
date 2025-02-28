@@ -1,4 +1,4 @@
-package spot.spot.global.security.util;
+package spot.spot.global.security.filter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

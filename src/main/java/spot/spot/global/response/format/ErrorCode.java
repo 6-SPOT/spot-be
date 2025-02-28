@@ -1,5 +1,6 @@
 package spot.spot.global.response.format;
 
+import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,14 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // GLOBAL
     NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR, "백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!"),
+    NOT_ALLOW_STATUS_SETTER_4_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Status Setter는 오직 정 응답 코드를 위해서만 쓸 수 있습니다."),
+    // SECURITY
+    NOT_FOUND_JWT(HttpStatus.UNAUTHORIZED, "JWT가 없습니다."),
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "만료된 JWT 입니다."),
+    INVALID_JWT(HttpStatus.UNAUTHORIZED, "잘못된 JWT 입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "지원하지 않는 버전의 JWT 입니다."),
+    ILLEGAL_JWT(HttpStatus.UNAUTHORIZED, " 잘못된 JWT 입니다."),
+    UNKNOWN_JWT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알려지지 않은 JWT 에러 입니다."),
     // KLAYTN
     FAIL_CONNECT_KLAYTN_NETWORK(HttpStatus.INTERNAL_SERVER_ERROR, "클라이튼 네트워크와 연결을 실패하였습니다."),
     FAIL_CREATE_CONTRACT(HttpStatus.BAD_REQUEST, "컨트랙트 생성에 실패하였습니다."),

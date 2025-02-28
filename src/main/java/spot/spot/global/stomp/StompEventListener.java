@@ -1,4 +1,4 @@
-package spot.spot.global.config.stomp;
+package spot.spot.global.stomp;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

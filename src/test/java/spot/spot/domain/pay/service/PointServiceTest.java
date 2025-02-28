@@ -3,6 +3,7 @@
  import lombok.extern.slf4j.Slf4j;
  import org.assertj.core.api.Assertions;
  import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.DisplayName;
  import org.junit.jupiter.api.Test;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.test.context.SpringBootTest;
@@ -62,6 +63,7 @@
      }
 
      @Test
+     @DisplayName("포인트 생성")
      void servePoint() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
@@ -77,6 +79,7 @@
      }
 
      @Test
+     @DisplayName("포인트 등록")
      void registerPoint() {
          Member findMember = memberService.findByNickname("테스트유저1");
          for (int i = 0; i < responseDtos.size(); i++) {
@@ -92,6 +95,7 @@
      }
 
      @Test
+     @DisplayName("포인트코드가 일치하는 포인트 한개 삭제")
      void deletePointOnce() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
@@ -111,6 +115,7 @@
      }
 
      @Test
+     @DisplayName("포인트코드가 일치하는 모든 포인트 삭제")
      void deletePoint() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
