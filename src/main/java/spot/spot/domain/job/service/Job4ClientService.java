@@ -55,10 +55,10 @@ public class Job4ClientService {
     private final MemberRepository memberRepository;
 
 
-    public PayReadyResponseDto registerJob(RegisterJobRequest request,MultipartFile file) {
+    public PayReadyResponseDto registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
-        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
+        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.content(), request.money(), request.point());
         String tid = payReadyResponseDto.tid();
         PayHistory payHistory = payReadyResponseDto.payHistory();
         Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, tid, payHistory));
@@ -83,9 +83,10 @@ public class Job4ClientService {
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
 
-    public Job findByTid(String jobTitle) {
-        return jobRepository.findByTitle(jobTitle).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
+    public Job findByTid(String tid) {
+        return jobRepository.findByTid(tid).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
     }
+
     public void askingJob2Worker (Job2ClientRequest request) {
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
@@ -96,7 +97,6 @@ public class Job4ClientService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
     }
-
 
     @Transactional
     public void yesOrNo2RequestOfWorker(YesOrNo2WorkersRequest request) {
@@ -109,7 +109,7 @@ public class Job4ClientService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
-    // 일 취소 요창
+    // 일 철회 요청
     @Transactional
     public void requestWithdrawal(Job2ClientRequest request) {
         Member owner = userAccessUtil.getMember();
@@ -117,7 +117,10 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
-        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        int payAmountByJob = payService.getPayAmountByJob(job);
+        payService.payCancel(job, payAmountByJob);
+        Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        jobUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }

@@ -3,14 +3,10 @@ package spot.spot.global.util;
 public class ConstantUtil {
     // FOR SECURITY
     public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String TOKEN_PREFIX = "token:";
     // 거리 계산
     public static final double EARTH_RADIUS_KM = 6371;
-    // JOB STATUS
-    public static final Integer OWNER           = 0;
-    public static final Integer ATTENDER        = 1;
-    public static final Integer WORKER          = 2;
-    public static final Integer CANCEL_REQUEST  = 3;
-    public static final Integer CANCEL_COMPLETE = 4;
     // WORKER STAUTS
     public static final Integer STILL_WORKING   = 0;
     public static final Integer LITTLE_BREAK    = 1;

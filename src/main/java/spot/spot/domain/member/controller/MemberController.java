@@ -8,8 +8,8 @@ import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.dto.TokenResponse;
 import spot.spot.domain.member.service.MemberService;
-import spot.spot.domain.member.service.TokenService;
-import spot.spot.global.security.util.jwt.Token;
+import spot.spot.global.redis.service.TokenService;
+import spot.spot.global.redis.entity.Token;
 
 @RestController
 @RequiredArgsConstructor

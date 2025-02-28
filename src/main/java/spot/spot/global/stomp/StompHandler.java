@@ -1,4 +1,4 @@
-package spot.spot.global.config.stomp;
+package spot.spot.global.stomp;
 
 import java.util.Objects;
 

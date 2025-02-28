@@ -56,6 +56,7 @@ public class Job4WorkerService {
     private final MatchingRepository matchingRepository;
     private final ChangeJobStatusDsl changeJobStatusDsl;
     private final PayService payService;
+    private final JobUtil jobUtil;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -102,7 +103,7 @@ public class Job4WorkerService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
                 fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
-
+    // 의뢰인이 보낸 요청 승낙하기 혹은 거절하기
     @Transactional
     public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -110,5 +111,13 @@ public class Job4WorkerService {
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
             fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
+    }
+
+    @Transactional
+    public void contiuneJob(Job2WorkerRequest request) {
+        Member worker = userAccessUtil.getMember();
+        Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
+        jobUtil.withdrawalExistingScheduledTask(matching.getId());
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
     }
 }

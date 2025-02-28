@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.entity.QJob;
 import spot.spot.domain.job.entity.QMatching;
@@ -62,12 +63,26 @@ public class ChangeJobStatusDsl {
         ).orElseThrow(() -> new GlobalException(ErrorCode.DIDNT_PASS_VALIDATION));
     }
 
-    public  void updateMatchingStatus(long worker_id, long job_id, MatchingStatus next) {
-        if (queryFactory.update(matching)
+    public  Matching updateMatchingStatus(long worker_id, long job_id, MatchingStatus next) {
+        long affectedRows = queryFactory.update(matching)
             .set(matching.status, next)
             .where(matching.job.id.eq(job_id), matching.member.id.eq(worker_id))
-            .execute() == 0) {
+            .execute();
+
+        if (affectedRows == 0) {
             throw new GlobalException(ErrorCode.FAILED_2_UPDATE_JOB_STATUS);
         }
+
+        // ✅ 변경된 Matching을 다시 조회해서 반환
+        return queryFactory.selectFrom(matching)
+            .where(matching.job.id.eq(job_id), matching.member.id.eq(worker_id))
+            .fetchOne();
+    }
+
+    public void updateMatchingStatus (long matching_id, MatchingStatus next) {
+        if(queryFactory.update(matching)
+            .set(matching.status, next)
+            .where(matching.id.eq(matching_id))
+            .execute() == 0) throw new GlobalException(ErrorCode.FAILED_2_UPDATE_JOB_STATUS);
     }
 }

@@ -1,4 +1,4 @@
-package spot.spot.global.security.util;
+package spot.spot.global.security.filter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,12 +11,12 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import spot.spot.domain.member.entity.OAuth2Member;
-import spot.spot.domain.member.service.TokenService;
-import spot.spot.global.security.util.jwt.JwtUtil;
-import spot.spot.global.security.util.jwt.Token;
+import spot.spot.global.redis.service.TokenService;
+import spot.spot.global.redis.entity.Token;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import spot.spot.global.security.util.JwtUtil;
 
 @Component
 @RequiredArgsConstructor
@@ -43,6 +43,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        response.sendRedirect("https://ilmatch.net/oauth2/redirect?accessToken=" + accessToken + "&refreshToken=" + refreshToken +"&nickname=" + encodedNickname);
+        String redirectUri = request.getRequestURL().toString();  // 요청된 전체 URL
+
+        String redirectUrl = "https://ilmatch.net/oauth2/redirect";
+
+        if (redirectUri.contains("localhost:8080")) {
+            redirectUrl = "http://localhost:3000/oauth2/redirect";
+        } else if (redirectUri.contains("ilmatch.net")) {
+            redirectUrl = "https://ilmatch.net/oauth2/redirect";
+        }
+        // 🛠 리다이렉트 URL 설정
+        response.sendRedirect(redirectUrl + "?accessToken=" + accessToken + "&refreshToken=" + refreshToken + "&nickname=" + encodedNickname);
+
     }
 }

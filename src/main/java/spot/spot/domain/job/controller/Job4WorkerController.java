@@ -17,6 +17,7 @@ import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
+import spot.spot.global.logging.Logging;
 
 @RestController
 @RequestMapping("/api/job/worker")
@@ -57,6 +58,11 @@ public class Job4WorkerController implements Job4WorkerDocs {
     @PostMapping("/yes-or-no")
     public void acceptJobRequestOfClient(YesOrNo2ClientsRequest request) {
         job4WorkerService.yesOrNo2RequestOfClient(request);
+    }
+
+    @PostMapping("/continue")
+    public void continueJob(@RequestBody Job2WorkerRequest request) {
+        job4WorkerService.contiuneJob(request);
     }
 
 

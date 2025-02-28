@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface PayHistoryRepository extends JpaRepository<PayHistory, Long> {
 
+    Optional<PayHistory> findByDepositor(String depositor);
+
 }

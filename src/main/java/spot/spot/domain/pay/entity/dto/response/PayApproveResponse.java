@@ -1,10 +1,12 @@
 package spot.spot.domain.pay.entity.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PayApproveResponse {
     private String aid;
     private String tid;
@@ -24,6 +26,7 @@ public class PayApproveResponse {
 
     @Getter
     @Setter
+    @Builder
     public static class Amount {
         private int total;
         private int tax_free;
@@ -35,6 +38,7 @@ public class PayApproveResponse {
 
     @Getter
     @Setter
+    @Builder
     public static class CardInfo {
         private String kakaopay_purchase_corp;
         private String kakaopay_purchase_corp_code;

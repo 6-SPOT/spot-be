@@ -14,7 +14,7 @@ import spot.spot.domain.member.repository.MemberRepository;
 import java.util.Optional;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
-import spot.spot.global.security.util.jwt.JwtUtil;
+import spot.spot.global.security.util.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -47,15 +47,15 @@ public class MemberService {
     @Transactional
     public Member findByNickname(String nickname) {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
-        if(findMember.isEmpty()) return null;
+        return findMember.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return findMember.get();
     }
 
     @Transactional
-    public Member findById(Long id) {
+    public Member findById(String memberId) {
+        long id = Long.parseLong(memberId);
         Optional<Member> findMember = memberRepository.findById(id);
-        if(findMember.isEmpty()) return null;
+        if(findMember.isEmpty()) throw new GlobalException(ErrorCode.EMPTY_MEMBER);
 
         return findMember.get();
     }
