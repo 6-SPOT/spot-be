@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import spot.spot.domain.pay.entity.PayHistory;
+import spot.spot.domain.review.entity.Review;
 import spot.spot.global.auditing.entitiy.CreatedAndDeleted;
 
 @Getter
@@ -48,4 +49,7 @@ public class Job extends CreatedAndDeleted {
 
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobHashTag> jobHashTagList;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> Review;
 }

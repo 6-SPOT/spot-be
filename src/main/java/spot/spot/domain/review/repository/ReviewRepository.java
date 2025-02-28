@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    Optional<Review> findById(@NotNull Long id); // 기본 제공됨
-    List<Review> findByJobId(Long jobId);  // 특정 일(Job)에 대한 모든 리뷰 조회
+    List<Review> findByJobId(Long jobId);
+    List<Review> findAllByJob_Id(Long jobId);// 특정 일(Job)에 대한 모든 리뷰 조회
 }
