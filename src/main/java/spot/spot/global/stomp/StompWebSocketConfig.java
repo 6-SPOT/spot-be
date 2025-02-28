@@ -8,7 +8,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import lombok.RequiredArgsConstructor;
-import spot.spot.global.config.stomp.StompHandler;
 
 @Configuration
 @EnableWebSocketMessageBroker

@@ -1,5 +1,7 @@
 package spot.spot.global.stomp;
 
+import static spot.spot.global.util.ConstantUtil.*;
+
 import java.util.Objects;
 
 import org.springframework.messaging.Message;
@@ -12,13 +14,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import spot.spot.domain.member.entity.OAuth2Member;
 import spot.spot.domain.member.service.MemberService;
-import spot.spot.domain.member.service.TokenService;
-import spot.spot.global.security.util.jwt.JwtUtil;
-import spot.spot.global.security.util.jwt.Token;
+import spot.spot.global.redis.service.TokenService;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.FilterResponse;
+import spot.spot.global.response.format.GlobalException;
+import spot.spot.global.security.util.JwtUtil;
 
 @Component
 @RequiredArgsConstructor
@@ -26,55 +31,28 @@ import spot.spot.global.security.util.jwt.Token;
 public class StompHandler implements ChannelInterceptor {
 
 	private final JwtUtil jwtUtil;
-	private final TokenService tokenService;
-	private final MemberService memberService;
+	private final FilterResponse filterResponse;
 
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
 		if(StompCommand.CONNECT == accessor.getCommand()) {
-			String token = accessor.getFirstNativeHeader("Authorization");
-
-			if (token != null && token.startsWith("Bearer ")) {
-				token = token.substring(7); // "Bearer " 제거
-
-				if (!jwtUtil.isExpired(token)) {
-					authenticateToken(token, accessor);  // JWT 검증 및 인증 처리
-				} else {
-					handleExpiredToken(token, message);
-				}
+			String authHeader = accessor.getFirstNativeHeader("Authorization");
+			if(Objects.isNull(authHeader)) {
+				throw new GlobalException(ErrorCode.NOT_FOUND_JWT);
 			}
+			String token = jwtUtil.separateBearer(authHeader);
+			ErrorCode error  = jwtUtil.validateToken(token);
+			if(error != null) {
+				throw new GlobalException(ErrorCode.INVALID_JWT);
+			}
+			Claims userInfo = jwtUtil.getUserInfoFromToken(token);
+			long memberId = Long.parseLong(userInfo.getSubject());
+			Objects.requireNonNull(accessor.getSessionAttributes()).put("memberId", memberId);
 		}
+
 		return message;
 	}
 
-
-	private void authenticateToken(String token, StompHeaderAccessor accessor) {
-		if (!jwtUtil.isExpired(token)) {
-			Authentication authentication = jwtUtil.getAuthentication(token);
-			Long memberId = Long.parseLong(authentication.getName());
-			Objects.requireNonNull(accessor.getSessionAttributes()).put("memberId", memberId);
-		}
-	}
-
-	private void handleExpiredToken(String token, Message<?> message) {
-		Token redisToken = tokenService.findToken(token);
-		String loginId = jwtUtil.getLoginId(redisToken.getRefreshToken());
-
-		if (redisToken != null && jwtUtil.isExpired(redisToken.getRefreshToken())) {
-			log.info("RefreshToken 만료");
-			// RefreshToken도 만료된 경우, 연결 차단 (인증 실패)
-			throw new AccessDeniedException("RefreshToken 만료");
-		} else if (redisToken != null) {
-			// RefreshToken이 유효한 경우 AccessToken 재발급
-			String newAccessToken = jwtUtil.getAccessToken((OAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-			redisToken.setAccessToken(newAccessToken);
-			tokenService.saveToken(redisToken);
-			// WebSocket 연결 헤더에 새 AccessToken을 추가하거나, 재인증 로직 수행
-			SecurityContextHolder.getContext().setAuthentication(jwtUtil.getAuthentication(newAccessToken));
-		} else {
-			tokenService.deleteToken(loginId);
-		}
-	}
 }
