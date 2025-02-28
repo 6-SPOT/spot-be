@@ -32,15 +32,6 @@ public class ChatController {
 	public ResponseEntity<?> getMyChatRooms(Authentication authentication) {
 		Long memberId = Long.parseLong(authentication.getName());
 		List<ChatListResponse> chatListResponses = chatService.getMyChatRooms(memberId);
-
-		// 테스트 데이터 추가
-		// TODO: 나중에 지우기
-		ChatListResponse chatListResponse1 = ChatListResponse.builder()
-			.title("채팅방제목입니다")
-			.roomId(1L)
-			.build();
-		chatListResponses.add(chatListResponse1);
-
 		return new ResponseEntity<>(chatListResponses, HttpStatus.OK);
 	}
 
@@ -57,17 +48,9 @@ public class ChatController {
 	// 이전 메시지 조회
 	@GetMapping("/history/{roomId}")
 	public ResponseEntity<?> getChatHistory(@PathVariable Long roomId, Authentication authentication) {
-		// Long memberId = Long.parseLong(authentication.getName());
-		// List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
+		Long memberId = Long.parseLong(authentication.getName());
+		List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
 
-		// 테스트 데이터 추가
-		// TODO: 나중에 지우기
-		List<ChatMessageResponse> chatMessageResponses = new ArrayList<>();
-		ChatMessageResponse chatMessageResponse1 = ChatMessageResponse.builder()
-			.sender("보낸이입니다")
-			.content("내용입니다.")
-			.build();
-		chatMessageResponses.add(chatMessageResponse1);
 
 		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
 	}
