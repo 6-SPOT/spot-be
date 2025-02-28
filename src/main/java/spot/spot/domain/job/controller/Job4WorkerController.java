@@ -17,6 +17,7 @@ import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
+import spot.spot.global.logging.Logging;
 
 @RestController
 @RequestMapping("/api/job/worker")

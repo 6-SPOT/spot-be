@@ -28,7 +28,6 @@ public interface Job4WorkerMapper {
     @Mapping(target = "introduction", source = "request.content")
     @Mapping(target = "workerAbilities", ignore = true) // WorkerAbility 매핑은 별도 처리
     Worker dtoToWorker(RegisterWorkerRequest request, Member member);
-
     @Mapping(target = "dist", ignore = true)
     NearByJobResponse toNearByJobResponse(Job job);
 
@@ -53,7 +52,7 @@ public interface Job4WorkerMapper {
             .map(job -> {
                 NearByJobResponse response = toNearByJobResponse(job);
                 double distance = JobUtil.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
-                return response.toBuilder().dist(distance).build(); // ✅ 기존 객체를 복사하면서 dist만 변경
+                return response.toBuilder().dist(distance).build(); //기존 객체를 복사 + dist만 변경
             })
             .toList();
     }

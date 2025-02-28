@@ -58,7 +58,7 @@ public class Job4ClientService {
     public PayReadyResponseDto registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
-        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.title(), request.money(), request.point());
+        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.content(), request.money(), request.point());
         String tid = payReadyResponseDto.tid();
         PayHistory payHistory = payReadyResponseDto.payHistory();
         Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, tid, payHistory));

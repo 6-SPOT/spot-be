@@ -61,22 +61,21 @@ public class PayService {
     private final PayAPIRequestService payAPIRequestService;
 
     //결제준비 (결제페이지로 이동)
-    public PayReadyResponseDto payReady(String memberNickname, String title, int amount, int point) {
-        if(memberNickname == null || memberNickname.isEmpty()) {
-            throw new GlobalException(ErrorCode.EMPTY_MEMBER);
-        }else if(title == null || title.isEmpty()) {
-            throw new GlobalException(ErrorCode.EMPTY_TITLE);
-        }else if(amount <=0) {
-            throw new GlobalException(ErrorCode.INVALID_AMOUNT);
-        }
-
+    public PayReadyResponseDto payReady(String memberNickname, String content, int amount, int point) {
+            if(memberNickname == null || memberNickname.isEmpty()) {
+                throw new GlobalException(ErrorCode.EMPTY_MEMBER);
+            }else if(content == null || content.isEmpty()) {
+                throw new GlobalException(ErrorCode.EMPTY_TITLE);
+            }else if(amount <=0) {
+                throw new GlobalException(ErrorCode.INVALID_AMOUNT);
+            }
         String totalAmount = String.valueOf(amount - point);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("partner_order_id", domain);
         parameters.put("partner_user_id", memberNickname);
-        parameters.put("item_name", title);
+        parameters.put("item_name", content);
         parameters.put("quantity", "1");
         parameters.put("total_amount", totalAmount);
         parameters.put("vat_amount", "0");
