@@ -27,7 +27,7 @@ spring:
         enabled: true
   jwt:
     access:
-      token: 10000000
+      token: 86400000
     refresh:
       token: 86400000
     secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf

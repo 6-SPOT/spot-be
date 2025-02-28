@@ -110,14 +110,13 @@ public class JwtUtil {
             .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()))
             .orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_FOUND.getMessage()) {});
     }
+
     public void setAuthentication (long id) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = createAuthentication(id);
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
     }
-
-
 
     //유효한 토큰인지 확인
     public Boolean isExpired(String token) {

@@ -52,9 +52,10 @@ public class MemberService {
     }
 
     @Transactional
-    public Member findById(Long id) {
+    public Member findById(String memberId) {
+        long id = Long.parseLong(memberId);
         Optional<Member> findMember = memberRepository.findById(id);
-        if(findMember.isEmpty()) return null;
+        if(findMember.isEmpty()) throw new GlobalException(ErrorCode.EMPTY_MEMBER);
 
         return findMember.get();
     }

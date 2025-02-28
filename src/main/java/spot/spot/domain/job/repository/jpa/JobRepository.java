@@ -63,8 +63,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
         @Param("offset") int offset
     );
 
-
-    Optional<Job> findByTitle(String title);
-
     Optional<Job> findByTid(String tid);
 }

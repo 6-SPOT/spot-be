@@ -28,5 +28,6 @@ public class KlayAboutJob {
     private double exchangeRate;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private PayStatus payStatus;
 }

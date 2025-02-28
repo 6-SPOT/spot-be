@@ -57,7 +57,7 @@ public class PointService {
         Optional<Point> validPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode);
         if (validPoint.isPresent()) {
             validPoint.get().setValid(false);
-            Member findMember = memberService.findById(Long.parseLong(memberId));
+            Member findMember = memberService.findById(memberId);
             int point = findMember.getPoint();
             findMember.setPoint(point + validPoint.get().getPoint());
         } else {
