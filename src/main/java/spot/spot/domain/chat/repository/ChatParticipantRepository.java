@@ -15,7 +15,5 @@ import spot.spot.domain.member.entity.Member;
 public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long> {
 	List<ChatParticipant> findByChatRoom(ChatRoom chatRoom);
 
-	Optional<ChatParticipant> findByChatRoomAndMember(ChatRoom chatRoom, Member member);
-
 	List<ChatParticipant> findAllByMember(Member member);
 }
