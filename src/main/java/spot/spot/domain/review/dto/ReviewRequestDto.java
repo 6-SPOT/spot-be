@@ -17,9 +17,6 @@ public class ReviewRequestDto {
     private Long targetId;
 
     @NotNull
-    private Long writerId;
-
-    @NotNull
     @Min(1) @Max(5)
     private Integer score;
 
