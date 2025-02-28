@@ -1,4 +1,4 @@
-package spot.spot.global.security.util.jwt;
+package spot.spot.global.redis.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -9,16 +9,12 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @Getter
 @Builder
-@RedisHash(value = "userToken", timeToLive = 86400)
+@RedisHash(value = "token:", timeToLive = 86400)
 public class Token {
 
     @Id
     private String refreshToken;
 
-    @Indexed
-    @Setter
     private String accessToken;
-
-    @Indexed
     private String memberId;
 }
