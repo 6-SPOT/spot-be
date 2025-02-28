@@ -8,11 +8,14 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import lombok.RequiredArgsConstructor;
+import spot.spot.global.config.stomp.StompHandler;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+	private final StompHandler stompHandler;
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -34,6 +37,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		// 웹소켓 요청시 검증 로직 작성 가능
-		WebSocketMessageBrokerConfigurer.super.configureClientInboundChannel(registration);
+		registration.interceptors(stompHandler);
 	}
 }

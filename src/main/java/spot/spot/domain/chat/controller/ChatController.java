@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.dto.request.ChatRoomCreateRequest;
@@ -19,7 +20,7 @@ import spot.spot.domain.chat.dto.response.ChatListResponse;
 import spot.spot.domain.chat.dto.response.ChatMessageResponse;
 import spot.spot.domain.chat.service.ChatService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat")
 public class ChatController {
