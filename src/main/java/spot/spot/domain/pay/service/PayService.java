@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.member.entity.Member;
@@ -54,7 +53,6 @@ public class PayService {
     @Value("${kakao.pay.cancel_url}")
     private String cancelUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
     private final MemberService memberService;
     private final PayHistoryRepository payHistoryRepository;
     private final ExchangeRateByBithumbApi exchangeRateByBithumbApi;
@@ -64,6 +62,14 @@ public class PayService {
 
     //결제준비 (결제페이지로 이동)
     public PayReadyResponseDto payReady(String memberNickname, String title, int amount, int point) {
+        if(memberNickname == null || memberNickname.isEmpty()) {
+            throw new GlobalException(ErrorCode.EMPTY_MEMBER);
+        }else if(title == null || title.isEmpty()) {
+            throw new GlobalException(ErrorCode.EMPTY_TITLE);
+        }else if(amount <=0) {
+            throw new GlobalException(ErrorCode.INVALID_AMOUNT);
+        }
+
         String totalAmount = String.valueOf(amount - point);
 
         Map<String, String> parameters = new HashMap<>();
@@ -89,8 +95,14 @@ public class PayService {
 
     //결제 승인(결제)
     public PayApproveResponse payApprove(String memberId, Job job, String pgToken, int totalAmount) {
-        long parseMemberId = Long.parseLong(memberId);
-        Member findMember = memberService.findById(parseMemberId);
+        if(job.getId() == null) {
+            throw new GlobalException(ErrorCode.JOB_NOT_FOUND);
+        } else if (pgToken == null || pgToken.isEmpty()) {
+            throw new GlobalException(ErrorCode.EMPTY_PG_TOKEN);
+        } else if (totalAmount <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_AMOUNT);
+        }
+        Member findMember = memberService.findById(memberId);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("partner_order_id", domain);
@@ -129,6 +141,9 @@ public class PayService {
 
     //주문 조회
     public PayOrderResponse payOrder(String tid) {
+        if (tid == null || tid.isEmpty()) {
+            throw new GlobalException(ErrorCode.EMPTY_TID);
+        }
         Map<String, String> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("tid", tid);
@@ -140,6 +155,11 @@ public class PayService {
 
     //결제 취소(등록 취소 시)
     public PayCancelResponse payCancel(Job job, int amount){
+        if(job.getId() == null) {
+            throw new GlobalException(ErrorCode.JOB_NOT_FOUND);
+        } else if (amount <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_AMOUNT);
+        }
         PayHistory payHistory = job.getPayment();
         if(payHistory.getPayStatus().equals(PayStatus.FAIL)) {
             throw new GlobalException(ErrorCode.ALREADY_PAY_FAIL);
@@ -181,8 +201,12 @@ public class PayService {
     }
 
     //일 완료 시 구직자에게 포인트 반환
-    public PaySuccessResponseDto payTransfer(Long workerId, int amount, Job job) {
-
+    public PaySuccessResponseDto payTransfer(String workerId, int amount, Job job) {
+        if(job.getId() == null) {
+            throw new GlobalException(ErrorCode.JOB_NOT_FOUND);
+        } else if (amount <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_AMOUNT);
+        }
         Member worker = memberService.findById(workerId);
         int point = worker.getPoint();
         worker.setPoint(point + amount);

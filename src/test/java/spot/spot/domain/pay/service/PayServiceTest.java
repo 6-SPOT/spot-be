@@ -118,6 +118,7 @@ public class PayServiceTest {
                 .build();
 
         Job mockJob = Job.builder().title("음쓰 버려주실 분~")
+                .id(1L)
                 .money(10000)
                 .tid("T1234ABCD5678")
                 .payment(mockPayHistory)
@@ -165,7 +166,7 @@ public class PayServiceTest {
 
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
         when(mockSingleKeyring.getAddress()).thenReturn("0x123456789abcdef");
-        when(memberService.findById(anyLong())).thenReturn(mockMember);
+        when(memberService.findById(anyString())).thenReturn(mockMember);
         when(matchingDsl.findWorkerNicknameByJob(any(Job.class))).thenReturn(Optional.of("testWorker"));
         when(exchangeRateByBithumbApi.exchangeToKaia(anyInt())).thenReturn(1.2);
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
@@ -189,7 +190,7 @@ public class PayServiceTest {
 
         // payAPIRequestService가 제대로 호출되었는지 검증
         verify(payAPIRequestService, times(1)).payAPIRequest(anyString(), any(HttpEntity.class), eq(PayApproveResponse.class));
-        verify(memberService, times(1)).findById(anyLong());
+        verify(memberService, times(1)).findById(anyString());
         verify(matchingDsl, times(1)).findWorkerNicknameByJob(any(Job.class));
         verify(klayAboutJobRepository, times(1)).save(any(KlayAboutJob.class));
     }
@@ -288,6 +289,7 @@ public class PayServiceTest {
                 .build();
 
         Job mockJob = Job.builder().title("음쓰 버려주실 분~")
+                .id(1L)
                 .money(amount)
                 .tid("T1234ABCD5678")
                 .payment(mockPayHistory)
@@ -392,6 +394,7 @@ public class PayServiceTest {
                 .build();
 
         Job mockJob = Job.builder()
+                .id(1L)
                 .tid(mockTid)
                 .money(mockAmount)
                 .payment(mockPayHistory)
@@ -408,11 +411,11 @@ public class PayServiceTest {
 
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
         when(mockSingleKeyring.getAddress()).thenReturn("tx1231415116t16");
-        when(memberService.findById(anyLong())).thenReturn(mockMember);
+        when(memberService.findById(anyString())).thenReturn(mockMember);
         when(klayAboutJobRepository.findByJob(any(Job.class))).thenReturn(Optional.of(mockKlayAboutJob));
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
 
-        PaySuccessResponseDto result = payService.payTransfer(1L, mockAmount, mockJob);
+        PaySuccessResponseDto result = payService.payTransfer("1", mockAmount, mockJob);
 
         assertNotNull(result);
         assertEquals(mockAmount, result.totalPointAmount());

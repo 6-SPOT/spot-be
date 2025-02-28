@@ -56,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // AccessToken 만료 시 처리 로직 추가 가능
             Token token1 = tokenService.findToken(token);
             String memberId = jwtUtil.getLoginId(token1.getRefreshToken());
-            Member findMember = memberService.findById(Long.parseLong(memberId));
+            Member findMember = memberService.findById(memberId);
             OAuth2Member oAuth2Member = new OAuth2Member(findMember);
             if(!jwtUtil.isExpired(token1.getRefreshToken())){
                 Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
