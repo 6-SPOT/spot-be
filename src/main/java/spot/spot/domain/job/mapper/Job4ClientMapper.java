@@ -20,7 +20,6 @@ public interface Job4ClientMapper {
     * 3) 2번의 리스트 형태
     * 4) 3번 변환 시, 일에 필요한 능력을 교차테이블을 통해 String으로 변환하여 매핑하는 매소드
     * */
-
     // 1) 일 등록  (reqeust -> entity)
     @Mapping(source = "tid", target = "tid")
     @Mapping(source = "payHistory", target = "payment")
