@@ -1,5 +1,6 @@
 package spot.spot.domain.job.mapper;
 
+import com.querydsl.core.Tuple;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import org.mapstruct.*;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.entity.WorkerAbility;

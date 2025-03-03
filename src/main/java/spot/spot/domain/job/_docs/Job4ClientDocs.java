@@ -21,6 +21,7 @@ import spot.spot.domain.job.dto.request.Job2ClientRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 
@@ -210,4 +211,26 @@ public interface Job4ClientDocs {
         })
     @GetMapping
     public JobResponse getJobDetail(@RequestParam long jobId);
+
+    @Operation(summary = "내가 맡긴 일의 현황 보기",
+        description = """
+   
+        jobId,
+        title,
+        img,
+        content,
+        status,
+        memberId,
+        nickName,
+        phone
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @GetMapping
+    public List<JobSituationResponse> getSituationByOwner();
 }

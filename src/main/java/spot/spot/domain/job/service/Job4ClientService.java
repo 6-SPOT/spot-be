@@ -2,6 +2,7 @@ package spot.spot.domain.job.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -13,6 +14,7 @@ import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
@@ -37,6 +39,7 @@ import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class Job4ClientService {
@@ -143,5 +146,10 @@ public class Job4ClientService {
     // 8) 일 하나 상세 보기
     public JobResponse getJobDetail(long jobId) {
         return  null;
+    }
+    // 9) 내가 맡긴 일 현황 보기
+    public List<JobSituationResponse> getSituationsByOwner() {
+        Member owner = userAccessUtil.getMember();
+        return searchingListDsl.findJobSituationsByOwner(owner.getId());
     }
 }
