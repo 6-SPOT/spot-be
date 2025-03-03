@@ -72,11 +72,6 @@ public class Job4ClientController implements Job4ClientDocs {
         job4ClientService.requestWithdrawal(request);
     }
 
-    @GetMapping("/detail")
-    public JobResponse getJobDetail(@RequestParam  long jobId) {
-        return null;
-    }
-
     @GetMapping("/dash-board")
     public List<JobSituationResponse> getSituationByOwner() {
         return job4ClientService.getSituationsByOwner();
