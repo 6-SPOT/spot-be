@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,6 +76,11 @@ public class Job4ClientController implements Job4ClientDocs {
     @GetMapping("/dash-board")
     public List<JobSituationResponse> getSituationByOwner() {
         return job4ClientService.getSituationsByOwner();
+    }
+
+    @PatchMapping("/confirm-or-reject")
+    public void confirmOrRejectJob(YesOrNo2WorkersRequest request) {
+        job4ClientService.confirmOrRejectJob(request);
     }
 
 }
