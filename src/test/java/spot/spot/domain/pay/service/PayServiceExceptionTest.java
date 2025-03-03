@@ -6,28 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.dsl.MatchingDsl;
-import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
-import spot.spot.domain.pay.entity.dto.response.PayReadyResponse;
-import spot.spot.domain.pay.repository.KlayAboutJobRepository;
-import spot.spot.domain.pay.repository.PayHistoryRepository;
-import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -44,18 +34,6 @@ public class PayServiceExceptionTest {
     @MockitoBean
     private MemberService memberService;
 
-    @MockitoBean
-    private KlayAboutJobRepository klayAboutJobRepository;
-
-    @MockitoBean
-    private ExchangeRateByBithumbApi exchangeRateByBithumbApi;
-
-    @MockitoBean
-    private MatchingDsl matchingDsl;
-
-    @Autowired
-    private PayHistoryRepository payHistoryRepository;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -70,7 +48,7 @@ public class PayServiceExceptionTest {
      * payTransfer -> member, job, amount
      */
     @Test
-    @DisplayName("payReady 멤버 누락 예외")
+    @DisplayName("결제 준비 시 멤버 정보가 누락되면 예외가 발생한다.")
     void payReadyEmptyMemberException() {
         // 멤버 누락 exception
         assertThatThrownBy(() -> payService.payReady(null, "음쓰 버려주실 분~", 10000, 500))
@@ -80,7 +58,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payReady 일 정보 누락 예외")
+    @DisplayName("결제 준비 시 일 정보가 누락되면 예외가 발생한다.")
     void payReadyEmptyJobException() {
         // 일 정보 누락 exception
         assertThatThrownBy(() -> payService.payReady("testUser", null, 10000, 500))
@@ -90,7 +68,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payReady 결제 금액 누락 예외")
+    @DisplayName("결제 준비 시 결제 금액이 누락되면 예외가 발생한다.")
     void payReadyEmptyAmountException() {
         // 일 정보 누락 exception
         assertThatThrownBy(() -> payService.payReady("testUser", "음쓰 버려주실 분~", 0, 500))
@@ -100,7 +78,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payApprove 멤버 누락 예외")
+    @DisplayName("결제 승인 시 멤버가 누락되면 예외가 발생한다.")
     void payApproveEmptyMemberException() {
         String mockPgToken = "12T12351ASTAH";
 
@@ -128,7 +106,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payApprove 일 정보 누락 예외")
+    @DisplayName("결제 승인 시 일 정보가 누락되면 예외가 발생한다.")
     void payApproveEmptyJobException() {
         String mockPgToken = "12T12351ASTAH";
 
@@ -142,7 +120,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payApprove pgToken 누락 예외")
+    @DisplayName("결제 승인 시 pgToken값이 누락되면 예외가 발생한다.")
     void payApproveEmptyPgTokenException() {
         String mockPgToken = "";
 
@@ -167,7 +145,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payApprove 가격 누락 예외")
+    @DisplayName("결제 승인 시 가격이 누락되면 예외가 발생한다.")
     void payApproveEmptyAmountException() {
         String mockPgToken = "12T12351ASTAH";
 
@@ -192,10 +170,11 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payCancel 일 정보 누락 예외")
+    @DisplayName("결제 취소 시 일 정보가 누락되면 예외가 발생한다.")
     void payCancelEmptyJobException() {
         //Job이 Optional이라고 가정
-        Job mockJob = Job.builder().build();
+        PayHistory payHistory = PayHistory.builder().id(1L).payPoint(100).payAmount(1000).payStatus(PayStatus.PENDING).build();
+        Job mockJob = Job.builder().payment(payHistory).build();
 
         assertThatThrownBy(() -> payService.payCancel(mockJob, 10000))
                 .isInstanceOf(GlobalException.class)
@@ -204,7 +183,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payCancel 가격 누락 예외")
+    @DisplayName("결제 취소 시 가격이 누락되면 예외가 발생한다.")
     void payCancelEmptyAmountException() {
         PayHistory mockPayHistory = PayHistory.builder().payAmount(10000)
                 .payPoint(500)
@@ -227,7 +206,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payOrder tid 누락 예외")
+    @DisplayName("주문 조회 시 tid 값이 없으면 예외가 발생한다.")
     void PayOrderEmptyTidException() {
         assertThatThrownBy(() -> payService.payOrder(null))
                 .isInstanceOf(GlobalException.class)
@@ -236,7 +215,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payTransfer 멤버 누락 예외")
+    @DisplayName("일 완료 시 멤버가 누락되면 예외가 발생한다.")
     void payTransferEmptyMemberException() {
 
         PayHistory mockPayHistory = PayHistory.builder().payAmount(10000)
@@ -253,7 +232,7 @@ public class PayServiceExceptionTest {
                 .payment(mockPayHistory)
                 .build();
 
-        when(memberService.findById(anyString())).thenThrow(new GlobalException(ErrorCode.EMPTY_MEMBER));
+        when(memberService.findMemberByIdOrNickname(any(),any())).thenThrow(new GlobalException(ErrorCode.EMPTY_MEMBER));
 
         assertThatThrownBy(() -> payService.payTransfer("", 10000, mockJob))
                 .isInstanceOf(GlobalException.class)
@@ -262,7 +241,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payTransfer 일 정보 누락")
+    @DisplayName("일 완료시 일 정보가 누락되면 예외가 발생한다.")
     void payTransferEmptyJobException() {
         //Optional이라는 가정
         Job mockJob = Job.builder().build();
@@ -274,7 +253,7 @@ public class PayServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("payTransfer 가격 누락")
+    @DisplayName("일 완료 시 가격이 누락되면 예외가 발생한다.")
     void payTransferEmptyAmountException() {
         PayHistory mockPayHistory = PayHistory.builder().payAmount(10000)
                 .payPoint(500)

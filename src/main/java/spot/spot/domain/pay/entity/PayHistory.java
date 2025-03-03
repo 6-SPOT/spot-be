@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 public class PayHistory {
 
@@ -31,5 +29,16 @@ public class PayHistory {
     @Enumerated(EnumType.STRING)
     private PayStatus payStatus;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createAt = LocalDateTime.now();
+
+    @Builder
+    private PayHistory(Long id, int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus) {
+        this.id = id;
+        this.payAmount = payAmount;
+        this.payPoint = payPoint;
+        this.depositor = depositor;
+        this.worker = worker;
+        this.payStatus = payStatus;
+    }
+
 }

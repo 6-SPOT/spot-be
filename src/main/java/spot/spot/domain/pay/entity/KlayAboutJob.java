@@ -27,7 +27,4 @@ public class KlayAboutJob {
     @Column(name = "exchange_rate", nullable = false)
     private double exchangeRate;
 
-    @Setter
-    @Enumerated(EnumType.STRING)
-    private PayStatus payStatus;
 }

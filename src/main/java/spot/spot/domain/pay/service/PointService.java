@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class PointService {
 
@@ -35,6 +34,14 @@ public class PointService {
         ).flatMap(entry -> {
             PointServeRequestDto req = entry.getKey();
             String pointCode = entry.getValue();
+
+            if (req.pointName() == null || req.pointName().isEmpty()) {
+                throw new GlobalException(ErrorCode.EMPTY_POINT_NAME);
+            }else if(req.point() <= 0) {
+                throw new GlobalException(ErrorCode.INVALID_POINT_AMOUNT);
+            }else if(req.count() <= 0) {
+                throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
+            }
 
             Stream<Point> pointStream = IntStream.range(0, req.count())
                     .mapToObj(i -> Point.builder()
@@ -54,6 +61,7 @@ public class PointService {
 
     //쿠폰 사용
     public void registerPoint(String pointCode,String memberId){
+        validatePointCode(pointCode);
         Optional<Point> validPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode);
         if (validPoint.isPresent()) {
             validPoint.get().setValid(false);
@@ -67,14 +75,22 @@ public class PointService {
 
     //쿠폰 하나삭제
     public void deletePointOnce(String pointCode) {
+        validatePointCode(pointCode);
         Optional<Point> firstByPointCode = pointRepository.findFirstByPointCode(pointCode);
+        if(firstByPointCode.isEmpty()) throw new GlobalException(ErrorCode.INVALID_POINT_CODE);
         firstByPointCode.ifPresent(pointRepository::delete);
     }
 
     //포인트코드가 같은 포인트 전체 삭제
     public void deletePoint(String pointCode) {
+        validatePointCode(pointCode);
         pointRepository.deleteByPointCode(pointCode);
     }
 
-
+    private void validatePointCode(String pointCode) {
+        pointRepository.findFirstByPointCode(pointCode).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_POINT_CODE));
+        if (pointCode == null || pointCode.isEmpty()) {
+            throw new GlobalException(ErrorCode.INVALID_POINT_CODE);
+        }
+    }
 }

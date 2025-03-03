@@ -38,13 +38,8 @@
 
      List<PointServeResponseDto> responseDtos = new ArrayList<>();
 
-     @Autowired
-     private MemberRepository memberRepository;
-
      @BeforeEach
      void before() {
-         memberRepository.deleteAll(); // ✅ 기존 데이터 삭제
-         pointRepository.deleteAll();
          MemberRequest.register build = MemberRequest.register.builder()
                  .nickname("테스트유저1")
                  .email("test@test.com")
@@ -63,15 +58,13 @@
      }
 
      @Test
-     @DisplayName("포인트 생성")
+     @DisplayName("포인트 생성 시 포인트의 갯수만큼 사용할 수 있는 포인트가 저장된다.")
      void servePoint() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
-             log.info("pointCode = {}", pointCode);
              List<Point> byPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
 
              Point point = byPointCodeAndIsValidTrue.get(0);
-             log.info("name = {}, point = {}, pointCode = {}", point.getPointName(), point.getPoint(), point.getPointCode());
          }
 
          List<Point> all = pointRepository.findAll();
@@ -79,7 +72,7 @@
      }
 
      @Test
-     @DisplayName("포인트 등록")
+     @DisplayName("포인트 등록 시 입력한 포인트코드와 일치하는 포인트를 찾아 사용했음으로 변경한다.")
      void registerPoint() {
          Member findMember = memberService.findByNickname("테스트유저1");
          for (int i = 0; i < responseDtos.size(); i++) {
@@ -95,7 +88,7 @@
      }
 
      @Test
-     @DisplayName("포인트코드가 일치하는 포인트 한개 삭제")
+     @DisplayName("포인트코드가 일치하는 포인트를 한개 삭제한다.")
      void deletePointOnce() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();
@@ -105,17 +98,15 @@
              List<Point> afterByPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
              int afterRegisterPoint = afterByPointCodeAndIsValidTrue.size();
 
-             log.info("point Size before = {}, point Size after ={}", beforePointCount, afterRegisterPoint);
              Assertions.assertThat(beforePointCount).isEqualTo(afterRegisterPoint + 1);
          }
 
          List<Point> all = pointRepository.findAll();
-
          Assertions.assertThat(all.size()).isEqualTo(6);
      }
 
      @Test
-     @DisplayName("포인트코드가 일치하는 모든 포인트 삭제")
+     @DisplayName("포인트코드가 일치하는 모든 포인트를 삭제한다.")
      void deletePoint() {
          for (int i = 0; i < responseDtos.size(); i++) {
              String pointCode = responseDtos.get(i).pointCode();

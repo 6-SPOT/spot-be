@@ -52,8 +52,12 @@ public enum ErrorCode {
     EMPTY_MEMBER(HttpStatus.BAD_REQUEST, "멤버 값이 비어있습니다."),
     EMPTY_TITLE(HttpStatus.BAD_REQUEST, "일 타이틀 값이 비어있습니다."),
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST, "비용이 0보다 작습니다."),
+    INVALID_POINT_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 생성 시 포인트는 0보다 커야합니다."),
+    INVALID_POINT_COUNT(HttpStatus.BAD_REQUEST, "포인트 생성 시 포인트 개수는 0보다 커야합니다."),
     EMPTY_PG_TOKEN(HttpStatus.BAD_REQUEST, "pgToken 값이 비어있습니다."),
-    EMPTY_TID(HttpStatus.BAD_REQUEST, "tid 값이 비어있습니다.")
+    EMPTY_TID(HttpStatus.BAD_REQUEST, "tid 값이 비어있습니다."),
+    EMPTY_POINT_NAME(HttpStatus.BAD_REQUEST, "포인트 이름 값이 비어있습니다."),
+    INVALID_POINT_CODE(HttpStatus.BAD_REQUEST, "포인트 코드를 확인해주세요.")
     ;
     private final HttpStatus status;
     private final String message;

@@ -1,8 +1,10 @@
 package spot.spot.domain.pay.entity.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import spot.spot.domain.pay.entity.PayHistory;
 
+@Builder
 public record PayReadyResponseDto(
         @Schema(description = "카카오페이 결제 PC url", example = "https://online-payment.kakaopay.com/mockup/bridge/pc/pg/one-time/payment/b453bfd8ca4241e56d4740b76f53f2f28cc036d4db83effbccd758e4a7e58d67")
         String redirectPCUrl,
@@ -14,4 +16,13 @@ public record PayReadyResponseDto(
         PayHistory payHistory
 
 ) {
+
+        public static PayReadyResponseDto of(PayReadyResponse payReadyResponse, PayHistory payHistory) {
+                return  PayReadyResponseDto.builder()
+                        .redirectPCUrl(payReadyResponse.getNext_redirect_pc_url())
+                        .redirectMobileUrl(payReadyResponse.getNext_redirect_mobile_url())
+                        .tid(payReadyResponse.getTid())
+                        .payHistory(payHistory)
+                        .build();
+        }
 }

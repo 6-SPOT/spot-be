@@ -53,15 +53,23 @@ public class MemberService {
 
     @Transactional
     public Member findById(String memberId) {
+        if(memberId == null || memberId.isEmpty()) throw new GlobalException(ErrorCode.EMPTY_MEMBER);
         long id = Long.parseLong(memberId);
-        Optional<Member> findMember = memberRepository.findById(id);
-        if(findMember.isEmpty()) throw new GlobalException(ErrorCode.EMPTY_MEMBER);
-
-        return findMember.get();
+        return memberRepository.findById(id).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public void modify(MemberRequest.modify modify, String memberId) {
         Long parseMemberId = Long.parseLong(memberId);
         memberQueryRepository.updateMember(parseMemberId, modify);
+    }
+
+    public Member findMemberByIdOrNickname(String id, String nickname) {
+        log.info("findMemberByIdOrNickname called with id = {}, nickname = {}", id, nickname);
+        if (id != null) {
+            return findById(id);
+        } else if (nickname != null) {
+            return findByNickname(nickname);
+        }
+        throw new GlobalException(ErrorCode.EMPTY_MEMBER);
     }
 }
