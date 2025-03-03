@@ -27,4 +27,6 @@ public class Certification {
     @JoinColumn(name = "matching_id", nullable = false)
     private Matching matching;
 
+    private String img;
+
 }

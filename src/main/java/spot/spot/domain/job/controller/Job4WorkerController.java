@@ -4,13 +4,16 @@ package spot.spot.domain.job.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job._docs.Job4WorkerDocs;
 import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
@@ -63,6 +66,13 @@ public class Job4WorkerController implements Job4WorkerDocs {
     @PostMapping("/continue")
     public void continueJob(@RequestBody Job2WorkerRequest request) {
         job4WorkerService.contiuneJob(request);
+    }
+
+    @PutMapping(value = "/certificate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void certificateJob(
+        @RequestPart(value = "request") Job2WorkerRequest request,
+        @RequestPart(value = "file") MultipartFile file) {
+        job4WorkerService.certificateJob(request, file);
     }
 
 
