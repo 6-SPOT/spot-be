@@ -15,12 +15,18 @@ public class StompEventListener {
 	@EventListener
 	public void connectionHandle(SessionConnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		log.info("connect session Id" + accessor.getSessionId());
+		String sessionId = accessor.getSessionId();
+		sessionTracker.addSession(sessionId);
 	}
 
 	@EventListener
 	public void disconnectionHandle(SessionDisconnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		log.info("disconnect session Id" + accessor.getSessionId());
+		String sessionId = accessor.getSessionId();
+
+		if(sessionTracker.isSessionActive(sessionId)){
+			log.warn("비정상 종료 감지!, 세션 ID: {}", sessionId);
+		}
+		sessionTracker.removeSession(sessionId);
 	}
 }
