@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -219,4 +220,18 @@ public interface Job4ClientDocs {
         })
     @GetMapping
     public List<JobSituationResponse> getSituationByOwner();
+
+    @Operation(summary = "해결사의 일 완료 요청을 반려 시키거나 확정",
+        description = """
+        
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @PatchMapping
+    public void confirmOrRejectJob(YesOrNo2WorkersRequest request);
 }
