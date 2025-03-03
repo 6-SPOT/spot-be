@@ -69,7 +69,7 @@ public class Job4WorkerController implements Job4WorkerDocs {
         job4WorkerService.contiuneJob(request);
     }
 
-    @PutMapping(value = "/certificate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/certificate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void certificateJob(
         @RequestPart(value = "request") Job2WorkerRequest request,
         @RequestPart(value = "file") MultipartFile file) {
