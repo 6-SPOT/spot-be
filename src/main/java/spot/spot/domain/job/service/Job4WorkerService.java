@@ -144,7 +144,7 @@ public class Job4WorkerService {
         Matching matching = matchingRepository
             .findByMemberAndJob_Id(worker, request.jobId())
             .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
-        Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
     }
 }
