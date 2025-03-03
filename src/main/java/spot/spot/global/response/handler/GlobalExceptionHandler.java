@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessagingException;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import spot.spot.global.logging.ColorLogger;
@@ -36,6 +39,13 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .headers(jsonHeaders)
             .body(ResultResponse.fail("서버 내부 오류 발생: " + e.getMessage()));
+    }
+
+    @MessageExceptionHandler(MessagingException.class)
+    @SendToUser("/errors")
+    public String handleMessageException(MessagingException e) {
+        ColorLogger.red("STOMP 발송 중 에러 발생! : {} ", e.getMessage());
+        return "에러 발생" + e.getMessage();
     }
 
 }
