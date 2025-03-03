@@ -200,7 +200,7 @@ public interface Job4WorkerDocs {
                 (message : "의뢰자가 존재하지 않습니다.")
                 """, content = @Content),
         })
-    @PutMapping
+    @PostMapping
     public void certificateJob(Job2WorkerRequest request, MultipartFile file);
 
     @PatchMapping
