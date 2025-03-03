@@ -69,7 +69,7 @@ public class Job4ClientController implements Job4ClientDocs {
     }
 
     @PostMapping("/withdrawal")
-    public void requestWithdrawal(Job2ClientRequest request) {
+    public void requestWithdrawal(@RequestBody Job2ClientRequest request) {
         job4ClientService.requestWithdrawal(request);
     }
 
@@ -79,7 +79,7 @@ public class Job4ClientController implements Job4ClientDocs {
     }
 
     @PatchMapping("/confirm-or-reject")
-    public void confirmOrRejectJob(YesOrNo2WorkersRequest request) {
+    public void confirmOrRejectJob(@RequestBody YesOrNo2WorkersRequest request) {
         job4ClientService.confirmOrRejectJob(request);
     }
 

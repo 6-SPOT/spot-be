@@ -149,6 +149,7 @@ public class Job4ClientService {
         return searchingListDsl.findJobSituationsByOwner(owner.getId());
     }
 
+    @Transactional
     public void confirmOrRejectJob(YesOrNo2WorkersRequest request) {
         Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
