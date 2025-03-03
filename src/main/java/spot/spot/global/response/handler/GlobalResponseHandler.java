@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -46,6 +47,7 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
         }
         // 만약 String이면 예외 발생
         if (body instanceof String) {throw new GlobalException(ErrorCode.NOT_ALLOW_STRING);}
+        if( body instanceof ResultResponse<?> ) return body;
         return ResultResponse.success(body);
     }
 }
