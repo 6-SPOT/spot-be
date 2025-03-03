@@ -36,10 +36,15 @@
      @Autowired
      MemberService memberService;
 
+     @Autowired
+     MemberRepository memberRepository;
+
      List<PointServeResponseDto> responseDtos = new ArrayList<>();
 
      @BeforeEach
      void before() {
+         pointRepository.deleteAllInBatch();
+         memberRepository.deleteAllInBatch();
          MemberRequest.register build = MemberRequest.register.builder()
                  .nickname("테스트유저1")
                  .email("test@test.com")
@@ -75,6 +80,7 @@
      @DisplayName("포인트 등록 시 입력한 포인트코드와 일치하는 포인트를 찾아 사용했음으로 변경한다.")
      void registerPoint() {
          Member findMember = memberService.findByNickname("테스트유저1");
+         log.info("memberId= {}", findMember.getId());
          for (int i = 0; i < responseDtos.size(); i++) {
             String pointCode = responseDtos.get(i).pointCode();
             List<Point> byPointCodeAndIsValidTrue = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
