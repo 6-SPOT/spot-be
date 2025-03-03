@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -201,5 +202,8 @@ public interface Job4WorkerDocs {
         })
     @PutMapping
     public void certificateJob(Job2WorkerRequest request, MultipartFile file);
+
+    @PatchMapping
+    public void finishJob(Job2WorkerRequest request);
 
 }

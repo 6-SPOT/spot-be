@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,6 +74,11 @@ public class Job4WorkerController implements Job4WorkerDocs {
         @RequestPart(value = "request") Job2WorkerRequest request,
         @RequestPart(value = "file") MultipartFile file) {
         job4WorkerService.certificateJob(request, file);
+    }
+
+    @PatchMapping("/finish")
+    public void finishJob(@RequestBody Job2WorkerRequest request) {
+        job4WorkerService.finishingJob(request);
     }
 
 
