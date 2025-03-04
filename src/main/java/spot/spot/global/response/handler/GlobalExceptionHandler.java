@@ -1,6 +1,8 @@
 package spot.spot.global.response.handler;
 
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ResultResponse;
 import spot.spot.global.response.format.GlobalException;
 import org.springframework.validation.FieldError;
+
+import java.util.Set;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -35,6 +39,22 @@ public class GlobalExceptionHandler {
                 .orElse("잘못된 요청입니다.");
 
         ResultResponse<Object> response = ResultResponse.fail(firstErrorMessage);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .headers(jsonHeaders)
+                .body(response);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleValidationListException(ConstraintViolationException e) {
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        String errorMessage = violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("잘못된 요청입니다.");
+
+        ResultResponse<Object> response = ResultResponse.fail(errorMessage);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

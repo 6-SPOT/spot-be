@@ -18,4 +18,12 @@ public record PointServeResponseDto(
                 .point(requestDto.point())
                 .build();
     }
+
+    public static PointServeResponseDto create(String pointName, int point, String pointCode) {
+        return PointServeResponseDto.builder()
+                .pointName(pointName)
+                .point(point)
+                .pointCode(pointCode)
+                .build();
+    }
 }
