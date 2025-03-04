@@ -137,4 +137,14 @@ public class Job4WorkerService {
         Certification certification = Certification.builder().matching(now).img(url).build();
         certificationRepository.save(certification);
     }
+
+    @Transactional
+    public void finishingJob(Job2WorkerRequest request) {
+        Member worker = userAccessUtil.getMember();
+        Matching matching = matchingRepository
+            .findByMemberAndJob_Id(worker, request.jobId())
+            .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
+        changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
+    }
 }
