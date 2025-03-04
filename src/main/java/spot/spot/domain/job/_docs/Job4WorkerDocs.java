@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
 @Tag(name = "Job4Worker", description = "해결사를 위한 API 모음")
@@ -126,7 +127,7 @@ public interface Job4WorkerDocs {
                 """, content = @Content),
         })
     @GetMapping
-    public NearByJobResponse getOneJob(
+    public JobDetailResponse getOneJob(
         @RequestParam long id
     );
 

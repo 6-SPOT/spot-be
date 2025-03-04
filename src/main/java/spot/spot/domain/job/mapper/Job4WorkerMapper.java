@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import spot.spot.domain.job.dto.Location;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
+import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.JobUtil;
@@ -39,6 +40,9 @@ public interface Job4WorkerMapper {
     // 2) 근처 일 하나 변환 (entity to response)
     @Mapping(target = "dist", ignore = true)
     NearByJobResponse toNearByJobResponse(Job job);
+
+
+
     // 3) Worker가 입력한 자신의 능력들과 Worker 본인을 교차테이블로 연관관계 짓기 (default)
     default List<WorkerAbility> mapWorkerAbilities(List<AbilityType> strong, Worker worker, AbilityRepository abilityRepository) {
         if(strong == null || strong.isEmpty()) return new ArrayList<>();

@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Certification;
 import spot.spot.domain.job.entity.Job;
@@ -18,6 +19,7 @@ import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.mapper.Job4WorkerMapper;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
+import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.job.repository.jpa.CertificationRepository;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
@@ -63,6 +65,7 @@ public class Job4WorkerService {
     private final PayService payService;
     private final JobUtil jobUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
+    private final MatchingDsl matchingDsl;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -86,9 +89,8 @@ public class Job4WorkerService {
         return service.findNearByJobs(lat, lng, zoom, pageable);
     }
     // 일 하나 상세 확인
-    public NearByJobResponse getOneJob (long jobId) {
-        return job4WorkerMapper.toNearByJobResponse(
-                jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
+    public JobDetailResponse getOneJob (long jobId) {
+        return matchingDsl.findOneJobDetail(jobId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
     // 일 신청하기
     public void askingJob2Client(Job2WorkerRequest request) {
