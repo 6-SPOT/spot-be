@@ -9,17 +9,18 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.Job2ClientRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 
@@ -196,6 +197,39 @@ public interface Job4ClientDocs {
         @RequestBody Job2ClientRequest request
     );
 
+    @Operation(summary = "내가 맡긴 일의 현황 보기",
+        description = """
+   
+        jobId,
+        title,
+        img,
+        content,
+        status,
+        memberId,
+        nickName,
+        phone
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @GetMapping
+    public List<JobSituationResponse> getSituationByOwner();
 
-
+    @Operation(summary = "해결사의 일 완료 요청을 반려 시키거나 확정",
+        description = """
+        
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
+                content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = """
+                (message : "그런 해결사가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @PatchMapping
+    public void confirmOrRejectJob(YesOrNo2WorkersRequest request);
 }

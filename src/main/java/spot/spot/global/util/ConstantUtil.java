@@ -10,4 +10,8 @@ public class ConstantUtil {
     // WORKER STAUTS
     public static final Integer STILL_WORKING   = 0;
     public static final Integer LITTLE_BREAK    = 1;
+    // MESSAGE TYPE
+    public static final String TYPE = "type";
+    public static final String PERMIT_ALL = "permitAll";
+    public static final String AUTH_ERROR = "auth_error";
 }

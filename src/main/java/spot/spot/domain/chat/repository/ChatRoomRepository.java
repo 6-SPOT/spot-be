@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import spot.spot.domain.chat.entity.ChatRoom;
 
 @Repository
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-	List<ChatRoom> findByIsGroupChat(String isGroupChat);
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, ChatRoomCustomRepository {
+
 }

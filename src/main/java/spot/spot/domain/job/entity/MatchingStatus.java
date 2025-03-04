@@ -12,6 +12,8 @@ public enum MatchingStatus {
     START       ("일 시작"),
     SLEEP       ("의뢰인이 레코드의 주인에게 일 해결을 취소 요청 - 10분 뒤 자동 취소"),
     CANCEL      ("레코드 주인의 일 해결이 취소됨"),
-    FINISH      ("의뢰인 입장에서는 일 최종 종료, 해결사 입장에서는 일이 끝났음을 알림");
+    FINISH      ("해결사 입장에서는 일이 끝났음을 알림"),
+    CONFIRM     ("의뢰인이 해결됨을 확정"),
+    REJECT      ("의뢰인이 해결됨을 반려");
     private final String message;
 }

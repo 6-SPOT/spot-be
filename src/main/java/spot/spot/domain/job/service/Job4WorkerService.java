@@ -7,15 +7,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
+import spot.spot.domain.job.entity.Certification;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.mapper.Job4WorkerMapper;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
+import spot.spot.domain.job.repository.dsl.MatchingDsl;
+import spot.spot.domain.job.repository.jpa.CertificationRepository;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.service.searching.JobSearchJPQLService;
@@ -34,6 +39,7 @@ import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
+import spot.spot.global.util.AwsS3ObjectStorage;
 
 @Slf4j
 @Service
@@ -54,9 +60,12 @@ public class Job4WorkerService {
     private final WorkerAbilityRepository workerAbilityRepository;
     private final JobRepository jobRepository;
     private final MatchingRepository matchingRepository;
+    private final CertificationRepository certificationRepository;
     private final ChangeJobStatusDsl changeJobStatusDsl;
     private final PayService payService;
     private final JobUtil jobUtil;
+    private final AwsS3ObjectStorage awsS3ObjectStorage;
+    private final MatchingDsl matchingDsl;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -80,9 +89,8 @@ public class Job4WorkerService {
         return service.findNearByJobs(lat, lng, zoom, pageable);
     }
     // 일 하나 상세 확인
-    public NearByJobResponse getOneJob (long jobId) {
-        return job4WorkerMapper.toNearByJobResponse(
-                jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND)));
+    public JobDetailResponse getOneJob (long jobId) {
+        return matchingDsl.findOneJobDetail(jobId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
     // 일 신청하기
     public void askingJob2Client(Job2WorkerRequest request) {
@@ -119,5 +127,26 @@ public class Job4WorkerService {
         Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         jobUtil.withdrawalExistingScheduledTask(matching.getId());
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
+    }
+
+    @Transactional
+    public void certificateJob(Job2WorkerRequest request, MultipartFile file) {
+        String url = awsS3ObjectStorage.uploadFile(file);
+        Member worker = userAccessUtil.getMember();
+        Matching now = matchingRepository
+            .findByMemberAndJob_Id(worker, request.jobId())
+            .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
+        Certification certification = Certification.builder().matching(now).img(url).build();
+        certificationRepository.save(certification);
+    }
+
+    @Transactional
+    public void finishingJob(Job2WorkerRequest request) {
+        Member worker = userAccessUtil.getMember();
+        Matching matching = matchingRepository
+            .findByMemberAndJob_Id(worker, request.jobId())
+            .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
+        changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START, MatchingStatus.REJECT);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
     }
 }

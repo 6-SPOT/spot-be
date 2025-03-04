@@ -36,6 +36,7 @@ public class FcmService {
     public void testSending(FcmTestRequest request) {
         Member receiver = memberRepository.findById(request.receiver_id())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        log.info("test sending 보내는 중---- id: {}, 내용물: {}", request.receiver_id(), request.content());
         fcmUtil.singleFcmSend(receiver.getId(),
             FcmDTO.builder().title(String.valueOf(receiver.getId())).body(request.content()).build());
     }
