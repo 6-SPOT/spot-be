@@ -19,6 +19,7 @@ import spot.spot.domain.job._docs.Job4WorkerDocs;
 import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
 import spot.spot.global.logging.Logging;
@@ -45,7 +46,7 @@ public class Job4WorkerController implements Job4WorkerDocs {
     }
 
     @GetMapping(value = "/get")
-    public NearByJobResponse getOneJob(@RequestParam  long id) {
+    public JobDetailResponse getOneJob(@RequestParam  long id) {
         return job4WorkerService.getOneJob(id);
     }
 

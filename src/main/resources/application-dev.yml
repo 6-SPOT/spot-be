@@ -20,6 +20,7 @@ spring:
         transaction:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+        use_sql_comments: true
     open-in-view: false
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
