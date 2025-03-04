@@ -20,6 +20,8 @@ import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
+import spot.spot.domain.job.dto.response.JobResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.service.Job4ClientService;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
@@ -68,6 +70,16 @@ public class Job4ClientController implements Job4ClientDocs {
     @PostMapping("/withdrawal")
     public void requestWithdrawal(Job2ClientRequest request) {
         job4ClientService.requestWithdrawal(request);
+    }
+
+    @GetMapping("/detail")
+    public JobResponse getJobDetail(@RequestParam  long jobId) {
+        return null;
+    }
+
+    @GetMapping("/dash-board")
+    public List<JobSituationResponse> getSituationByOwner() {
+        return job4ClientService.getSituationsByOwner();
     }
 
 }

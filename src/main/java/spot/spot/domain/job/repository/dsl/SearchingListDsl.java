@@ -1,8 +1,10 @@
 package spot.spot.domain.job.repository.dsl;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.entity.QJob;
@@ -24,6 +27,7 @@ import spot.spot.domain.member.entity.Worker;
 public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방법
 
     private final JPAQueryFactory queryFactory;
+    private final QJob job = QJob.job;
     private final QWorker worker = QWorker.worker;
     private final QWorkerAbility workerAbility = QWorkerAbility.workerAbility;
     private final QMatching matching = QMatching.matching;
@@ -91,5 +95,31 @@ public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방
         }
 
         return new SliceImpl<>(workers, pageable, hasNext);
+    }
+
+    public List<JobSituationResponse> findJobSituationsByOwner(long memberId) {
+        return queryFactory
+            .select(Projections.constructor(JobSituationResponse.class,
+                job.id.as("jobId"),
+                job.title,
+                job.img,
+                job.content,
+                matching.status,
+                member.id.as("memberId"),
+                member.nickname,
+                member.phone
+            ))
+            .from(job)
+            .leftJoin(matching).on(job.id.eq(matching.job.id))
+            .leftJoin(member).on(member.id.eq(matching.member.id))
+            .where(
+                matching.job.id.in(
+                    JPAExpressions
+                        .select(matching.job.id)
+                        .from(matching)
+                        .where(matching.member.id.eq(memberId)
+                            .and(matching.status.eq(MatchingStatus.OWNER)))
+                ).and(matching.status.ne(MatchingStatus.OWNER))
+            ).fetch();
     }
 }
