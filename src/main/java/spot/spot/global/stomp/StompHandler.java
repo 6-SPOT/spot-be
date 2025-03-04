@@ -28,18 +28,22 @@ public class StompHandler implements ChannelInterceptor {
 	public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		log.info("STOMP 접근 명령어={}", accessor.getCommand());
-		String atk = stompUtil.getAccessToken(accessor);
-		if(atk == null) throw new MessagingException("JWT TOKEN is NULL");
-		switch (accessor.getCommand()) {
-			case CONNECT :
-				String msgType = accessor.getFirstNativeHeader("type");
-				if(Objects.equals(msgType,PERMIT_ALL)) {break;}
-			case SUBSCRIBE:
-			case SEND:
-				stompUtil.verifyAccessToken(atk);
-				break;
+		try {
+			String atk = stompUtil.getAccessToken(accessor);
+			if(atk == null) throw new MessagingException("JWT TOKEN is NULL");
+			switch (accessor.getCommand()) {
+				case CONNECT :
+					String msgType = accessor.getFirstNativeHeader("type");
+					if(Objects.equals(msgType,PERMIT_ALL)) {break;}
+				case SUBSCRIBE:
+				case SEND:
+					stompUtil.verifyAccessToken(atk);
+					break;
+			}
+		} catch (MessagingException e) {
+			log.error("STOMP 인증 실패: {}", e.getMessage());
+			return stompUtil.handleErrorMessage(accessor, e.getMessage());
 		}
-
 		return message;
 	}
 }
