@@ -1,11 +1,13 @@
 package spot.spot.domain.pay.repository;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.pay.entity.Point;
 
@@ -22,6 +24,9 @@ class PointRepositoryTest {
 
     @Autowired
     PointRepository pointRepository;
+
+    @MockitoBean
+    JPAQueryFactory jpaQueryFactory;
 
     @DisplayName("사용하지 않은 포인트를 일치하는 포인트코드로 조회하면 일치하는 포인트 중 하나가 조회된다.")
     @Test
