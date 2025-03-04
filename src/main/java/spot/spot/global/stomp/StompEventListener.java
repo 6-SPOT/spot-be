@@ -21,6 +21,7 @@ public class StompEventListener {
 	public void connectionHandle(SessionConnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 		String sessionId = accessor.getSessionId();
+		log.info("연결 성공 SESSION ID: {}", sessionId);
 		sessionTracker.addSession(sessionId);
 	}
 
