@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import spot.spot.domain.member._docs.MemberDocs;
 import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.dto.response.TokenDTO;
-import spot.spot.domain.member.entity.dto.TokenResponse;
+import spot.spot.domain.member.dto.response.TokenResponse;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.global.redis.service.TokenService;
 import spot.spot.global.redis.entity.Token;
