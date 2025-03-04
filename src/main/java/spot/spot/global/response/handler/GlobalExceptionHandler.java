@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ResultResponse;
 import spot.spot.global.response.format.GlobalException;
+import org.springframework.validation.FieldError;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -19,6 +21,24 @@ public class GlobalExceptionHandler {
         jsonHeaders = new HttpHeaders();
         jsonHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException e) {
+        String firstErrorMessage = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("잘못된 요청입니다.");
+
+        ResultResponse<Object> response = ResultResponse.fail(firstErrorMessage);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .headers(jsonHeaders)
+                .body(response);
+    }
+
     // 사용자가 예측 가능한 에러 발생 시
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<ResultResponse<Object>> handleGlobalException ( GlobalException globalException) {

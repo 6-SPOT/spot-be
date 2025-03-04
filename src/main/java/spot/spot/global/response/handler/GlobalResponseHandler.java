@@ -1,13 +1,17 @@
 package spot.spot.global.response.handler;
 
 import javax.annotation.Nonnull;
+import javax.xml.transform.Result;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import spot.spot.global.response.format.ErrorCode;
@@ -46,6 +50,7 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
         }
         // 만약 String이면 예외 발생
         if (body instanceof String) {throw new GlobalException(ErrorCode.NOT_ALLOW_STRING);}
+        if(body instanceof ResultResponse<?>) return body;
         return ResultResponse.success(body);
     }
 }
