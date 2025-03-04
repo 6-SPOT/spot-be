@@ -26,13 +26,12 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.setUserDestinationPrefix("/user");				// 1대 1 메시지 전용
 		// 메세지가 발행되면 @Controller 객체의 @MessageMapping 메서드로 라우팅
 		registry.setApplicationDestinationPrefixes("/api/publish");
 
 		// 메세지를 수신해야 함을 설정
 		registry.enableSimpleBroker("/api/topic");
-        registry.setUserDestinationPrefix("/user");				// 1대 1 메시지 전용
+        registry.setUserDestinationPrefix("/user");	// 1대 1 메시지 전용
     }
 
 	@Override
