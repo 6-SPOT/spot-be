@@ -28,6 +28,7 @@ public class StompHandler implements ChannelInterceptor {
 	@Override
 	public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+<<<<<<< HEAD
         log.info("STOMP 접근 명령어={}", accessor.getCommand());
 
         if(StompCommand.CONNECT == accessor.getCommand()) {
@@ -43,6 +44,24 @@ public class StompHandler implements ChannelInterceptor {
 			Claims userInfo = jwtUtil.getUserInfoFromToken(token);
 			long memberId = Long.parseLong(userInfo.getSubject());
 			Objects.requireNonNull(accessor.getSessionAttributes()).put("memberId", memberId);
+=======
+		log.info("STOMP 접근 명령어={}", accessor.getCommand());
+		try {
+			String atk = stompUtil.getAccessToken(accessor);
+			if(atk == null) throw new MessagingException("JWT TOKEN is NULL");
+			switch (accessor.getCommand()) {
+				case CONNECT :
+					String msgType = accessor.getFirstNativeHeader("type");
+					if(Objects.equals(msgType,PERMIT_ALL)) {break;}
+				case SUBSCRIBE:
+				case SEND:
+					stompUtil.verifyAccessToken(atk);
+					break;
+			}
+		} catch (MessagingException e) {
+			log.error("STOMP 인증 실패: {}", e.getMessage());
+			return stompUtil.handleErrorMessage(accessor, e.getMessage());
+>>>>>>> 555c7fb (FIX: PreSend 전처리에서 오류가 나면 오류가 난 대상자에게 오류 메시지를 보내는 로직 수정)
 		}
 		return message;
 	}
