@@ -18,7 +18,6 @@ import static spot.spot.global.util.ConstantUtil.AUTH_ERROR;
 public class StompUtil {
 
     private final JwtUtil jwtUtil;
-    private final SimpMessagingTemplate brokerMessagingTemplate;
 
     public String getAccessToken(StompHeaderAccessor accessor) {
         return jwtUtil.separateBearer(accessor.getFirstNativeHeader(AUTHORIZATION));
@@ -36,8 +35,6 @@ public class StompUtil {
         accessor.setHeader(AUTH_ERROR, AUTH_ERROR);
 
         String sessionId = accessor.getSessionId();
-        brokerMessagingTemplate.convertAndSendToUser(sessionId, "/error", errorMessage);
-
         return MessageBuilder.withPayload(errorMessage)
             .setHeaders(accessor)
             .build();

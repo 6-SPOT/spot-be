@@ -1,6 +1,9 @@
 package spot.spot.global.stomp;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -17,6 +20,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	private final StompHandler stompHandler;
 
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/api/connect")
@@ -28,7 +32,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		// 메세지가 발행되면 @Controller 객체의 @MessageMapping 메서드로 라우팅
 		registry.setApplicationDestinationPrefixes("/api/publish");
-
 		// 메세지를 수신해야 함을 설정
 		registry.enableSimpleBroker("/api/topic");
         registry.setUserDestinationPrefix("/user");	// 1대 1 메시지 전용
