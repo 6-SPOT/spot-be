@@ -1,7 +1,7 @@
 package spot.spot.global.stomp;
 
-import static spot.spot.global.util.ConstantUtil.PERMIT_ALL;
 
+import static spot.spot.global.util.ConstantUtil.PERMIT_ALL;
 import io.jsonwebtoken.Claims;
 import java.util.Objects;
 import lombok.NonNull;
@@ -13,15 +13,25 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import spot.spot.domain.member.entity.OAuth2Member;
+import spot.spot.domain.member.service.MemberService;
+import spot.spot.global.redis.service.TokenService;
+import spot.spot.global.response.format.ErrorCode;
+import spot.spot.global.response.format.FilterResponse;
+import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.JwtUtil;
+import spot.spot.global.stomp.StompUtil;
+
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
-
 	private final StompUtil stompUtil;
 	private final JwtUtil jwtUtil;
 
@@ -29,6 +39,7 @@ public class StompHandler implements ChannelInterceptor {
 	@Override
 	public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
 		String atk = stompUtil.getAccessToken(accessor);
 		log.info("STOMP 접근 명령어={}", accessor.getCommand());
 		try {
@@ -51,4 +62,5 @@ public class StompHandler implements ChannelInterceptor {
 		Objects.requireNonNull(accessor.getSessionAttributes()).put("memberId", memberId);
 		return message;
 	}
+
 }
