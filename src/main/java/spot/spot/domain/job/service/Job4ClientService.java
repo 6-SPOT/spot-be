@@ -70,7 +70,7 @@ public class Job4ClientService {
     *       5. Worker의 일 신청 수락 혹은 거절하기
     *       6. Worker의 일 철회 요청
     *       7. 결제 내역으로 일 찾기
-    *       8. 일 하나 상세 확인하기
+    *       8. 내가 맡긴 일 현황 보기
     * */
 
     // 1) 일 등록
@@ -143,13 +143,17 @@ public class Job4ClientService {
     public Job findByTid(String tid) {
         return jobRepository.findByTid(tid).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
     }
-    // 8) 일 하나 상세 보기
-    public JobResponse getJobDetail(long jobId) {
-        return  null;
-    }
-    // 9) 내가 맡긴 일 현황 보기
+    // 8) 내가 맡긴 일 현황 보기
     public List<JobSituationResponse> getSituationsByOwner() {
         Member owner = userAccessUtil.getMember();
         return searchingListDsl.findJobSituationsByOwner(owner.getId());
     }
+
+    @Transactional
+    public void confirmOrRejectJob(YesOrNo2WorkersRequest request) {
+        Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
+        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
+    }
+
 }
