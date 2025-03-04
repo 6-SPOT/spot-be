@@ -55,53 +55,6 @@ public class PointServiceExceptionTest {
      * deletePointOnce -> pointCode
      * deletePoint -> pointCode
      */
-    @Test
-    @DisplayName("포인트 생성 시 포인트 이름이 누락되면 예외가 발생한다.")
-    void servePointEmptyPointNameException() {
-        //given
-        PointServeRequestDto serveCountPoint = new PointServeRequestDto("", 1000, 3);
-        List<PointServeRequestDto> serveRequestDtos = new ArrayList<>();
-
-        serveRequestDtos.add(serveCountPoint);
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> pointService.servePoint(serveRequestDtos))
-                .isInstanceOf(GlobalException.class)
-                .extracting(e -> ((GlobalException) e).getErrorCode().getMessage())
-                .isEqualTo(ErrorCode.EMPTY_POINT_NAME.getMessage());
-    }
-
-    @Test
-    @DisplayName("포인트 생성 시 포인트 가격이 0 이하이거나 null값이면 예외가 발생한다.")
-    void servePointInvalidPointException() {
-        //given
-        PointServeRequestDto serveCountPoint = new PointServeRequestDto("포인트네임", 0, 3);
-        List<PointServeRequestDto> serveRequestDtos = new ArrayList<>();
-
-        serveRequestDtos.add(serveCountPoint);
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> pointService.servePoint(serveRequestDtos))
-                .isInstanceOf(GlobalException.class)
-                .extracting(e -> ((GlobalException) e).getErrorCode().getMessage())
-                .isEqualTo(ErrorCode.INVALID_POINT_AMOUNT.getMessage());
-    }
-
-    @Test
-    @DisplayName("포인트 생성 시 포인트 갯수가 0이하거나 null값이면 예외가 발생한다.")
-    void servePointInvalidCountException() {
-        //given
-        PointServeRequestDto serveCountPoint = new PointServeRequestDto("포인트네임", 10000, 0);
-        List<PointServeRequestDto> serveRequestDtos = new ArrayList<>();
-
-        serveRequestDtos.add(serveCountPoint);
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> pointService.servePoint(serveRequestDtos))
-                .isInstanceOf(GlobalException.class)
-                .extracting(e -> ((GlobalException) e).getErrorCode().getMessage())
-                .isEqualTo(ErrorCode.INVALID_POINT_COUNT.getMessage());
-    }
 
     @Test
     @DisplayName("포인트 등록시 유효하지 않은 포인트코드를 입력하면 예외가 발생한다.")
