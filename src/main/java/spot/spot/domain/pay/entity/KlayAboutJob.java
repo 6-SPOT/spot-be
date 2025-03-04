@@ -5,10 +5,8 @@ import lombok.*;
 import spot.spot.domain.job.entity.Job;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
 public class KlayAboutJob {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,11 @@ public class KlayAboutJob {
     @Column(name = "exchange_rate", nullable = false)
     private double exchangeRate;
 
-    @Setter
-    @Enumerated(EnumType.STRING)
-    private PayStatus payStatus;
+    @Builder
+    private KlayAboutJob(Job job, double amtKlay, int amtKrw, double exchangeRate) {
+        this.job = job;
+        this.amtKlay = amtKlay;
+        this.amtKrw = amtKrw;
+        this.exchangeRate = exchangeRate;
+    }
 }

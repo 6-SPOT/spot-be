@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.Job4ClientService;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
-import spot.spot.domain.pay.entity.dto.response.PayApproveResponse;
+import spot.spot.domain.pay.entity.dto.response.PayApproveResponseDto;
 import spot.spot.domain.pay.service.PayService;
 
 @RestController
@@ -23,13 +23,13 @@ public class PayController {
     private final Job4ClientService job4ClientService;
 
     @PostMapping("/deposit")
-    public ResponseEntity<PayApproveResponse> payApprove(@RequestBody @Valid PayApproveRequestDto request, Authentication auth) {
+    public PayApproveResponseDto payApprove(@Valid @RequestBody PayApproveRequestDto request, Authentication auth) {
         Job job = job4ClientService.findByTid(request.tid());
-        PayApproveResponse approve = payService.payApprove(auth.getName(),
+        return payService.payApprove(
+                auth.getName(),
                 job,
                 request.pgToken(),
                 request.totalAmount());
-        return ResponseEntity.ok().body(approve);
     }
 
 }
