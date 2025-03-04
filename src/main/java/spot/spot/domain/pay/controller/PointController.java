@@ -1,5 +1,6 @@
 package spot.spot.domain.pay.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +18,17 @@ public class PointController {
     private final PointService pointService;
 
     @PostMapping("/serve")
-    public List<PointServeResponseDto> servePointCoupon(@RequestBody List<PointServeRequestDto> requestDto) {
+    public List<PointServeResponseDto> servePointCoupon(@Valid @RequestBody List<PointServeRequestDto> requestDto) {
         return pointService.servePoint(requestDto);
     }
 
     @GetMapping("/register")
-    public void registerPointCoupon(@RequestParam String pointCode, Authentication auth) {
+    public void registerPointCoupon(@Valid @RequestParam String pointCode, Authentication auth) {
         pointService.registerPoint(pointCode, auth.getName());
     }
 
     @PostMapping("/delete")
-    public void deletePointCoupon(@RequestParam String pointCode) {
+    public void deletePointCoupon(@Valid @RequestParam String pointCode) {
         pointService.deletePoint(pointCode);
     }
 }

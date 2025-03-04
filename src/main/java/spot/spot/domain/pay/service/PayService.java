@@ -76,7 +76,6 @@ public class PayService {
         return PayReadyResponseDto.of(payReadyResponse, payHistory);
     }
 
-
     //결제 승인(결제)
     public PayApproveResponseDto payApprove(String memberId, Job job, String pgToken, int totalAmount) {
         ///파라미터 검증

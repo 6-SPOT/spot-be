@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Point {
 
@@ -25,4 +23,12 @@ public class Point {
     @Setter
     @Column(name = "is_valid", nullable = false)
     private boolean isValid;
+
+    @Builder
+    private Point(String pointName, int point, String pointCode, boolean isValid) {
+        this.pointName = pointName;
+        this.point = point;
+        this.pointCode = pointCode;
+        this.isValid = isValid;
+    }
 }

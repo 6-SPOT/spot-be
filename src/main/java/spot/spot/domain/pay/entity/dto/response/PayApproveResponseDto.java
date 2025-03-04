@@ -18,4 +18,13 @@ public record PayApproveResponseDto(
                 .amount(payApproveResponse.getAmount().getTotal())
                 .build();
     }
+
+    public static PayApproveResponseDto create(String nickname, String domain, String content, int amount) {
+        return PayApproveResponseDto.builder()
+                .nickname(nickname)
+                .domain(domain)
+                .content(content)
+                .amount(amount)
+                .build();
+    }
 }

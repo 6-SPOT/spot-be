@@ -35,21 +35,8 @@ public class PointService {
             PointServeRequestDto req = entry.getKey();
             String pointCode = entry.getValue();
 
-            if (req.pointName() == null || req.pointName().isEmpty()) {
-                throw new GlobalException(ErrorCode.EMPTY_POINT_NAME);
-            }else if(req.point() <= 0) {
-                throw new GlobalException(ErrorCode.INVALID_POINT_AMOUNT);
-            }else if(req.count() <= 0) {
-                throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
-            }
-
             Stream<Point> pointStream = IntStream.range(0, req.count())
-                    .mapToObj(i -> Point.builder()
-                            .pointName(req.pointName())
-                            .point(req.point())
-                            .pointCode(pointCode)
-                            .isValid(true)
-                            .build());
+                    .mapToObj(i -> PointServeRequestDto.toPoint(req, pointCode));
             responseDtos.add(new PointServeResponseDto(req.pointName(), req.point(), pointCode));
             return pointStream;
         }).collect(Collectors.toList());
