@@ -22,6 +22,7 @@ import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
+import spot.spot.domain.job.dto.response.RegisterJobResponse;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 
 @Tag(name = "Job4ClientDocs", description = "일 의뢰자를 위한 API 모음")
@@ -43,7 +44,7 @@ public interface Job4ClientDocs {
                 """, content = @Content),
     })
     @PutMapping
-    public PayReadyResponseDto registerJob(
+    public RegisterJobResponse registerJob(
         @RequestPart(value = "request") RegisterJobRequest request,
         @RequestPart(value = "file", required = false ) MultipartFile file
     );

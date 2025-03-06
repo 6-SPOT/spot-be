@@ -19,7 +19,6 @@ public class PayQueryRepository {
         return queryFactory
                 .select(payHistory.payAmount)
                 .from(job)
-                .join(job.payment, payHistory)
                 .where(job.id.eq(jobId))
                 .fetchOne();
     }
