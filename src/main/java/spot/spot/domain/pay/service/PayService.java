@@ -17,7 +17,6 @@ import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.response.*;
 import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
-import spot.spot.domain.pay.repository.PayQueryRepository;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
@@ -32,7 +31,6 @@ import java.util.*;
 public class PayService {
 
     private final MatchingDsl matchingDsl;
-    private final PayQueryRepository payQueryRepository;
     @Value("${kakao.pay.cid}")
     private String cid;
 
@@ -165,10 +163,6 @@ public class PayService {
         if(worker.equals("") || worker.isEmpty()) throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
         payHistory.setWorker(worker);
         payHistory.setPayStatus(payStatus);
-    }
-
-    public int getPayAmountByJob(Job job) {
-        return payQueryRepository.findPayAmountByPayHistory(job.getId());
     }
 
     private Map<String, String> createPaymentParameters(String partnerUserId, String tid, String itemName, String quantity, String totalAmount, String pgToken, boolean isCancel) {
