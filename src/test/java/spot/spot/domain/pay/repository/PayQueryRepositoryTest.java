@@ -34,7 +34,7 @@ class PayQueryRepositoryTest {
         int payAmount = 10000;
         int payPoint = 1000;
         PayHistory payHistory = PayHistory.builder().payStatus(PayStatus.PENDING).payPoint(payPoint).payAmount(payAmount-payPoint).worker("worker").depositor("depositort").build();
-        Job job = Job.builder().money(payAmount).title("title").img("img").payment(payHistory).content("content").build();
+        Job job = Job.builder().money(payAmount).title("title").img("img").content("content").build();
         payHistoryRepository.save(payHistory);
         jobRepository.save(job);
 

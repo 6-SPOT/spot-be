@@ -37,7 +37,7 @@ class KlayAboutJobRepositoryTest {
         double amtKlay = 0.00000001;
         int amtKrw = 10000;
         PayHistory payHistory = PayHistory.builder().payStatus(PayStatus.PENDING).payPoint(1000).payAmount(9000).worker("worker").depositor("depositort").build();
-        Job job = Job.builder().money(10000).title("title").img("img").payment(payHistory).content("content").build();
+        Job job = Job.builder().money(10000).title("title").img("img").content("content").build();
         KlayAboutJob klayAboutjob = KlayAboutJob.builder().job(job).amtKlay(amtKlay).amtKrw(amtKrw).exchangeRate(0.0001).build();
         payHistoryRepository.save(payHistory);
         jobRepository.save(job);
