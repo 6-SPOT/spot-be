@@ -1,8 +1,10 @@
 package spot.spot.domain.pay.entity.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import spot.spot.domain.pay.entity.PayHistory;
+import spot.spot.domain.pay.entity.dto.request.PayReadyRequestDto;
 
 @Builder
 public record PayReadyResponseDto(
@@ -22,6 +24,15 @@ public record PayReadyResponseDto(
                         .redirectPCUrl(payReadyResponse.getNext_redirect_pc_url())
                         .redirectMobileUrl(payReadyResponse.getNext_redirect_mobile_url())
                         .tid(payReadyResponse.getTid())
+                        .payHistory(payHistory)
+                        .build();
+        }
+
+        public static PayReadyResponseDto create(String redirectPcUrl, String redirectMobileUrl, String tid, PayHistory payHistory) {
+                return PayReadyResponseDto.builder()
+                        .redirectPCUrl(redirectPcUrl)
+                        .redirectMobileUrl(redirectMobileUrl)
+                        .tid(tid)
                         .payHistory(payHistory)
                         .build();
         }

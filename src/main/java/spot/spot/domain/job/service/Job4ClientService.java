@@ -15,6 +15,7 @@ import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
 import spot.spot.domain.job.dto.response.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
+import spot.spot.domain.job.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
@@ -73,13 +74,10 @@ public class Job4ClientService {
     * */
 
     // 1) 일 등록
-    public PayReadyResponseDto registerJob(RegisterJobRequest request, MultipartFile file) {
+    public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
-        PayReadyResponseDto payReadyResponseDto = payService.payReady(client.getNickname(), request.content(), request.money(), request.point());
-        String tid = payReadyResponseDto.tid();
-        PayHistory payHistory = payReadyResponseDto.payHistory();
-        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, tid, payHistory));
+        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, " "));
 
         Matching matching = Matching.builder()
             .member(client)
@@ -87,7 +85,7 @@ public class Job4ClientService {
             .status(MatchingStatus.OWNER)
             .build();
         matchingRepository.save(matching);
-        return payReadyResponseDto;
+        return RegisterJobResponse.create(newJob.getId());
     }
     // 2) 근처 해결사 찾기
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
@@ -131,8 +129,6 @@ public class Job4ClientService {
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
-        int payAmountByJob = payService.getPayAmountByJob(job);
-        payService.payCancel(job, payAmountByJob);
         Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         jobUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
@@ -146,6 +142,16 @@ public class Job4ClientService {
     public List<JobSituationResponse> getSituationsByOwner() {
         Member owner = userAccessUtil.getMember();
         return searchingListDsl.findJobSituationsByOwner(owner.getId());
+    }
+
+    //결제 준비가 되면 일에 일치하는 tid값 넣어주기
+    public void updateTidToJob(Job findJob, String tid) {
+        findJob.setTid(tid);
+    }
+
+    //id로 찾기
+    public Job findById(Long jobId) {
+        return jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }
 
     @Transactional

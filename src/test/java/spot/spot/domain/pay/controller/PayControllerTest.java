@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,11 +16,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.service.Job4ClientService;
+import spot.spot.domain.pay.entity.PayHistory;
+import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
+import spot.spot.domain.pay.entity.dto.request.PayReadyRequestDto;
 import spot.spot.domain.pay.entity.dto.response.PayApproveResponseDto;
+import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 import spot.spot.domain.pay.service.PayService;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,6 +50,9 @@ class PayControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+
     @DisplayName("결제 승인시 결제가 완료된다.")
     @Test
     void deposit() throws Exception {
@@ -63,6 +72,51 @@ class PayControllerTest {
                 .andExpect(status().isOk())  // HTTP 200 응답 기대
                 .andExpect(jsonPath("$.message").value("정상적으로 처리하였습니다."))
         ;
+    }
+
+    @DisplayName("멤버Id, 일 타이틀, 가격정보, 포인트 정보가 요청이 오면 결제를 준비한다.")
+    @Test
+    void payReady() throws Exception {
+        ///given
+        PayReadyRequestDto req = PayReadyRequestDto.create("title", 10000, 1000, 1L);
+        PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
+        PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
+
+        when(payService.payReady(anyString(), anyString(),anyInt(),anyInt(), any())).thenReturn(res);
+        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+        ///when ///then
+        mockMvc.perform(
+                        post("/api/pay/ready")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("정상적으로 처리하였습니다."));
+    }
+
+    @DisplayName("포인트 가격이 0원일때는 결제준비가 통과된다.")
+    @Test
+    void payReadyPointZero() throws Exception {
+        ///given
+        PayReadyRequestDto req = PayReadyRequestDto.create("title", 10000, 0, 1L);
+        PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
+        PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
+        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
+        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+
+        ///when ///then
+        mockMvc.perform(
+                        post("/api/pay/ready")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req))
+
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("정상적으로 처리하였습니다."));
     }
 
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -45,6 +46,9 @@ class PointControllerTest {
 
     @MockitoBean
     MemberService memberService;
+
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @DisplayName("포인트 이름, 갯수, 금액을 받아 포인트를 생성한다.")
     @Test

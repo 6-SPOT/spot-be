@@ -14,7 +14,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
+import spot.spot.domain.job.repository.jpa.JobRepository;
+import spot.spot.domain.job.service.Job4ClientService;
+import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.entity.Member;
+import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.pay.entity.KlayAboutJob;
 import spot.spot.domain.pay.entity.PayHistory;
@@ -41,6 +45,15 @@ public class PayServiceTest {
     @Autowired
     private PayService payService;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private PayHistoryRepository payHistoryRepository;
+
+    @Autowired
+    private JobRepository jobRepository;
+
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
 
@@ -59,12 +72,12 @@ public class PayServiceTest {
     @MockitoBean
     private MatchingDsl matchingDsl;
 
-    @Autowired
-    private PayHistoryRepository payHistoryRepository;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        memberRepository.deleteAllInBatch();
+        payHistoryRepository.deleteAllInBatch();
+        jobRepository.deleteAllInBatch();
     }
 
     @Test
@@ -77,6 +90,8 @@ public class PayServiceTest {
         String mockMobileUrl = "https://kakaopay-mock.com/mobile";
         PayReadyResponse payReadyResponse = new PayReadyResponse();
         PayReadyResponse mockPayReadyResponse = payReadyResponse.create(mockTid, mockPcUrl, mockMobileUrl);
+        Job mockJob = createMockJob(mockTid);
+        jobRepository.save(mockJob);
 
         // Mock 객체로 실제 API 호출을 대체
         when(payAPIRequestService.payAPIRequest(
@@ -86,7 +101,7 @@ public class PayServiceTest {
         )).thenReturn(mockPayReadyResponse);
 
         ///when
-        PayReadyResponseDto result = payService.payReady("testUser", "음쓰 버려주실 분~", 10000, 500);
+        PayReadyResponseDto result = payService.payReady("testUser", "음쓰 버려주실 분~", 10000, 500, mockJob);
 
         ///then
         Assertions.assertThat(result).isNotNull()
@@ -102,11 +117,14 @@ public class PayServiceTest {
         PayApproveResponse.Amount amount = new PayApproveResponse.Amount();
         int mockPrice = 1000;
         Member mockMember = createMockMember();
+        Job mockJob = createMockJob("T123141515");
         PayApproveResponse.Amount mockAmount = amount.create(mockPrice, 100);
-        PayHistory mockPayHistory = PayHistory.builder().id(1L).build();
+        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
+        jobRepository.save(mockJob);
+        memberRepository.save(mockMember);
+        payHistoryRepository.save(mockPayHistory);
 
         PayApproveResponse payApproveResponse = new PayApproveResponse();
-        Job mockJob = createMockJob(mockPayHistory, "T123141515");
 
         // ApproveResponse mock 데이터 생성
         String mockTid = "T1234ABCD5678";
@@ -170,9 +188,12 @@ public class PayServiceTest {
         int cancelAmount = 10000;
         //mock 데이터
         Member mockMember = createMockMember();
-        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname());
-        Job mockJob = createMockJob(mockPayHistory, "T123145151");
+        Job mockJob = createMockJob("T123145151");
+        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
         KlayAboutJob mockKlayAboutJob = createMockKlayAboutJob(amount, mockJob);
+        jobRepository.save(mockJob);
+        memberRepository.save(mockMember);
+        payHistoryRepository.save(mockPayHistory);
 
         // payCancelResponse mock 생성
         PayCancelResponse payCancelResponse = new PayCancelResponse();
@@ -215,10 +236,13 @@ public class PayServiceTest {
         String mockTid = "T12351612425";
         int mockAmount = 10000;
         Member mockMember = createMockMember();
-        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname());
-        Job mockJob = createMockJob(mockPayHistory, mockTid);
+        Job mockJob = createMockJob(mockTid);
+        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
         KlayAboutJob mockKlayAboutJob = createMockKlayAboutJob(mockAmount, mockJob);
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
+        jobRepository.save(mockJob);
+        memberRepository.save(mockMember);
+        payHistoryRepository.save(mockPayHistory);
 
         when(mockSingleKeyring.getAddress()).thenReturn("tx1231415116t16");
         when(memberService.findMemberByIdOrNickname(any(), any())).thenReturn(mockMember);
@@ -241,8 +265,10 @@ public class PayServiceTest {
         String depositor = "testUser";
         int mockAmount = 1000;
         int mockPoint = 100;
+        Job mockJob = createMockJob("T123131");
+        jobRepository.save(mockJob);
 
-        PayHistory payHistory = payService.savePayHistory(depositor, mockAmount, mockPoint);
+        PayHistory payHistory = payService.savePayHistory(depositor, mockAmount, mockPoint , mockJob);
 
         ///when
         PayHistory findPayHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -257,8 +283,10 @@ public class PayServiceTest {
         ///given
         String depositor = "testUser2";
         //payHistory 가상 데이터
-        PayHistory mockPayHistory = createMockPayHistory(depositor);
+        Job mockJob = createMockJob("T1123123132");
+        PayHistory mockPayHistory = createMockPayHistory(depositor, mockJob);
         //payHistory 저장
+        jobRepository.save(mockJob);
         payHistoryRepository.save(mockPayHistory);
 
         PayHistory payHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -276,9 +304,11 @@ public class PayServiceTest {
         ///given
         String depositor = "testUser2";
         //payHistory 가상 데이터
-        PayHistory mockPayHistory = createMockPayHistory(depositor);
+        Job mockJob = createMockJob("T1241414");
+        PayHistory mockPayHistory = createMockPayHistory(depositor, mockJob);
 
         //payHistory 저장
+        jobRepository.save(mockJob);
         payHistoryRepository.save(mockPayHistory);
 
         PayHistory payHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -296,8 +326,10 @@ public class PayServiceTest {
         ///given
         String depositor = "testUser2";
         //payHistory 가상 데이터
-        PayHistory mockPayHistory = createMockPayHistory(depositor);
+        Job mockJob = createMockJob("T121313");
+        PayHistory mockPayHistory = createMockPayHistory(depositor, mockJob);
         //payHistory 저장
+        jobRepository.save(mockJob);
         payHistoryRepository.save(mockPayHistory);
 
         PayHistory payHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
@@ -309,19 +341,18 @@ public class PayServiceTest {
         assertEquals(payHistory.getPayStatus(), PayStatus.SUCCESS);
     }
 
-    private static Job createMockJob(PayHistory mockPayHistory, String mockTid) {
+    private static Job createMockJob(String mockTid) {
         return Job.builder().title("음쓰 버려주실 분~")
                 .content("음쓰 버려주실 분~")
-                .id(1L)
                 .tid(mockTid)
-                .payment(mockPayHistory)
                 .build();
     }
 
-    private PayHistory createMockPayHistory(String depositor) {
+    private PayHistory createMockPayHistory(String depositor,Job job) {
         return PayHistory
                 .builder()
                 .worker("worker")
+                .job(job)
                 .payStatus(PayStatus.PENDING)
                 .depositor(depositor).build();
     }

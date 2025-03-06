@@ -25,8 +25,7 @@ public interface Job4ClientMapper {
 
     // 1) 일 등록  (reqeust -> entity)
     @Mapping(source = "tid", target = "tid")
-    @Mapping(source = "payHistory", target = "payment")
-    Job registerRequestToJob (String img, RegisterJobRequest request, String tid, PayHistory payHistory);
+    Job registerRequestToJob (String img, RegisterJobRequest request, String tid);
     // 2) 일 신청자 하나 변환 (entity -> response)
     @Mapping(source = "member.id", target = "id")
     @Mapping(source = "member.nickname", target = "name")

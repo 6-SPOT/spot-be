@@ -2,6 +2,7 @@ package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import spot.spot.domain.job.entity.Job;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,9 @@ public class PayHistory {
     @Setter
     private String worker;
 
+    @OneToOne
+    private Job job;
+
     @Setter
     @Enumerated(EnumType.STRING)
     private PayStatus payStatus;
@@ -32,13 +36,24 @@ public class PayHistory {
     private LocalDateTime createAt = LocalDateTime.now();
 
     @Builder
-    private PayHistory(Long id, int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus) {
-        this.id = id;
+    private PayHistory(int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus, Job job) {
         this.payAmount = payAmount;
         this.payPoint = payPoint;
         this.depositor = depositor;
         this.worker = worker;
         this.payStatus = payStatus;
+        this.job = job;
+    }
+
+    public static PayHistory create(int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus, Job job) {
+        return PayHistory.builder()
+                .payAmount(payAmount)
+                .payPoint(payPoint)
+                .payStatus(payStatus)
+                .depositor(depositor)
+                .worker(worker)
+                .job(job)
+                .build();
     }
 
 }
