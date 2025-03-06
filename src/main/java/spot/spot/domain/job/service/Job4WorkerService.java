@@ -1,5 +1,6 @@
 package spot.spot.domain.job.service;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Certification;
 import spot.spot.domain.job.entity.Job;
@@ -20,6 +22,7 @@ import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.mapper.Job4WorkerMapper;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
+import spot.spot.domain.job.repository.dsl.SearchingListDsl;
 import spot.spot.domain.job.repository.jpa.CertificationRepository;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
@@ -66,6 +69,7 @@ public class Job4WorkerService {
     private final JobUtil jobUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final MatchingDsl matchingDsl;
+    private final SearchingListDsl searchingListDsl;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -148,5 +152,10 @@ public class Job4WorkerService {
             .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START, MatchingStatus.REJECT);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
+    }
+
+    public List<JobSituationResponse> getMyJobSituations() {
+        Member me = userAccessUtil.getMember();
+        return searchingListDsl.findJobSituationsByWorker(me.getId());
     }
 }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
 @Tag(name = "Job4Worker", description = "해결사를 위한 API 모음")
@@ -204,7 +206,27 @@ public interface Job4WorkerDocs {
     @PostMapping
     public void certificateJob(Job2WorkerRequest request, MultipartFile file);
 
+    @Operation(summary = "일을 끝냈음을 알림",
+        description = """
+        일을 끝냈음을 의뢰인에게 알립니다.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
     @PatchMapping
     public void finishJob(Job2WorkerRequest request);
 
+    @Operation(summary = "내가 신청하거나 진행 중인 일 현황 보내기",
+        description = """
+        내가 신청하거나 진행 중인 일 현황 보내기
+        """,
+        responses = {
+            @ApiResponse(responseCode = "404", description = """
+                (message : "의뢰자가 존재하지 않습니다.")
+                """, content = @Content),
+        })
+    @GetMapping
+    public List<JobSituationResponse> getMyJobSituations();
 }

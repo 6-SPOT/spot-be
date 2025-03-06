@@ -34,5 +34,4 @@ public class JobStreamingService {
         log.info("전송 내용: 위도={}, 경도={}", request.lat(), request.lng());
         template.convertAndSend("/topic/job/" + request.jobId(), response);
     }
-
 }
