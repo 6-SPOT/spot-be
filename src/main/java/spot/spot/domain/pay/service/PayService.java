@@ -59,14 +59,14 @@ public class PayService {
     private final PayAPIRequestService payAPIRequestService;
 
     //결제준비 (결제페이지로 이동)
-    public PayReadyResponseDto payReady(String memberNickname, String content, int amount, int point) {
+    public PayReadyResponseDto payReady(String memberNickname, String content, int amount, int point, Job job) {
         ///요청 파라미터 생성
         String totalAmount = String.valueOf(amount - point);
         Map<String, String> parameters = createPaymentParameters(memberNickname, null, content, "1", totalAmount, null, false);
 
         ///결제 내역 기록 및 결제 준비
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayHistory payHistory = savePayHistory(memberNickname, amount, point);
+        PayHistory payHistory = savePayHistory(memberNickname, amount, point, job);
         PayReadyResponse payReadyResponse = payAPIRequestService.payAPIRequest("ready", requestEntity, PayReadyResponse.class);
         return PayReadyResponseDto.of(payReadyResponse, payHistory);
     }
@@ -147,12 +147,13 @@ public class PayService {
     }
 
     //일 등록 시 payHistory에 저장
-    protected PayHistory savePayHistory(String depositor, int payAmount, int point) {
+    protected PayHistory savePayHistory(String depositor, int payAmount, int point, Job job) {
         PayHistory payHistory = PayHistory.builder()
                 .payAmount(payAmount)
                 .payPoint(point)
                 .depositor(depositor)
                 .worker("")
+                .job(job)
                 .payStatus(PayStatus.PENDING)
                 .build();
 

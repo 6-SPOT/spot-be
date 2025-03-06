@@ -143,7 +143,7 @@ public class PayControllerExceptionTest {
         PayReadyRequestDto req = PayReadyRequestDto.create("", 10000, 1000, 1L);
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
-        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt())).thenReturn(res);
+        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
         doNothing().when(job4ClientService).updateTidToJob(any(),any());
 
         ///when ///then
@@ -165,7 +165,7 @@ public class PayControllerExceptionTest {
         PayReadyRequestDto req = PayReadyRequestDto.create("title", 0, 1000, 1L);
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
-        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt())).thenReturn(res);
+        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
         doNothing().when(job4ClientService).updateTidToJob(any(),any());
 
         ///when ///then
@@ -188,7 +188,7 @@ public class PayControllerExceptionTest {
         PayReadyRequestDto req = PayReadyRequestDto.create("title", 10000, -1, 1L);
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
-        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt())).thenReturn(res);
+        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
         doNothing().when(job4ClientService).updateTidToJob(any(),any());
 
         ///when ///then
@@ -211,7 +211,7 @@ public class PayControllerExceptionTest {
         PayReadyRequestDto req = PayReadyRequestDto.create("title", 10000, 0, null);
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
-        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt())).thenReturn(res);
+        when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
         doNothing().when(job4ClientService).updateTidToJob(any(),any());
 
         ///when ///then

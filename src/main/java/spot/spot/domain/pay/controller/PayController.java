@@ -38,13 +38,10 @@ public class PayController {
 
     @PostMapping("/ready")
     public PayReadyResponseDto payReady(@Valid @RequestBody PayReadyRequestDto request, Authentication auth) {
-        log.info("amount = {}", request.amount());
-        log.info("content = {}", request.content());
-        log.info("point = {}", request.point());
-        log.info("jobId = {}", request.jobId());
-        PayReadyResponseDto payReadyResponseDto = payService.payReady(auth.getName(), request.content(), request.amount(), request.point());
+        Job findJob = job4ClientService.findById(request.jobId());
+        PayReadyResponseDto payReadyResponseDto = payService.payReady(auth.getName(), request.content(), request.amount(), request.point(), findJob);
         String tid = payReadyResponseDto.tid();
-        job4ClientService.updateTidToJob(request.jobId(), tid);
+        job4ClientService.updateTidToJob(findJob, tid);
         return payReadyResponseDto;
     }
 }

@@ -147,9 +147,13 @@ public class Job4ClientService {
     }
 
     //결제 준비가 되면 일에 일치하는 tid값 넣어주기
-    public void updateTidToJob(Long jobId, String tid) {
-        Job findJob = jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    public void updateTidToJob(Job findJob, String tid) {
         findJob.setTid(tid);
+    }
+
+    //id로 찾기
+    public Job findById(Long jobId) {
+        return jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }
 
     @Transactional

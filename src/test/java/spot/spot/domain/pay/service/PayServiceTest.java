@@ -90,6 +90,8 @@ public class PayServiceTest {
         String mockMobileUrl = "https://kakaopay-mock.com/mobile";
         PayReadyResponse payReadyResponse = new PayReadyResponse();
         PayReadyResponse mockPayReadyResponse = payReadyResponse.create(mockTid, mockPcUrl, mockMobileUrl);
+        Job mockJob = createMockJob(mockTid);
+        jobRepository.save(mockJob);
 
         // Mock 객체로 실제 API 호출을 대체
         when(payAPIRequestService.payAPIRequest(
@@ -99,7 +101,7 @@ public class PayServiceTest {
         )).thenReturn(mockPayReadyResponse);
 
         ///when
-        PayReadyResponseDto result = payService.payReady("testUser", "음쓰 버려주실 분~", 10000, 500);
+        PayReadyResponseDto result = payService.payReady("testUser", "음쓰 버려주실 분~", 10000, 500, mockJob);
 
         ///then
         Assertions.assertThat(result).isNotNull()
@@ -263,8 +265,10 @@ public class PayServiceTest {
         String depositor = "testUser";
         int mockAmount = 1000;
         int mockPoint = 100;
+        Job mockJob = createMockJob("T123131");
+        jobRepository.save(mockJob);
 
-        PayHistory payHistory = payService.savePayHistory(depositor, mockAmount, mockPoint);
+        PayHistory payHistory = payService.savePayHistory(depositor, mockAmount, mockPoint , mockJob);
 
         ///when
         PayHistory findPayHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
