@@ -1,6 +1,7 @@
 package spot.spot.domain.job.controller;
 
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,6 +21,7 @@ import spot.spot.domain.job.dto.request.Job2WorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
+import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.service.Job4WorkerService;
 import spot.spot.global.logging.Logging;
@@ -80,6 +82,11 @@ public class Job4WorkerController implements Job4WorkerDocs {
     @PatchMapping("/finish")
     public void finishJob(@RequestBody Job2WorkerRequest request) {
         job4WorkerService.finishingJob(request);
+    }
+
+    @GetMapping("/dash-board")
+    public List<JobSituationResponse> getMyJobSituations() {
+        return job4WorkerService.getMyJobSituations();
     }
 
 

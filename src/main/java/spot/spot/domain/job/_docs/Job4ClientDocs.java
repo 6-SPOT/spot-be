@@ -210,8 +210,6 @@ public interface Job4ClientDocs {
         phone
         """,
         responses = {
-            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
-                content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = """
                 (message : "그런 해결사가 존재하지 않습니다.")
                 """, content = @Content),
@@ -221,11 +219,9 @@ public interface Job4ClientDocs {
 
     @Operation(summary = "해결사의 일 완료 요청을 반려 시키거나 확정",
         description = """
-        
+           해결사의 일 완료 요청을 반려 하거나   
         """,
         responses = {
-            @ApiResponse(responseCode = "200", description = "(message : \"Success\")",
-                content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = """
                 (message : "그런 해결사가 존재하지 않습니다.")
                 """, content = @Content),
