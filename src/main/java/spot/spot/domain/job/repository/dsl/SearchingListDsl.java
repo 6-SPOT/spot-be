@@ -122,4 +122,27 @@ public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방
                 ).and(matching.status.ne(MatchingStatus.OWNER))
             ).fetch();
     }
+
+    public List<JobSituationResponse> findJobSituationsByWorker(long memberId) {
+        return queryFactory
+            .select(Projections.constructor(JobSituationResponse.class,
+                job.id,
+                job.title,
+                job.img,
+                job.content,
+                matching.status,
+                member.id,
+                member.nickname,
+                member.phone
+            ))
+            .from(job)
+            .leftJoin(matching).on(job.id.eq(matching.job.id))
+            .leftJoin(member).on(member.id.eq(matching.member.id))
+            .where(
+                member.id.eq(memberId),
+                matching.status.isNull().or(matching.status.ne(MatchingStatus.OWNER)) // NULL 값 처리 추가
+            )
+            .fetch();
+    }
+
 }
