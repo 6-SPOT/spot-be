@@ -45,10 +45,12 @@ public class MemberService {
     }
 
     @Transactional
-    public Member findByNickname(String nickname) {
+    public Member findByNickname(String nickname) throws GlobalException {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
-        return findMember.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-
+        if (findMember.isEmpty()) {
+            return null;
+        }
+        return findMember.get();
     }
 
     @Transactional
