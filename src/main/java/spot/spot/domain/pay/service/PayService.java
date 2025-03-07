@@ -64,9 +64,9 @@ public class PayService {
 
         ///결제 내역 기록 및 결제 준비
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayHistory payHistory = savePayHistory(memberNickname, amount, point, job);
+        savePayHistory(memberNickname, amount, point, job);
         PayReadyResponse payReadyResponse = payAPIRequestService.payAPIRequest("ready", requestEntity, PayReadyResponse.class);
-        return PayReadyResponseDto.of(payReadyResponse, payHistory);
+        return PayReadyResponseDto.of(payReadyResponse);
     }
 
     //결제 승인(결제)
@@ -145,6 +145,7 @@ public class PayService {
     }
 
     //일 등록 시 payHistory에 저장
+    @Transactional
     protected PayHistory savePayHistory(String depositor, int payAmount, int point, Job job) {
         PayHistory payHistory = PayHistory.builder()
                 .payAmount(payAmount)

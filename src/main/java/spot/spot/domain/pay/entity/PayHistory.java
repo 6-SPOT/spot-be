@@ -26,7 +26,8 @@ public class PayHistory {
     @Setter
     private String worker;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
     private Job job;
 
     @Setter
