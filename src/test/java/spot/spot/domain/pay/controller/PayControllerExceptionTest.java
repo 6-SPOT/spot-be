@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PayController.class)
 @ActiveProfiles("local")
 @WithMockUser(username = "testUser")
+@ImportAutoConfiguration(exclude = OAuth2ClientAutoConfiguration.class)
 public class PayControllerExceptionTest {
 
     @Autowired
@@ -144,7 +147,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -166,7 +169,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -189,7 +192,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -212,7 +215,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        doNothing().when(job4ClientService).updateTidToJob(any(),any());
+        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(

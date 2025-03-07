@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PointController.class)
 @ActiveProfiles("local")
 @WithMockUser(username = "testUser")
+@ImportAutoConfiguration(exclude = OAuth2ClientAutoConfiguration.class)
 public class PointControllerExceptionTest {
 
     @Autowired
@@ -44,6 +48,9 @@ public class PointControllerExceptionTest {
 
     @MockitoBean
     MemberService memberService;
+
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @DisplayName("포인트 이름이 누락되면 예외를 발생시킨다.")
     @Test
