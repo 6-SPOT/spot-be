@@ -54,6 +54,9 @@ public class PayServiceTest {
     @Autowired
     private JobRepository jobRepository;
 
+    @Autowired
+    private Job4ClientService job4ClientService;
+
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
 
@@ -341,10 +344,34 @@ public class PayServiceTest {
         assertEquals(payHistory.getPayStatus(), PayStatus.SUCCESS);
     }
 
+    @DisplayName("결제 준비가 성공하면 관련 일에 tid값을 갱신한다.")
+    @Test
+    void test(){
+        ///given
+        String mockTid = "T11231313";
+        Job mockJob = createMockJob();
+        jobRepository.save(mockJob);
+
+        ///when
+        job4ClientService.updateTidToJob(mockJob, mockTid);
+        Job resultJob = job4ClientService.findByTid(mockTid);
+
+        ///then
+        Assertions.assertThat(resultJob).isNotNull()
+                .extracting("tid")
+                .isEqualTo(mockTid);
+    }
+
     private static Job createMockJob(String mockTid) {
         return Job.builder().title("음쓰 버려주실 분~")
                 .content("음쓰 버려주실 분~")
                 .tid(mockTid)
+                .build();
+    }
+
+    private static Job createMockJob() {
+        return Job.builder().title("음쓰 버려주실 분~")
+                .content("음쓰 버려주실 분~")
                 .build();
     }
 
