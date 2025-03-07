@@ -26,6 +26,8 @@ import spot.spot.domain.notification.service.FcmService;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.domain.pay.service.PointService;
 import spot.spot.global.redis.service.TokenService;
+import spot.spot.domain.review.service.ReviewService;
+import spot.spot.global.security.util.UserAccessUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -73,6 +75,12 @@ class Job4ClientControllerTest {
 
     @MockitoBean
     PointService pointService;
+
+    @MockitoBean
+    ReviewService reviewService;
+
+    @MockitoBean
+    UserAccessUtil userAccessUtil;
 
     @DisplayName("일을 등록하면 등록한 일의 JobId가 반환된다.")
     @Test
