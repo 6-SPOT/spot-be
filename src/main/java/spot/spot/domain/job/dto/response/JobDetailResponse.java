@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import spot.spot.domain.job.entity.MatchingStatus;
 
 @Getter
 @Builder
@@ -33,4 +34,6 @@ public class JobDetailResponse{
     private String nickname;
     @Schema(description = "의뢰인 프로필 사진")
     private String clientImg;
+    @Schema(description = "내가 신청한 일인가")
+    private MatchingStatus myStatus;
 }
