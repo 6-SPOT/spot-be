@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,5 +90,8 @@ public class Job4WorkerController implements Job4WorkerDocs {
         return job4WorkerService.getMyJobSituations();
     }
 
-
+    @DeleteMapping("/delete")
+    public void deletingWorker() {
+        job4WorkerService.deleteWorker();
+    }
 }

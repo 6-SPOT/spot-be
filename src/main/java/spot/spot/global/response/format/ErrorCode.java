@@ -34,6 +34,7 @@ public enum ErrorCode {
     // MEMBER
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 멤버가 존재하지 않습니다."),
     ITS_NOT_DEFINED_ABILITY(HttpStatus.BAD_REQUEST, "유효하지 않은 WORKER의 능력 입니다."),
+    WORKER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 멤버는 해결사로 등록하지 않았습니다."),
     // JOB
     FAILED_2_UPDATE_JOB_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "상태 변경에 실패했습니다."),
     DIDNT_PASS_VALIDATION(HttpStatus.BAD_REQUEST, "요청이 유효성 검증을 통과하지 못했습니다. (1. 구직자 등록 x, 2. 매칭 상태가 현재 요청을 이룰 수 없음, 3. 이미 해당 일을 진행하는 사람임"),
