@@ -1,6 +1,5 @@
 package spot.spot.domain.job.mapper;
 
-import com.querydsl.core.Tuple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,10 +8,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import spot.spot.domain.job.dto.Location;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
-import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.service.JobUtil;
+import spot.spot.domain.job.util.JobUtil;
 import spot.spot.domain.member.entity.Ability;
 import spot.spot.domain.member.entity.AbilityType;
 import spot.spot.domain.member.entity.Member;
@@ -23,7 +21,7 @@ import spot.spot.domain.member.repository.AbilityRepository;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AbilityRepository.class, JobUtil.class})
-public interface Job4WorkerMapper {
+public interface WorkerMapper {
 
     /*
     *   1) 구직자 등록 (request -> entity)

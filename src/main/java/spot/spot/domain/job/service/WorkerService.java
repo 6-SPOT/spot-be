@@ -1,7 +1,6 @@
 package spot.spot.domain.job.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -9,9 +8,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import spot.spot.domain.job.dto.request.Job2WorkerRequest;
+import spot.spot.domain.job.mapper.WorkerMapper;
+import spot.spot.domain.job.util.JobUtil;
+import spot.spot.domain.job.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
-import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.request.YesOrNoClientsRequest;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
@@ -19,17 +20,15 @@ import spot.spot.domain.job.entity.Certification;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.mapper.Job4WorkerMapper;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.job.repository.dsl.SearchingListDsl;
 import spot.spot.domain.job.repository.jpa.CertificationRepository;
 import spot.spot.domain.job.repository.jpa.JobRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
-import spot.spot.domain.job.service.searching.JobSearchJPQLService;
-import spot.spot.domain.job.service.searching.JobSearchNativeQueryService;
-import spot.spot.domain.job.service.searching.JobSearchQueryDSLService;
-import spot.spot.domain.job.service.searching.JobSearchService;
+import spot.spot.domain.job.service.searching.SearchingJobJPQLService;
+import spot.spot.domain.job.service.searching.SearchingJobNativeQueryService;
+import spot.spot.domain.job.service.searching.SearchingJobQueryDSLService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.repository.AbilityRepository;
@@ -48,16 +47,16 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class Job4WorkerService {
+public class WorkerService {
 
     // 거리 계산용 3가지
-    private final JobSearchJPQLService jobSearchJPQLService;
-    private final JobSearchNativeQueryService jobSearchNativeService;
-    private final JobSearchQueryDSLService jobSearchQueryDSLService;
+    private final SearchingJobJPQLService searchingJobJPQLService;
+    private final SearchingJobNativeQueryService jobSearchNativeService;
+    private final SearchingJobQueryDSLService jobSearchQueryDSLService;
     // Util
     private final UserAccessUtil userAccessUtil;
     private final FcmUtil fcmUtil;
-    private final Job4WorkerMapper job4WorkerMapper;
+    private final WorkerMapper workerMapper;
     // Repo
     private final WorkerRepository workerRepository;
     private final AbilityRepository abilityRepository;
@@ -75,9 +74,10 @@ public class Job4WorkerService {
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
         Member member = userAccessUtil.getMember();
-        Worker worker = job4WorkerMapper.dtoToWorker(request, member);
+        Worker worker = workerMapper.dtoToWorker(request, member);
         workerRepository.save(worker);
-        workerAbilityRepository.saveAll(job4WorkerMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
+        workerAbilityRepository.saveAll(
+            workerMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
     // 구직자 근처 일 리스트 반환
     public Slice<NearByJobResponse> getNearByJobList(String impl, Double lat, Double lng, int zoom, Pageable pageable) {
@@ -85,8 +85,8 @@ public class Job4WorkerService {
         lat = lat == null? member.getLat() : lat;
         lng = lng == null? member.getLng() : lng;
 
-        JobSearchService service = switch (impl.toLowerCase()) {
-            case "jpql" -> jobSearchJPQLService;
+        SearchingJobService service = switch (impl.toLowerCase()) {
+            case "jpql" -> searchingJobJPQLService;
             case "native" -> jobSearchNativeService;
             case "dsl" -> jobSearchQueryDSLService;
             default -> throw new GlobalException(ErrorCode.INVALID_SEARCH_METHOD);
@@ -99,7 +99,7 @@ public class Job4WorkerService {
         return matchingDsl.findOneJobDetail(jobId, me.getId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
     // 일 신청하기
-    public void askingJob2Client(Job2WorkerRequest request) {
+    public void askingJob2Client(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
@@ -109,7 +109,7 @@ public class Job4WorkerService {
     }
     // 일 시작하기
     @Transactional
-    public void startJob (Job2WorkerRequest request) {
+    public void startJob (ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
         PayHistory payHistory = payService.findByJob(job);
@@ -120,7 +120,7 @@ public class Job4WorkerService {
     }
     // 의뢰인이 보낸 요청 승낙하기 혹은 거절하기
     @Transactional
-    public void yesOrNo2RequestOfClient(YesOrNo2ClientsRequest request) {
+    public void yesOrNo2RequestOfClient(YesOrNoClientsRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
@@ -129,7 +129,7 @@ public class Job4WorkerService {
     }
 
     @Transactional
-    public void contiuneJob(Job2WorkerRequest request) {
+    public void contiuneJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         jobUtil.withdrawalExistingScheduledTask(matching.getId());
@@ -137,7 +137,7 @@ public class Job4WorkerService {
     }
 
     @Transactional
-    public void certificateJob(Job2WorkerRequest request, MultipartFile file) {
+    public void certificateJob(ChangeStatusWorkerRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member worker = userAccessUtil.getMember();
         Matching now = matchingRepository
@@ -148,7 +148,7 @@ public class Job4WorkerService {
     }
 
     @Transactional
-    public void finishingJob(Job2WorkerRequest request) {
+    public void finishingJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Matching matching = matchingRepository
             .findByMemberAndJob_Id(worker, request.jobId())

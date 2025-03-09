@@ -1,9 +1,8 @@
-package spot.spot.domain.job.dto.response;
+package spot.spot.domain.job.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
-import spot.spot.domain.member.entity.WorkerAbility;
 
 @Builder
 public record AttenderResponse(

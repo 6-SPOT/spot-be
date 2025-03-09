@@ -1,6 +1,5 @@
 package spot.spot.domain.pay.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +13,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import spot.spot.domain.chat.service.ChatService;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.service.Job4ClientService;
+import spot.spot.domain.job.service.ClientService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
@@ -26,7 +24,6 @@ import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 import spot.spot.domain.pay.service.PayService;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -50,7 +47,7 @@ public class PayControllerExceptionTest {
     PayService payService;
 
     @MockitoBean
-    Job4ClientService job4ClientService;
+    ClientService clientService;
 
     @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -147,7 +144,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -169,7 +166,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -192,7 +189,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(
@@ -215,7 +212,7 @@ public class PayControllerExceptionTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(

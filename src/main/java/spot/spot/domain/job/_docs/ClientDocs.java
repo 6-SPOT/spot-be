@@ -17,19 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.Job2ClientRequest;
-import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
-import spot.spot.domain.job.dto.response.AttenderResponse;
+import spot.spot.domain.job.dto.request.ChangeStatusClientRequest;
+import spot.spot.domain.job.dto.request.YesOrNoWorkersRequest;
+import spot.spot.domain.job.dto.request.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
-import spot.spot.global.response.format.ErrorCode;
 
 @Tag(
     name = "Job4ClientDocs",
     description = "일 의뢰자를 위한 API 모음")
-public interface Job4ClientDocs {
+public interface ClientDocs {
 
     @Operation(summary = "시킬 일 서버에 등록하기",
     description = """
@@ -97,7 +95,7 @@ public interface Job4ClientDocs {
         """)
     @PostMapping
     public void askJob2Worker (
-        @RequestBody Job2ClientRequest request
+        @RequestBody ChangeStatusClientRequest request
     );
 
     @Operation(summary = "너 일해라",
@@ -113,7 +111,7 @@ public interface Job4ClientDocs {
         })
     @PostMapping
     public void acceptJobRequestOfWorker (
-        @RequestBody YesOrNo2WorkersRequest request
+        @RequestBody YesOrNoWorkersRequest request
     );
 
 
@@ -123,7 +121,7 @@ public interface Job4ClientDocs {
         """)
     @PostMapping
     public void requestWithdrawal (
-        @RequestBody Job2ClientRequest request
+        @RequestBody ChangeStatusClientRequest request
     );
 
     @Operation(summary = "내가 맡긴 일의 현황 보기",
@@ -138,5 +136,5 @@ public interface Job4ClientDocs {
            해결사의 일 완료 요청을 반려 하거나 해결을 확정하는 API
         """)
     @PatchMapping
-    public void confirmOrRejectJob(YesOrNo2WorkersRequest request);
+    public void confirmOrRejectJob(YesOrNoWorkersRequest request);
 }
