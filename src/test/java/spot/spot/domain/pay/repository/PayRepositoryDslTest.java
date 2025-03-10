@@ -76,7 +76,7 @@ class PayRepositoryDslTest {
 
         RegisterJobResponse registerJobResponse = clientService.registerJob(request, file);
         Job findJob = clientService.findById(registerJobResponse.jobId());
-        payService.payReady(member.getNickname(), request.content(), request.money(), request.point(), findJob);
+        payService.payReady(String.valueOf(member.getId()), request.content(), request.money(), request.point(), findJob);
         Matching matching = matchingRepository.findByMemberAndJob_Id(member, findJob.getId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
 
         ///when
