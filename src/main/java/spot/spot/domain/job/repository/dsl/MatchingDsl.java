@@ -38,16 +38,8 @@ public class MatchingDsl {
         );
     }
 
-    public Optional<JobDetailResponse> findOneJobDetail(long jobId) {
-
-        List<MatchingStatus> statuses = queryFactory
-            .select(matching.status)
-            .from(matching)
-            .fetch();
-
-        System.out.println("All statuses in DB: " + statuses);
-
-
+    public Optional<JobDetailResponse> findOneJobDetail(long jobId, long memberId) {
+        QMatching myMatching = new QMatching("my_matching"); // 별칭 생성
         return Optional.ofNullable(queryFactory
             .select(Projections.constructor(JobDetailResponse.class,
                 job.id,
@@ -60,11 +52,15 @@ public class MatchingDsl {
                 job.tid,
                 member.id,
                 member.nickname,
-                member.img
+                member.img,
+                myMatching.status
             ))
             .from(job)
             .join(matching).on(job.id.eq(matching.job.id))
             .join(member).on(matching.member.id.eq(member.id))
+            .leftJoin(myMatching)
+            .on(myMatching.job.id.eq(jobId)
+                .and(myMatching.member.id.eq(memberId)))
             .where(matching.status.eq(MatchingStatus.OWNER)
                 .and(job.id.eq(jobId)))
             .fetchOne());

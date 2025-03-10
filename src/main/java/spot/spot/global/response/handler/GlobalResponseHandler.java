@@ -45,7 +45,8 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
         }
         // 만약 반환 타입이 void이면 data 없이 응답
         if (Void.TYPE.equals(returnType.getParameterType())) {
-            return ResultResponse.success("요청 완료");
+            response.setStatusCode(HttpStatus.NO_CONTENT);
+            return ResultResponse.success(null);
         }
         // 만약 String이면 예외 발생
         if (body instanceof String) {throw new GlobalException(ErrorCode.NOT_ALLOW_STRING);}

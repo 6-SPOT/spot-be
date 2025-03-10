@@ -95,7 +95,8 @@ public class Job4WorkerService {
     }
     // 일 하나 상세 확인
     public JobDetailResponse getOneJob (long jobId) {
-        return matchingDsl.findOneJobDetail(jobId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        Member me = userAccessUtil.getMember();
+        return matchingDsl.findOneJobDetail(jobId, me.getId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
     // 일 신청하기
     public void askingJob2Client(Job2WorkerRequest request) {
