@@ -59,14 +59,15 @@ public class PayService {
     private final PayAPIRequestService payAPIRequestService;
 
     //결제준비 (결제페이지로 이동)
-    public PayReadyResponseDto payReady(String memberNickname, String content, int amount, int point, Job job) {
+    public PayReadyResponseDto payReady(String memberId, String content, int amount, int point, Job job) {
+        Member findMember = memberService.findById(memberId);
         ///요청 파라미터 생성
         String totalAmount = String.valueOf(amount - point);
-        Map<String, String> parameters = createPaymentParameters(memberNickname, null, content, "1", totalAmount, null, false);
+        Map<String, String> parameters = createPaymentParameters(findMember.getNickname(), null, content, "1", totalAmount, null, false);
 
         ///결제 내역 기록 및 결제 준비
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        savePayHistory(memberNickname, amount, point, job);
+        savePayHistory(findMember.getNickname(), amount, point, job);
         PayReadyResponse payReadyResponse = payAPIRequestService.payAPIRequest("ready", requestEntity, PayReadyResponse.class);
         return PayReadyResponseDto.of(payReadyResponse);
     }
@@ -163,7 +164,7 @@ public class PayService {
 
     //매칭 시 PayHistory에 worker 업데이트
     public void updatePayHistory(PayHistory payHistory, PayStatus payStatus, String worker) {
-        if(worker.equals("") || worker.isEmpty()) throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+        if(worker == null) throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
         payHistory.setWorker(worker);
         payHistory.setPayStatus(payStatus);
     }
