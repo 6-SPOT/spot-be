@@ -8,7 +8,7 @@ import spot.spot.domain.job.dto.response.PositionResponse;
 import spot.spot.domain.member.entity.Member;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface JobStreamingMapper {
+public interface RealTimePositionMapper {
 
     @Mapping(source = "positionRequest.jobId", target = "jobId")
     @Mapping(source = "positionRequest.lat", target = "lat")

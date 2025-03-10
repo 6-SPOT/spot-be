@@ -1,21 +1,18 @@
 package spot.spot.domain.job.mapper;
 
-import com.querydsl.core.Tuple;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mapstruct.*;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.response.AttenderResponse;
-import spot.spot.domain.job.dto.response.JobSituationResponse;
+import spot.spot.domain.job.dto.request.AttenderResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.entity.WorkerAbility;
-import spot.spot.domain.pay.entity.PayHistory;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface Job4ClientMapper {
+public interface ClientMapper {
     /*
     * 1) 일 등록 (reqeust -> entity)
     * 2) 일 신청자 하나 변환 (entity -> response)

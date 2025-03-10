@@ -2,11 +2,9 @@ package spot.spot.domain.job.repository.dsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
-import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.entity.QJob;

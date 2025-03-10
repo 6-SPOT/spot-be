@@ -9,17 +9,18 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import spot.spot.domain.job.dto.request.Job2ClientRequest;
+import spot.spot.domain.job.dto.request.ChangeStatusClientRequest;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.request.YesOrNo2WorkersRequest;
-import spot.spot.domain.job.dto.response.AttenderResponse;
+import spot.spot.domain.job.mapper.ClientMapper;
+import spot.spot.domain.job.util.JobUtil;
+import spot.spot.domain.job.dto.request.YesOrNoWorkersRequest;
+import spot.spot.domain.job.dto.request.AttenderResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.mapper.Job4ClientMapper;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
 import spot.spot.domain.job.repository.dsl.SearchingListDsl;
 import spot.spot.domain.job.repository.jpa.JobRepository;
@@ -31,8 +32,6 @@ import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
-import spot.spot.domain.pay.entity.PayHistory;
-import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -42,13 +41,13 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class Job4ClientService {
+public class ClientService {
     // Util
     private final JobUtil jobUtil;
     private final UserAccessUtil userAccessUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     // Mapper
-    private final Job4ClientMapper job4ClientMapper;
+    private final ClientMapper clientMapper;
     private final MemberMapper memberMapper;
     private final JobRepository jobRepository;
     // JPA
@@ -77,7 +76,7 @@ public class Job4ClientService {
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
-        Job newJob = jobRepository.save(job4ClientMapper.registerRequestToJob(url, request, " "));
+        Job newJob = jobRepository.save(clientMapper.registerRequestToJob(url, request, " "));
 
         Matching matching = Matching.builder()
             .member(client)
@@ -95,15 +94,15 @@ public class Job4ClientService {
     @Transactional(readOnly = true)
     public Slice<AttenderResponse> findJobAttenderList(long jobId, Pageable pageable) {
         Slice<Worker> workers = searchingListDsl.findWorkersByJobIdAndStatus(jobId, pageable);
-        List<AttenderResponse> responseList = job4ClientMapper.toResponseList(workers.getContent());
+        List<AttenderResponse> responseList = clientMapper.toResponseList(workers.getContent());
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
     // 4) 해결사에게 일 의뢰
-    public void askingJob2Worker (Job2ClientRequest request) {
+    public void askingJob2Worker (ChangeStatusClientRequest request) {
         Member worker = memberRepository
-            .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
+            .findById(request.workerId()).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
-        Job job = changeJobStatusDsl.findJobWithValidation(request.attenderId(), request.jobId());
+        Job job = changeJobStatusDsl.findJobWithValidation(request.workerId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.REQUEST).build();
         matchingRepository.save(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
@@ -111,7 +110,7 @@ public class Job4ClientService {
     }
     // 5) 일 수락 혹은 거절
     @Transactional
-    public void yesOrNo2RequestOfWorker(YesOrNo2WorkersRequest request) {
+    public void yesOrNo2RequestOfWorker(YesOrNoWorkersRequest request) {
         Member owner = userAccessUtil.getMember();
         Member worker = memberRepository
             .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
@@ -123,10 +122,10 @@ public class Job4ClientService {
     }
     // 6) NO Show 사용자를 위해 일 철회 요청
     @Transactional
-    public void requestWithdrawal(Job2ClientRequest request) {
+    public void requestWithdrawal(ChangeStatusClientRequest request) {
         Member owner = userAccessUtil.getMember();
         Member worker = memberRepository
-            .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
+            .findById(request.workerId()).orElseThrow(() -> new GlobalException(
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
@@ -157,7 +156,7 @@ public class Job4ClientService {
     }
 
     @Transactional
-    public void confirmOrRejectJob(YesOrNo2WorkersRequest request) {
+    public void confirmOrRejectJob(YesOrNoWorkersRequest request) {
         Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
         changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.CONFIRM : MatchingStatus.REJECT);

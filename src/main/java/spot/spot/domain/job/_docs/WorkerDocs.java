@@ -1,7 +1,6 @@
 package spot.spot.domain.job._docs;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,15 +16,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import spot.spot.domain.job.dto.request.Job2WorkerRequest;
+import spot.spot.domain.job.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
-import spot.spot.domain.job.dto.request.YesOrNo2ClientsRequest;
+import spot.spot.domain.job.dto.request.YesOrNoClientsRequest;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
 
 @Tag(name = "Job4Worker", description = "해결사를 위한 API 모음")
-public interface Job4WorkerDocs {
+public interface WorkerDocs {
 
     @Operation(summary = "구직 등록하기",
         description = """
@@ -64,14 +63,14 @@ public interface Job4WorkerDocs {
         요청이 성공되면 매칭 테이블의 새로운 교차 레코드가 생기고, STATUS가 ATTENDER로 생성됩니다.
         """)
     @PostMapping
-    public void askingJob2Client(@RequestBody Job2WorkerRequest request);
+    public void askingJob2Client(@RequestBody ChangeStatusWorkerRequest request);
 
     @Operation(summary = "일을 시작하기",
         description = """
         MatchingStatus가 YES인 일의 상태를 START로 바꿉니다.
         """)
     @PostMapping
-    public void startJob(@RequestBody Job2WorkerRequest request);
+    public void startJob(@RequestBody ChangeStatusWorkerRequest request);
 
     @Operation(summary = "의뢰인이 요청한 일 수락 혹은 거절",
         description = """
@@ -79,7 +78,7 @@ public interface Job4WorkerDocs {
         """)
     @PostMapping
     public void acceptJobRequestOfClient (
-        @RequestBody YesOrNo2ClientsRequest request
+        @RequestBody YesOrNoClientsRequest request
     );
 
     @Operation(summary = "일 재개 응답",
@@ -87,7 +86,7 @@ public interface Job4WorkerDocs {
         취소 예약이 들어간 유저가 일을 재개하겠다는 응답을 합니다.
         """)
     @PostMapping
-    public void continueJob (Job2WorkerRequest request);
+    public void continueJob (ChangeStatusWorkerRequest request);
 
     @Operation(summary = "일 하는 것 증명 사진 제출",
         description = """
@@ -101,14 +100,14 @@ public interface Job4WorkerDocs {
                 """, content = @Content),
         })
     @PostMapping
-    public void certificateJob(Job2WorkerRequest request, MultipartFile file);
+    public void certificateJob(ChangeStatusWorkerRequest request, MultipartFile file);
 
     @Operation(summary = "일을 끝냈음을 알림",
         description = """
         일을 끝냈음을 의뢰인에게 알립니다.
         """)
     @PatchMapping
-    public void finishJob(Job2WorkerRequest request);
+    public void finishJob(ChangeStatusWorkerRequest request);
 
     @Operation(summary = "내가 신청하거나 진행 중인 일 현황 보내기",
         description = """

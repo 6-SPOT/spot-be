@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.job.repository.jpa.JobRepository;
-import spot.spot.domain.job.service.Job4ClientService;
-import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.job.service.ClientService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.member.service.MemberService;
@@ -55,7 +54,7 @@ public class PayServiceTest {
     private JobRepository jobRepository;
 
     @Autowired
-    private Job4ClientService job4ClientService;
+    private ClientService clientService;
 
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
@@ -353,8 +352,8 @@ public class PayServiceTest {
         jobRepository.save(mockJob);
 
         ///when
-        job4ClientService.updateTidToJob(mockJob, mockTid);
-        Job resultJob = job4ClientService.findByTid(mockTid);
+        clientService.updateTidToJob(mockJob, mockTid);
+        Job resultJob = clientService.findByTid(mockTid);
 
         ///then
         Assertions.assertThat(resultJob).isNotNull()

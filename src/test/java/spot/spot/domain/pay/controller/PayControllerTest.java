@@ -1,10 +1,8 @@
 package spot.spot.domain.pay.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
@@ -15,9 +13,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.service.Job4ClientService;
+import spot.spot.domain.job.service.ClientService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
@@ -27,7 +24,6 @@ import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
 import spot.spot.domain.pay.service.PayService;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,7 +44,7 @@ class PayControllerTest {
     private PayService payService;
 
     @MockitoBean
-    private Job4ClientService job4ClientService;
+    private ClientService clientService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -86,7 +82,7 @@ class PayControllerTest {
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
 
         when(payService.payReady(anyString(), anyString(),anyInt(),anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
         ///when ///then
         mockMvc.perform(
                         post("/api/pay/ready")
@@ -107,7 +103,7 @@ class PayControllerTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(job4ClientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(

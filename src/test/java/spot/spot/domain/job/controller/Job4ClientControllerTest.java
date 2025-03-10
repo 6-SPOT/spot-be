@@ -1,11 +1,8 @@
 package spot.spot.domain.job.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
@@ -21,8 +18,8 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import spot.spot.domain.chat.service.ChatService;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.job.service.Job4ClientService;
-import spot.spot.domain.job.service.Job4WorkerService;
+import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.service.WorkerService;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.notification.service.FcmService;
 import spot.spot.domain.pay.service.PayService;
@@ -31,7 +28,6 @@ import spot.spot.global.redis.service.TokenService;
 import spot.spot.domain.review.service.ReviewService;
 import spot.spot.global.security.util.UserAccessUtil;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -53,7 +49,7 @@ class Job4ClientControllerTest {
     ObjectMapper objectMapper;
 
     @MockitoBean
-    Job4ClientService job4ClientService;
+    ClientService clientService;
 
     @MockitoBean
     ChatService chatService;
@@ -62,7 +58,7 @@ class Job4ClientControllerTest {
     SimpMessageSendingOperations messagingTemplate;
 
     @MockitoBean
-    Job4WorkerService job4WorkerService;
+    WorkerService workerService;
 
     @MockitoBean
     MemberService memberService;
@@ -104,7 +100,7 @@ class Job4ClientControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "This is a test file".getBytes()
         );
-        given(job4ClientService.registerJob(any(), any())).willReturn(res);
+        given(clientService.registerJob(any(), any())).willReturn(res);
 
         ///when ///then
         ///multipart 요청 시 요청form이 다르다.
