@@ -1,4 +1,4 @@
-package spot.spot.domain.review.dto;
+package spot.spot.domain.review.dto.response;
 
 import lombok.Getter;
 import spot.spot.domain.review.entity.Review;
