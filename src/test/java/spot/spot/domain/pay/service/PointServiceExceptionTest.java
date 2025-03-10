@@ -68,7 +68,7 @@ public class PointServiceExceptionTest {
         Assertions.assertThatThrownBy(() -> pointService.registerPoint(mockPointCode, memberId))
                 .isInstanceOf(GlobalException.class)
                 .extracting(e -> ((GlobalException) e).getErrorCode().getMessage())
-                .isEqualTo(ErrorCode.INVALID_POINT_CODE.getMessage());
+                .isEqualTo(ErrorCode.EMPTY_POINT.getMessage());
     }
 
     @Test

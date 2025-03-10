@@ -178,7 +178,9 @@
                      log.info("{} 번째 쓰레드 접근 시작", finalI);
                      pointService.registerPoint(pointCode, String.valueOf(findMember.getId()));
                      successCount.getAndIncrement();
+                     log.info("{} 번째 쓰레드 성공", finalI);
                  } catch (Exception e) {
+                     log.info("{} 번째 쓰레드 실패", finalI);
                      failCount.getAndIncrement();
                  } finally {
                      log.info("{} 번째 쓰레드 접근 종료", finalI);
@@ -187,7 +189,7 @@
              });
          }
 
-         /// 스레드 종료 대기
+         /// 스레드 대기 종료
          doneSignal.await();
          executorService.shutdown();
 

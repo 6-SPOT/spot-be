@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ public class PayController {
                 request.totalAmount());
     }
 
+    @Transactional
     @PostMapping("/ready")
     public PayReadyResponseDto payReady(@Valid @RequestBody PayReadyRequestDto request, Authentication auth) {
         Job findJob = job4ClientService.findById(request.jobId());
