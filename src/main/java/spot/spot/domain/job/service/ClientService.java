@@ -159,7 +159,11 @@ public class ClientService {
     public void confirmOrRejectJob(YesOrNoWorkersRequest request) {
         Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         changeJobStatusDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
-        changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
+        Matching matching = changeJobStatusDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
+        int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching.getId());
+        if (matching.getStatus().equals(MatchingStatus.CONFIRM)) {
+            payService.payTransfer(String.valueOf(worker.getId()), payAmountByMatchingJob, matching.getJob());
+        }
     }
 
 }

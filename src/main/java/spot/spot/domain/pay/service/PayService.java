@@ -17,6 +17,7 @@ import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.response.*;
 import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
+import spot.spot.domain.pay.repository.PayRepositoryDsl;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
@@ -31,6 +32,7 @@ import java.util.*;
 public class PayService {
 
     private final MatchingDsl matchingDsl;
+    private final PayRepositoryDsl payRepositoryDsl;
     @Value("${kakao.pay.cid}")
     private String cid;
 
@@ -241,6 +243,10 @@ public class PayService {
 
     public PayHistory findByJob(Job job) {
         return payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    }
+
+    public int findPayAmountByMatchingJob(Long matchingId) {
+        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId);
     }
 
     private HttpHeaders getHeaders() {
