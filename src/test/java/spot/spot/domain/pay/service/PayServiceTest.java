@@ -1,6 +1,7 @@
 package spot.spot.domain.pay.service;
 
 import com.klaytn.caver.wallet.keyring.SingleKeyring;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ActiveProfiles("local")
 @Transactional
+@Slf4j
 public class PayServiceTest {
 
     @Autowired
@@ -94,6 +96,9 @@ public class PayServiceTest {
         PayReadyResponse mockPayReadyResponse = payReadyResponse.create(mockTid, mockPcUrl, mockMobileUrl);
         Job mockJob = createMockJob(mockTid);
         jobRepository.save(mockJob);
+        Member mockMember = Member.builder()
+                .nickname("testuser")
+                .build();
 
         // Mock 객체로 실제 API 호출을 대체
         when(payAPIRequestService.payAPIRequest(
@@ -101,9 +106,10 @@ public class PayServiceTest {
                 any(HttpEntity.class),
                 eq(PayReadyResponse.class)
         )).thenReturn(mockPayReadyResponse);
+        BDDMockito.given(memberService.findById(anyString())).willReturn(mockMember);
 
         ///when
-        PayReadyResponseDto result = payService.payReady("testUser", "음쓰 버려주실 분~", 10000, 500, mockJob);
+        PayReadyResponseDto result = payService.payReady(String.valueOf(mockMember.getId()), "음쓰 버려주실 분~", 10000, 500, mockJob);
 
         ///then
         Assertions.assertThat(result).isNotNull()
@@ -294,7 +300,7 @@ public class PayServiceTest {
         PayHistory payHistory = payHistoryRepository.findByDepositor(depositor).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
 
         ///when
-        payService.updatePayHistory(payHistory, PayStatus.PROCESS, "testUser2");
+        payService.updatePayHistory(payHistory, PayStatus.PROCESS, "");
 
         ///then
         assertEquals(payHistory.getPayStatus(), PayStatus.PROCESS);

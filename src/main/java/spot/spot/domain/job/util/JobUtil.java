@@ -14,6 +14,7 @@ import spot.spot.domain.job.entity.Matching;
 import spot.spot.domain.job.entity.MatchingStatus;
 import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
+import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -28,6 +29,7 @@ public class JobUtil {
     private final Map<Long, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final TransactionTemplate transactionTemplate;
     private final ChangeJobStatusDsl changeJobStatusDsl;
+    private final PayService payService;
 
     // 줌 레벨을 실제 KM로 변환하는 함수
     public double convertZoomToRadius(int zoom_level) {
@@ -86,6 +88,8 @@ public class JobUtil {
             }
             changeJobStatusDsl.updateMatchingStatus(matching_id, MatchingStatus.CANCEL);
             scheduledTasks.remove(matching_id);
+            int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching_id);
+            payService.payCancel(matching.getJob(), payAmountByMatchingJob);
             log.info("Matching-{}는 해결사의 노쇼로 인해 취소되었음을 알립니다.", matching_id);
             return 0;
         });
