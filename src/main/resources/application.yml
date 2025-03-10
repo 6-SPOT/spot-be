@@ -89,3 +89,12 @@ klaytn:
 kakao:
   pay:
     partner_order_id: ilmatch
+
+management:
+  endpoints:
+    prometheus:
+      enabled: true
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: prometheus

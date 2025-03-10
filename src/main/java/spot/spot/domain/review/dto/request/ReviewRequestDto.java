@@ -1,6 +1,5 @@
-package spot.spot.domain.review.dto;
+package spot.spot.domain.review.dto.request;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
