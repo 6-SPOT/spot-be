@@ -44,30 +44,30 @@ public interface ClientDocs {
         해결사를 찾기 위한 지도 화면을 위한 API 입니다. 
         페이지가 처음 랜더링 될 떄, map.center()를 통해 중앙 위치를 보내 주세요.
         이후 Draging과 zoomLevel이 바뀔 때마다 API 요청을 호출해주세요.
-        
+        <br/>
         허용 줌레벨 (
                         case 21 -> 0.05km;
-                        
+          <br/>              
                         case 20 -> 0.1km;
-                        
+          <br/>              
                         case 19 -> 0.2km;
-                        
+          <br/>             
                         case 18 -> 0.5km;
-                        
+          <br/>              
                         case 17 -> 1km;
-                        
+          <br/>              
                         case 16 -> 2km;
-                        
+          <br/>              
                         case 15 -> 5km;
-                        
+          <br/>              
                         case 14 -> 10km;
-                        
+          <br/>              
                         case 13 -> 20km;
-                        
+          <br/>              
                         case 12 -> 50km;
-                        
+          <br/>              
                         default -> 100km;
-        
+           <br/>
         )
          
         현재는 단순 API 호출이지만, 이후 최적화로 성능을 높이겠습니다. 
