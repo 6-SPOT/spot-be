@@ -39,4 +39,8 @@ public class ReviewController {
         log.info("{}",jobId);
         return reviewService.getReviewsByJobId(jobId);
     }
+
+    @GetMapping("/ok")
+    public void ok() {
+    }
 }

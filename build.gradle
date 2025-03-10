@@ -104,6 +104,9 @@ dependencies {
 	// Vault 설정
 	implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
 
+	// 모니터링 관련
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
