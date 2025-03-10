@@ -34,6 +34,9 @@ spring:
   kafka:
     admin:
       operation-timeout:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: my-group
 
 # 서버 설정
 server:
