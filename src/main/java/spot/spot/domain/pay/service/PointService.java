@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class PointService {
 
     private final PointRepository pointRepository;
@@ -47,17 +48,14 @@ public class PointService {
     }
 
     //쿠폰 사용
-    public void registerPoint(String pointCode,String memberId){
-        validatePointCode(pointCode);
-        Optional<Point> validPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode);
-        if (validPoint.isPresent()) {
-            validPoint.get().setValid(false);
-            Member findMember = memberService.findById(memberId);
-            int point = findMember.getPoint();
-            findMember.setPoint(point + validPoint.get().getPoint());
-        } else {
-            throw new GlobalException(ErrorCode.EMPTY_POINT);
-        }
+    public void registerPoint(String pointCode, String memberId) {
+        Point validPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode)
+                .orElseThrow(() -> new GlobalException(ErrorCode.EMPTY_POINT));
+        validPoint.setValid(false);
+
+        Member findMember = memberService.findById(memberId);
+        int point = findMember.getPoint();
+        findMember.setPoint(point + validPoint.getPoint());
     }
 
     //쿠폰 하나삭제
