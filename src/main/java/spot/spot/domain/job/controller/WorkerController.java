@@ -21,6 +21,7 @@ import spot.spot.domain.job._docs.WorkerDocs;
 import spot.spot.domain.job.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNoClientsRequest;
+import spot.spot.domain.job.dto.response.JobCertifiationResponse;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
@@ -73,10 +74,10 @@ public class WorkerController implements WorkerDocs {
     }
 
     @PostMapping(value = "/certificate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void certificateJob(
+    public JobCertifiationResponse certificateJob(
         @RequestPart(value = "request") ChangeStatusWorkerRequest request,
         @RequestPart(value = "file") MultipartFile file) {
-        workerService.certificateJob(request, file);
+        return workerService.certificateJob(request, file);
     }
 
     @PatchMapping("/finish")
