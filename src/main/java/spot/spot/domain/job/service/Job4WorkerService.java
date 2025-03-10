@@ -161,4 +161,11 @@ public class Job4WorkerService {
         Member me = userAccessUtil.getMember();
         return searchingListDsl.findJobSituationsByWorker(me.getId());
     }
+
+    @Transactional
+    public void deleteWorker() {
+        Member me = userAccessUtil.getMember();
+        Worker worker = workerRepository.findById(me.getId()).orElseThrow(() -> new GlobalException(ErrorCode.WORKER_NOT_FOUND));
+        workerRepository.delete(worker);
+    }
 }
