@@ -1,4 +1,4 @@
-package spot.spot.domain.job.repository.dsl;
+package spot.spot.domain.job.query.repository.dsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -11,11 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.dto.response.JobSituationResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.entity.QJob;
-import spot.spot.domain.job.entity.QMatching;
+import spot.spot.domain.job.command.dto.response.JobSituationResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.MatchingStatus;
+import spot.spot.domain.job.command.entity.QJob;
+import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.domain.member.entity.QWorkerAbility;
@@ -23,7 +23,7 @@ import spot.spot.domain.member.entity.Worker;
 
 @Repository
 @RequiredArgsConstructor
-public class SearchingListDsl {  // java 코드로 쿼리문을 build 하는 방법
+public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
 
     private final JPAQueryFactory queryFactory;
     private final QJob job = QJob.job;

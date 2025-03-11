@@ -1,4 +1,4 @@
-package spot.spot.domain.job.service.searching;
+package spot.spot.domain.job.query.util.searching;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -6,26 +6,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
-import spot.spot.domain.job.dto.Location;
-import spot.spot.domain.job.dto.response.NearByJobResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.mapper.WorkerMapper;
-import spot.spot.domain.job.repository.dsl.SearchingListDsl;
-import spot.spot.domain.job.service.SearchingJobService;
-import spot.spot.domain.job.util.JobUtil;
+import spot.spot.domain.job.command.dto.Location;
+import spot.spot.domain.job.query.dto.response.NearByJobResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.mapper.WorkerCommandMapper;
+import spot.spot.domain.job.query.mapper.WorkerQueryMapper;
+import spot.spot.domain.job.query.repository.dsl.SearchingListQueryDsl;
+import spot.spot.domain.job.query.util._docs.SearchingJobQueryUtil;
+import spot.spot.domain.job.command.util.JobUtil;
 
 @Service
 @RequiredArgsConstructor
-public class SearchingJobQueryDSLService implements SearchingJobService {
+public class SearchingJobQueryDSLUtil implements SearchingJobQueryUtil {
 
-    private final SearchingListDsl jobQueryDsl;
+    private final SearchingListQueryDsl jobQueryDsl;
     private final JobUtil jobUtil;
-    private final WorkerMapper workerMapper;
+    private final WorkerQueryMapper workerQueryMapper;
+
     @Override
     public Slice<NearByJobResponse> findNearByJobs(double lat, double lng, int zoom, Pageable pageable) {
         double dist = jobUtil.convertZoomToRadius(zoom);
         Slice<Job> jobs = jobQueryDsl.findNearByJobsWithQueryDSL(lat, lng, dist, pageable);
-        List<NearByJobResponse> responseList = workerMapper
+        List<NearByJobResponse> responseList = workerQueryMapper
             .toNearByJobResponseList(jobs.getContent(), Location.builder().lat(lat).lng(lng).build());
         return new SliceImpl<>(responseList, pageable, jobs.hasNext());
     }

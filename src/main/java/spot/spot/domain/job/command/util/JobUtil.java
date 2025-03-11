@@ -1,4 +1,4 @@
-package spot.spot.domain.job.util;
+package spot.spot.domain.job.command.util;
 
 import java.time.Instant;
 import java.util.Map;
@@ -10,10 +10,10 @@ import org.mapstruct.Named;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
-import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.repository.dsl.ChangeJobStatusDsl;
-import spot.spot.domain.job.repository.jpa.MatchingRepository;
+import spot.spot.domain.job.command.entity.Matching;
+import spot.spot.domain.job.command.entity.MatchingStatus;
+import spot.spot.domain.job.command.repository.dsl.ChangeJobStatusCommandDsl;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ErrorCode;
@@ -28,7 +28,7 @@ public class JobUtil {
     private final MatchingRepository matchingRepository;
     private final Map<Long, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final TransactionTemplate transactionTemplate;
-    private final ChangeJobStatusDsl changeJobStatusDsl;
+    private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
     private final PayService payService;
 
     // 줌 레벨을 실제 KM로 변환하는 함수
@@ -86,7 +86,7 @@ public class JobUtil {
                 ColorLogger.red("더 이상 잠수 상태가 아닌 해결사-일 Matching-{}은 skip 합니다. ", matching_id);
                 return -1;
             }
-            changeJobStatusDsl.updateMatchingStatus(matching_id, MatchingStatus.CANCEL);
+            changeJobStatusCommandDsl.updateMatchingStatus(matching_id, MatchingStatus.CANCEL);
             scheduledTasks.remove(matching_id);
             int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching_id);
             payService.payCancel(matching.getJob(), payAmountByMatchingJob);

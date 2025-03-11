@@ -1,26 +1,26 @@
-package spot.spot.domain.job.repository.dsl;
+package spot.spot.domain.job.query.repository.dsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.dto.response.JobDetailResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.entity.QJob;
-import spot.spot.domain.job.entity.QMatching;
-
+import spot.spot.domain.job.command.entity.QJob;
+import spot.spot.domain.job.command.entity.QMatching;
+import spot.spot.domain.job.query.dto.response.JobDetailResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.MatchingStatus;
 import java.util.Optional;
 import spot.spot.domain.member.entity.QMember;
 
 @Repository
 @RequiredArgsConstructor
-public class MatchingDsl {
+public class SearchingOneQueryDsl {
 
     private final JPAQueryFactory queryFactory;
     private final QMember member = QMember.member;
     private final QJob job = QJob.job;
     private final QMatching matching = QMatching.matching;
+
     public Optional<String> findWorkerNicknameByJob(Job job) {
 
         return Optional.ofNullable(
