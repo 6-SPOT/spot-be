@@ -1,13 +1,11 @@
-package spot.spot.domain.job.entity;
+package spot.spot.domain.job.command.entity;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
-import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.review.entity.Review;
 import spot.spot.global.auditing.entitiy.CreatedAndDeleted;
 
