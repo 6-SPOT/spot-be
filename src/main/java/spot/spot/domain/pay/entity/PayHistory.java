@@ -2,9 +2,8 @@ package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
