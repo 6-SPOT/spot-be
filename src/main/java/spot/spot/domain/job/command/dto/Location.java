@@ -1,4 +1,4 @@
-package spot.spot.domain.job.dto;
+package spot.spot.domain.job.command.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

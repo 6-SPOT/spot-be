@@ -1,4 +1,4 @@
-package spot.spot.domain.job.dto.response;
+package spot.spot.domain.job.query.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

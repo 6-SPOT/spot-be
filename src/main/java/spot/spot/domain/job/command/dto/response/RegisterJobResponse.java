@@ -1,4 +1,4 @@
-package spot.spot.domain.job.dto.response;
+package spot.spot.domain.job.command.dto.response;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
