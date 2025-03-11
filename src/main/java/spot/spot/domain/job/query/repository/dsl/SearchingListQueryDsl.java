@@ -1,9 +1,12 @@
 package spot.spot.domain.job.query.repository.dsl;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -97,6 +100,24 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
     }
 
     public List<JobSituationResponse> findJobSituationsByOwner(long memberId) {
+
+        JPQLQuery<Long> subQuery = JPAExpressions
+            .select(matching.job.id)
+            .from(matching)
+            .where(matching.member.id.eq(memberId)
+                .and(matching.status.eq(MatchingStatus.OWNER))
+            );
+
+        BooleanExpression hasApplicants = JPAExpressions
+            .selectOne()
+            .from(QMatching.matching)
+            .where(QMatching.matching.job.id.eq(job.id)
+                .and(QMatching.matching.status.ne(MatchingStatus.OWNER)))
+            .exists();
+
+        // 참가자가 없는 경우 -> OWNER의 레코드를 그대로 띄움. 참가자가 한 명이라도 있다면? Owner인 레코드는 지우고 참가자 레코드만 띄움
+        BooleanExpression condition = hasApplicants.not().or(matching.status.ne(MatchingStatus.OWNER));
+
         return queryFactory
             .select(Projections.constructor(JobSituationResponse.class,
                 job.id.as("jobId"),
@@ -106,20 +127,16 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
                 matching.status,
                 member.id.as("memberId"),
                 member.nickname,
-                member.phone
+                member.phone,
+                Expressions.constant(true)
             ))
             .from(job)
             .leftJoin(matching).on(job.id.eq(matching.job.id))
             .leftJoin(member).on(member.id.eq(matching.member.id))
-            .where(
-                matching.job.id.in(
-                    JPAExpressions
-                        .select(matching.job.id)
-                        .from(matching)
-                        .where(matching.member.id.eq(memberId)
-                            .and(matching.status.eq(MatchingStatus.OWNER)))
-                ).and(matching.status.ne(MatchingStatus.OWNER))
-            ).fetch();
+            .where(job.id.in(subQuery)
+                .and(condition)
+            )
+            .fetch();
     }
 
     public List<JobSituationResponse> findJobSituationsByWorker(long memberId) {
@@ -132,7 +149,8 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
                 matching.status,
                 member.id,
                 member.nickname,
-                member.phone
+                member.phone,
+                Expressions.constant(false)
             ))
             .from(job)
             .leftJoin(matching).on(job.id.eq(matching.job.id))

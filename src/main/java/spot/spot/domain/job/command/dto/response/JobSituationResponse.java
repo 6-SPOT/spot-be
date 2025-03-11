@@ -28,4 +28,6 @@ public class JobSituationResponse {
     private String nickName;
     @Schema(description = "해결사 전화번호")
     private String phone;
+    @Schema(description = "내가 일의 owner인가?")
+    private boolean isOwner;
 }
