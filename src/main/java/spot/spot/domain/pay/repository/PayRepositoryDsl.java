@@ -3,8 +3,8 @@ package spot.spot.domain.pay.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.entity.QJob;
-import spot.spot.domain.job.entity.QMatching;
+import spot.spot.domain.job.command.entity.QJob;
+import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.pay.entity.QPayHistory;
 
 @Repository

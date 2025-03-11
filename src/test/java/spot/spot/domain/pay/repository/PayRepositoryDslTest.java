@@ -37,7 +37,7 @@ class PayRepositoryDslTest {
     PayRepositoryDsl payRepositoryDsl;
 
     @Autowired
-    ClientService clientService;
+    ClientCommandService clientCommandService;
 
     @Autowired
     PayService payService;
@@ -47,6 +47,9 @@ class PayRepositoryDslTest {
 
     @Autowired
     MatchingRepository matchingRepository;
+
+    @Autowired
+    CertificationRepository certificationRepository;
 
     @MockitoBean
     AwsS3ObjectStorage awsS3ObjectStorage;
@@ -79,8 +82,8 @@ class PayRepositoryDslTest {
                 .when(payUtil)
                 .insertFromSchedule(any());
 
-        RegisterJobResponse registerJobResponse = clientService.registerJob(request, file);
-        Job findJob = clientService.findById(registerJobResponse.jobId());
+        RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
+        Job findJob = clientQueryService.findById(registerJobResponse.jobId());
         payService.payReady(String.valueOf(member.getId()), request.content(), request.money(), request.point(), findJob);
         Matching matching = matchingRepository.findByMemberAndJob_Id(member, findJob.getId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
 
