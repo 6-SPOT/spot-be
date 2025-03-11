@@ -1,12 +1,15 @@
 package spot.spot.domain.pay.service;
 
 import com.klaytn.caver.wallet.keyring.SingleKeyring;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.member.entity.Member;
@@ -41,15 +44,6 @@ public class PayService {
 
     @Value("${kakao.pay.partner_order_id}")
     private String domain;
-
-    @Value("${kakao.pay.approval_url}")
-    private String approvalUrl;
-
-    @Value("${kakao.pay.fail_url}")
-    private String failUrl;
-
-    @Value("${kakao.pay.cancel_url}")
-    private String cancelUrl;
 
     private final MemberService memberService;
     private final PayHistoryRepository payHistoryRepository;
@@ -197,18 +191,36 @@ public class PayService {
             parameters.put("pg_token", pgToken);
         }
 
+        String redirectUri = getRedirectUrl();
+
         if (isCancel) {
             parameters.put("cancel_amount", totalAmount);
             parameters.put("cancel_tax_free_amount", "0");
             parameters.put("cancel_vat_amount", "0");
             parameters.put("cancel_available_amount", totalAmount);
         } else {
-            parameters.put("approval_url", approvalUrl);
-            parameters.put("fail_url", failUrl);
-            parameters.put("cancel_url", cancelUrl);
+            parameters.put("approval_url", redirectUri + "/payment/success");
+            parameters.put("fail_url", redirectUri + "/payment/fail");
+            parameters.put("cancel_url", redirectUri + "/payment/cancel");
         }
 
         return parameters;
+    }
+
+    private String getRedirectUrl() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return "https://ilmatch.net"; // 기본값
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+        String redirectUri = request.getRequestURL().toString();
+
+        if (redirectUri.contains("localhost:8080")) {
+            return "http://localhost:3000";
+        }
+
+        return "https://ilmatch.net"; // 기본값
     }
 
     private void depositToKlaytn(int peb) {
