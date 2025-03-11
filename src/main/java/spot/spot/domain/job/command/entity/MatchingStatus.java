@@ -1,4 +1,4 @@
-package spot.spot.domain.job.entity;
+package spot.spot.domain.job.command.entity;
 
 import lombok.AllArgsConstructor;
 
