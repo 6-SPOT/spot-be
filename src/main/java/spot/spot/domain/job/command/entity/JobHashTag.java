@@ -1,4 +1,4 @@
-package spot.spot.domain.job.entity;
+package spot.spot.domain.job.command.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
