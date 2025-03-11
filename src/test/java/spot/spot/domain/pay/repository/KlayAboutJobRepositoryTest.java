@@ -36,11 +36,11 @@ class KlayAboutJobRepositoryTest {
         ///given
         double amtKlay = 0.00000001;
         int amtKrw = 10000;
-        PayHistory payHistory = PayHistory.builder().payStatus(PayStatus.PENDING).payPoint(1000).payAmount(9000).worker("worker").depositor("depositort").build();
         Job job = Job.builder().money(10000).title("title").img("img").content("content").build();
-        KlayAboutJob klayAboutjob = KlayAboutJob.builder().job(job).amtKlay(amtKlay).amtKrw(amtKrw).exchangeRate(0.0001).build();
+        Job saveJob = jobRepository.save(job);
+        PayHistory payHistory = PayHistory.builder().job(saveJob).payStatus(PayStatus.PENDING).payPoint(1000).payAmount(9000).worker("worker").depositor("depositort").build();
+        KlayAboutJob klayAboutjob = KlayAboutJob.builder().job(saveJob).amtKlay(amtKlay).amtKrw(amtKrw).exchangeRate(0.0001).build();
         payHistoryRepository.save(payHistory);
-        jobRepository.save(job);
         klayAboutJobRepository.save(klayAboutjob);
         ///when
         Optional<KlayAboutJob> findKlay = klayAboutJobRepository.findByJob(job);
