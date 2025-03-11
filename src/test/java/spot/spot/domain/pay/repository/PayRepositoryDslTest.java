@@ -10,11 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import spot.spot.domain.job.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.entity.Job;
 import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.job.repository.jpa.CertificationRepository;
 import spot.spot.domain.job.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.service.ClientService;
 import spot.spot.domain.member.entity.Member;
@@ -26,6 +28,7 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 
 @SpringBootTest
 @WithMockUser(username = "1")
+@ActiveProfiles("local")
 class PayRepositoryDslTest {
 
     @Autowired
@@ -43,11 +46,15 @@ class PayRepositoryDslTest {
     @Autowired
     MatchingRepository matchingRepository;
 
+    @Autowired
+    CertificationRepository certificationRepository;
+
     @MockitoBean
     AwsS3ObjectStorage awsS3ObjectStorage;
 
     @BeforeEach
     void before() {
+        certificationRepository.deleteAllInBatch();
         matchingRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }
