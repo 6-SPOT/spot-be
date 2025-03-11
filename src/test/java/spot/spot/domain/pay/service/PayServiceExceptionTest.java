@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;

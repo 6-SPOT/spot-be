@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import spot.spot.domain.chat.entity.ChatParticipant;
 import spot.spot.domain.chat.entity.ChatRoom;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.MemberRole;
 
