@@ -13,10 +13,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.dsl.MatchingDsl;
-import spot.spot.domain.job.repository.jpa.JobRepository;
-import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.query.repository.dsl.SearchingOneQueryDsl;
+import spot.spot.domain.job.query.repository.jpa.JobRepository;
+import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.member.service.MemberService;
@@ -56,7 +57,7 @@ public class PayServiceTest {
     private JobRepository jobRepository;
 
     @Autowired
-    private ClientService clientService;
+    private ClientCommandService clientCommandService;
 
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
@@ -74,7 +75,9 @@ public class PayServiceTest {
     private ConnectToKlaytnNetwork connectToKlaytnNetwork;
 
     @MockitoBean
-    private MatchingDsl matchingDsl;
+    private SearchingOneQueryDsl searchingOneQueryDsl;
+    @Autowired
+    private ClientQueryService clientQueryService;
 
     @BeforeEach
     void setUp() {
@@ -140,7 +143,7 @@ public class PayServiceTest {
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
         when(mockSingleKeyring.getAddress()).thenReturn("0x123456789abcdef");
         when(memberService.findById(anyString())).thenReturn(mockMember);
-        when(matchingDsl.findWorkerNicknameByJob(any(Job.class))).thenReturn(Optional.of("testWorker"));
+        when(searchingOneQueryDsl.findWorkerNicknameByJob(any(Job.class))).thenReturn(Optional.of("testWorker"));
         when(exchangeRateByBithumbApi.exchangeToKaia(anyInt())).thenReturn(1.2);
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
         when(klayAboutJobRepository.save(any(KlayAboutJob.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -214,7 +217,7 @@ public class PayServiceTest {
         //메서드에 필요한 mock 반환값 설정
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
         when(mockSingleKeyring.getAddress()).thenReturn("0x123456789abcdef");
-        when(matchingDsl.findWorkerNicknameByJob(any(Job.class))).thenReturn(Optional.of("testWorker"));
+        when(searchingOneQueryDsl.findWorkerNicknameByJob(any(Job.class))).thenReturn(Optional.of("testWorker"));
         when(memberService.findMemberByIdOrNickname(any(), any())).thenReturn(mockMember);
         when(exchangeRateByBithumbApi.exchangeToKaia(anyInt())).thenReturn(1.2);
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
@@ -358,8 +361,8 @@ public class PayServiceTest {
         jobRepository.save(mockJob);
 
         ///when
-        clientService.updateTidToJob(mockJob, mockTid);
-        Job resultJob = clientService.findByTid(mockTid);
+        clientCommandService.updateTidToJob(mockJob, mockTid);
+        Job resultJob = clientQueryService.findByTid(mockTid);
 
         ///then
         Assertions.assertThat(resultJob).isNotNull()
