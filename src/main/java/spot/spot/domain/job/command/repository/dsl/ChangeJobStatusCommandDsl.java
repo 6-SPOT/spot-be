@@ -1,4 +1,4 @@
-package spot.spot.domain.job.repository.dsl;
+package spot.spot.domain.job.command.repository.dsl;
 
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -6,11 +6,11 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.job.entity.MatchingStatus;
-import spot.spot.domain.job.entity.QJob;
-import spot.spot.domain.job.entity.QMatching;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.Matching;
+import spot.spot.domain.job.command.entity.MatchingStatus;
+import spot.spot.domain.job.command.entity.QJob;
+import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -18,7 +18,7 @@ import spot.spot.global.response.format.GlobalException;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class ChangeJobStatusDsl {
+public class ChangeJobStatusCommandDsl {
 
     private final JPAQueryFactory queryFactory;
     private final QJob job = QJob.job;
