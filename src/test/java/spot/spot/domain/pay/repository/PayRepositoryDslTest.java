@@ -29,7 +29,6 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 
 @SpringBootTest
 @WithMockUser(username = "1")
-@ActiveProfiles("local")
 class PayRepositoryDslTest {
 
     @Autowired
