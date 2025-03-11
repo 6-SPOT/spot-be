@@ -1,4 +1,4 @@
-package spot.spot.domain.job.repository.jpa;
+package spot.spot.domain.job.query.repository.jpa;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
