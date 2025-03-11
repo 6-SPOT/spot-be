@@ -3,7 +3,7 @@ spring:
   application:
     name: spot-be
   profiles:
-    active: local
+    active: dev
     include: default
   thymeleaf:
     check-template-location: false
@@ -89,3 +89,12 @@ klaytn:
 kakao:
   pay:
     partner_order_id: ilmatch
+
+management:
+  endpoints:
+    prometheus:
+      enabled: true
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: prometheus

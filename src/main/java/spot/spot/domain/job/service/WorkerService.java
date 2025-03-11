@@ -8,6 +8,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import spot.spot.domain.job.dto.response.JobCertifiationResponse;
 import spot.spot.domain.job.mapper.WorkerMapper;
 import spot.spot.domain.job.util.JobUtil;
 import spot.spot.domain.job.dto.request.ChangeStatusWorkerRequest;
@@ -137,7 +138,7 @@ public class WorkerService {
     }
 
     @Transactional
-    public void certificateJob(ChangeStatusWorkerRequest request, MultipartFile file) {
+    public JobCertifiationResponse certificateJob(ChangeStatusWorkerRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member worker = userAccessUtil.getMember();
         Matching now = matchingRepository
@@ -145,6 +146,7 @@ public class WorkerService {
             .orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         Certification certification = Certification.builder().matching(now).img(url).build();
         certificationRepository.save(certification);
+        return new JobCertifiationResponse(url);
     }
 
     @Transactional

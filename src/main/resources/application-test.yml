@@ -1,0 +1,71 @@
+spring:
+  datasource:
+    url: jdbc:mysql://test-db.c1o8wakk25sc.ap-northeast-2.rds.amazonaws.com/spotdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8 #이부분 변경해야함 ilmatch -> local docker로
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 3000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+        use_sql_comments: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+            client-name: Kakao
+            redirect-uri: https://ilmatch.net/login/oauth2/code/kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+  data:
+    redis:
+      host: redis-server
+      port: 6379
+      password: 1234
+
+kakao:
+  pay:
+    approval_url: https://ilmatch.net/payment/success
+    fail_url: https://ilmatch.net/payment/fail
+    cancel_url: https://ilmatch.net/payment/cancel
+
+kafka:
+  url: kafka:9092
+  group: spot
+
+management:
+  endpoints:
+    prometheus:
+      enabled: true
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: prometheus
+

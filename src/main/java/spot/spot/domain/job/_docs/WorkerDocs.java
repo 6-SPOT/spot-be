@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.dto.request.YesOrNoClientsRequest;
+import spot.spot.domain.job.dto.response.JobCertifiationResponse;
 import spot.spot.domain.job.dto.response.JobDetailResponse;
 import spot.spot.domain.job.dto.response.JobSituationResponse;
 import spot.spot.domain.job.dto.response.NearByJobResponse;
@@ -100,7 +101,7 @@ public interface WorkerDocs {
                 """, content = @Content),
         })
     @PostMapping
-    public void certificateJob(ChangeStatusWorkerRequest request, MultipartFile file);
+    public JobCertifiationResponse certificateJob(ChangeStatusWorkerRequest request, MultipartFile file);
 
     @Operation(summary = "일을 끝냈음을 알림",
         description = """
