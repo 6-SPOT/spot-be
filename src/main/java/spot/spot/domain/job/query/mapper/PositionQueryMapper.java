@@ -1,14 +1,14 @@
-package spot.spot.domain.job.mapper;
+package spot.spot.domain.job.query.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import spot.spot.domain.job.dto.request.PositionRequest;
-import spot.spot.domain.job.dto.response.PositionResponse;
+import spot.spot.domain.job.query.dto.request.PositionRequest;
+import spot.spot.domain.job.query.dto.response.PositionResponse;
 import spot.spot.domain.member.entity.Member;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface RealTimePositionMapper {
+public interface PositionQueryMapper {
 
     @Mapping(source = "positionRequest.jobId", target = "jobId")
     @Mapping(source = "positionRequest.lat", target = "lat")
