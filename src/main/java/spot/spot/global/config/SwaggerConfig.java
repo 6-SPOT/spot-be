@@ -30,11 +30,14 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-            .title("SPOT - 어디든 간다. 무엇이든 한다.")
-            .version("v0.0.1")
-            .description("<img src=\"https://soomin-bucket-1.s3.ap-northeast-2.amazonaws.com/TEAM_LOGO__team_name_is_spot__logo_with_cloud__dreamy_cloud__round_cloud__1_-removebg-preview.png\"\n"
-                + "                alt=\"TEAM SPOT 로고\" width=\"250px\" height=\"auto\"/>\n"
-                + "            <br> TEAM SPOT API에 오신 것을 환영합니다.").contact(new Contact()
+            .title("SPOT")
+            .version("v0.0.3")
+            .description(
+                "<br/> <h2 align='center'> 일 상태 전개도 </h2>"
+                + "<div align='center' width = '500px'>"
+                    + "<img src='https://soomin-bucket-1.s3.ap-northeast-2.amazonaws.com/static/Job_%EC%83%81%ED%83%9C_%EB%B3%80%EA%B2%BD_%EC%A0%84%EA%B0%9C%EB%8F%84.png'/>"
+                    + "</div>")
+                .contact(new Contact()
                 .name("담당자 - 개발팀 고경훈")
                 .email("rhrudgns159@gmail.com")
                 .url("https://github.com/42kko"));
