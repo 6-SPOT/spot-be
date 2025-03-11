@@ -1,11 +1,11 @@
-package spot.spot.domain.job.dto.response;
+package spot.spot.domain.job.query.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.domain.job.entity.MatchingStatus;
+import spot.spot.domain.job.command.entity.MatchingStatus;
 
 @Getter
 @Builder
