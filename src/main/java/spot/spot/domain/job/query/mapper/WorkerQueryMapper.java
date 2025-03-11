@@ -6,8 +6,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import spot.spot.domain.job.command.dto.Location;
 import spot.spot.domain.job.command.entity.Job;
-import spot.spot.domain.job.command.util.JobUtil;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
+import spot.spot.domain.job.query.util._docs.DistanceCalculateUtilDocs;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WorkerQueryMapper {
@@ -19,7 +19,7 @@ public interface WorkerQueryMapper {
         return jobs.stream()
             .map(job -> {
                 NearByJobResponse response = toNearByJobResponse(job);
-                double distance = JobUtil.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
+                double distance = DistanceCalculateUtilDocs.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
                 return response.toBuilder().dist(distance).build(); //기존 객체를 복사 + dist만 변경
             })
             .toList();

@@ -6,11 +6,8 @@ import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import spot.spot.domain.job.command.dto.Location;
 import spot.spot.domain.job.command.dto.request.RegisterWorkerRequest;
-import spot.spot.domain.job.query.dto.response.NearByJobResponse;
-import spot.spot.domain.job.command.entity.Job;
-import spot.spot.domain.job.command.util.JobUtil;
+import spot.spot.domain.job.query.util.DistanceCalculateUtil;
 import spot.spot.domain.member.entity.Ability;
 import spot.spot.domain.member.entity.AbilityType;
 import spot.spot.domain.member.entity.Member;
@@ -20,7 +17,7 @@ import spot.spot.domain.member.repository.AbilityRepository;
 
 
 @Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AbilityRepository.class, JobUtil.class})
+        unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AbilityRepository.class, DistanceCalculateUtil.class})
 public interface WorkerCommandMapper {
 
     // 1) Registing request to Entity
