@@ -12,8 +12,6 @@ import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.dsl.SearchingOneQueryDsl;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.pay.entity.KlayAboutJob;
