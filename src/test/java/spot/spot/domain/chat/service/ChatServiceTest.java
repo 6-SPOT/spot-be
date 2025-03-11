@@ -1,23 +1,17 @@
 package spot.spot.domain.chat.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import spot.spot.domain.chat.dto.request.ChatMessageCreateRequest;
@@ -32,8 +26,8 @@ import spot.spot.domain.chat.repository.ChatMessageRepository;
 import spot.spot.domain.chat.repository.ChatParticipantRepository;
 import spot.spot.domain.chat.repository.ChatRoomRepository;
 import spot.spot.domain.chat.repository.ReadStatusRepository;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.jpa.JobRepository;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.global.common.TestUtils;

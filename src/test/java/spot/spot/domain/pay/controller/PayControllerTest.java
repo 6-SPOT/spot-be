@@ -13,8 +13,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.service.ClientCommandService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
@@ -44,7 +44,7 @@ class PayControllerTest {
     private PayService payService;
 
     @MockitoBean
-    private ClientService clientService;
+    private ClientCommandService clientCommandService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -82,7 +82,7 @@ class PayControllerTest {
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
 
         when(payService.payReady(anyString(), anyString(),anyInt(),anyInt(), any())).thenReturn(res);
-        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientCommandService.updateTidToJob(any(), any())).thenReturn(new Job());
         ///when ///then
         mockMvc.perform(
                         post("/api/pay/ready")
@@ -103,7 +103,7 @@ class PayControllerTest {
         PayHistory payHistory = PayHistory.builder().payAmount(1000).payPoint(1000).worker("worker").payStatus(PayStatus.PENDING).build();
         PayReadyResponseDto res = PayReadyResponseDto.create("redirect_pc_url", "redirect_mobile_url", "T123131", payHistory);
         when(payService.payReady(anyString(), anyString(), anyInt(), anyInt(), any())).thenReturn(res);
-        when(clientService.updateTidToJob(any(), any())).thenReturn(new Job());
+        when(clientCommandService.updateTidToJob(any(), any())).thenReturn(new Job());
 
         ///when ///then
         mockMvc.perform(

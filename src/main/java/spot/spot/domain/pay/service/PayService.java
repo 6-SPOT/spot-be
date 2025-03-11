@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.query.repository.dsl.SearchingOneQueryDsl;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.dsl.MatchingDsl;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.pay.entity.KlayAboutJob;
@@ -34,7 +34,7 @@ import java.util.*;
 @Transactional
 public class PayService {
 
-    private final MatchingDsl matchingDsl;
+    private final SearchingOneQueryDsl searchingOneQueryDsl;
     private final PayRepositoryDsl payRepositoryDsl;
     @Value("${kakao.pay.cid}")
     private String cid;
@@ -73,7 +73,7 @@ public class PayService {
         Map<String, String> parameters = createPaymentParameters(findMember.getNickname(), job.getTid(), null, null, null, pgToken, false);
 
         ///결제 내역 업데이트
-        Optional<String> workerNicknameByJob = matchingDsl.findWorkerNicknameByJob(job);
+        Optional<String> workerNicknameByJob = searchingOneQueryDsl.findWorkerNicknameByJob(job);
         String worker = workerNicknameByJob.orElse("");
         PayHistory payHistory = payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
         updatePayHistory(payHistory, PayStatus.PROCESS, worker);

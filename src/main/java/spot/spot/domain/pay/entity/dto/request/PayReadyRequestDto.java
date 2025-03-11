@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
-import spot.spot.domain.job.entity.Job;
 
 @Builder
 public record PayReadyRequestDto(
