@@ -16,10 +16,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import spot.spot.domain.chat.service.ChatService;
-import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.job.service.ClientService;
-import spot.spot.domain.job.service.WorkerService;
+import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
+import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.command.service.WorkerCommandService;
 import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.notification.service.FcmService;
 import spot.spot.domain.pay.service.PayService;
@@ -49,7 +49,7 @@ class Job4ClientControllerTest {
     ObjectMapper objectMapper;
 
     @MockitoBean
-    ClientService clientService;
+    ClientCommandService clientCommandService;
 
     @MockitoBean
     ChatService chatService;
@@ -58,7 +58,7 @@ class Job4ClientControllerTest {
     SimpMessageSendingOperations messagingTemplate;
 
     @MockitoBean
-    WorkerService workerService;
+    WorkerCommandService workerCommandService;
 
     @MockitoBean
     MemberService memberService;
@@ -100,7 +100,7 @@ class Job4ClientControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "This is a test file".getBytes()
         );
-        given(clientService.registerJob(any(), any())).willReturn(res);
+        given(clientCommandService.registerJob(any(), any())).willReturn(res);
 
         ///when ///then
         ///multipart 요청 시 요청form이 다르다.
