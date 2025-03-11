@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
-import spot.spot.domain.job.command.util.JobUtil;
+import spot.spot.domain.job.query.util.DistanceCalculateUtil;
 import spot.spot.domain.job.query.dto.request.AttenderResponse;
 import spot.spot.domain.job.query.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.query.mapper.ClientQueryMapper;
@@ -29,7 +29,7 @@ import spot.spot.global.security.util.UserAccessUtil;
 @RequiredArgsConstructor
 public class ClientQueryService {
     // Util
-    private final JobUtil jobUtil;
+    private final DistanceCalculateUtil distanceCalculateUtil;
     private final UserAccessUtil userAccessUtil;
     // Mapper
     private final ClientQueryMapper clientQueryMapper;
@@ -42,7 +42,7 @@ public class ClientQueryService {
 
 
     public List<NearByWorkersResponse> findNearByWorkers(double lat, double lng, int zoomLevel) {
-        return memberMapper.toDtoList(memberQueryRepository.findWorkerNearByMember(lat, lng, jobUtil.convertZoomToRadius(zoomLevel)));
+        return memberMapper.toDtoList(memberQueryRepository.findWorkerNearByMember(lat, lng, distanceCalculateUtil.convertZoomToRadius(zoomLevel)));
     }
 
     @Transactional(readOnly = true)

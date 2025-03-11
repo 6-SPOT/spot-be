@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.mapper.ClientCommandMapper;
-import spot.spot.domain.job.command.util.JobUtil;
+import spot.spot.domain.job.command.service._docs.ClientCommandServiceDocs;
+import spot.spot.domain.job.command.util.ReservationCancelUtil;
+import spot.spot.domain.job.query.util.DistanceCalculateUtil;
 import spot.spot.domain.job.command.dto.request.YesOrNoWorkersRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.entity.Job;
@@ -30,9 +32,9 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ClientCommandService {
+public class ClientCommandService implements ClientCommandServiceDocs {
     // Util
-    private final JobUtil jobUtil;
+    private final DistanceCalculateUtil distanceCalculateUtil;
     private final UserAccessUtil userAccessUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     // Mapper
@@ -45,8 +47,8 @@ public class ClientCommandService {
     private final FcmUtil fcmUtil;
     private final PayService payService;
     private final MemberRepository memberRepository;
+    private final ReservationCancelUtil reservationCancelUtil;
 
-    // 1) 일 등록
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
@@ -60,7 +62,7 @@ public class ClientCommandService {
         matchingRepository.save(matching);
         return RegisterJobResponse.create(newJob.getId());
     }
-    // 2) 해결사에게 일 의뢰
+
     public void askingJob2Worker (ChangeStatusClientRequest request) {
         Member worker = memberRepository
             .findById(request.workerId()).orElseThrow(() -> new GlobalException(
@@ -71,7 +73,7 @@ public class ClientCommandService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
     }
-    // 3) 일 수락 혹은 거절
+
     @Transactional
     public void yesOrNo2RequestOfWorker(YesOrNoWorkersRequest request) {
         Member owner = userAccessUtil.getMember();
@@ -83,7 +85,7 @@ public class ClientCommandService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
-    // 4) NO Show 사용자를 위해 일 철회 요청
+
     @Transactional
     public void requestWithdrawal(ChangeStatusClientRequest request) {
         Member owner = userAccessUtil.getMember();
@@ -92,19 +94,17 @@ public class ClientCommandService {
                 ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
-        jobUtil.scheduledSleepMatching2Cancel(matching);
+        reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 
-
-    // 5) 결제 준비가 되면 일에 일치하는 tid값 넣어주기
     @Transactional
     public Job updateTidToJob(Job findJob, String tid) {
         findJob.setTid(tid);
         return findJob;
     }
-    // 6) 일 완료 확정 or 거절
+
     @Transactional
     public void confirmOrRejectJob(YesOrNoWorkersRequest request) {
         Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));

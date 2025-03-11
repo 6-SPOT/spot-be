@@ -7,7 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.response.JobCertifiationResponse;
 import spot.spot.domain.job.command.mapper.WorkerCommandMapper;
-import spot.spot.domain.job.command.util.JobUtil;
+import spot.spot.domain.job.command.service._docs.WorkerCommandServiceDocs;
+import spot.spot.domain.job.command.util.ReservationCancelUtil;
 import spot.spot.domain.job.command.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.command.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.command.dto.request.YesOrNoClientsRequest;
@@ -36,11 +37,13 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WorkerCommandService {
+public class WorkerCommandService implements WorkerCommandServiceDocs {
     // Util
     private final UserAccessUtil userAccessUtil;
     private final FcmUtil fcmUtil;
     private final WorkerCommandMapper workerCommandMapper;
+    private final AwsS3ObjectStorage awsS3ObjectStorage;
+    private final ReservationCancelUtil reservationCancelUtil;
     // Repo
     private final WorkerRepository workerRepository;
     private final AbilityRepository abilityRepository;
@@ -49,8 +52,6 @@ public class WorkerCommandService {
     private final CertificationRepository certificationRepository;
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
     private final PayService payService;
-    private final JobUtil jobUtil;
-    private final AwsS3ObjectStorage awsS3ObjectStorage;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -60,9 +61,6 @@ public class WorkerCommandService {
         workerAbilityRepository.saveAll(
             workerCommandMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
-    // 구직자 근처 일 리스트 반환
-
-    // 일 신청하기
     public void askingJob2Client(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId());
@@ -71,7 +69,6 @@ public class WorkerCommandService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
-    // 일 시작하기
     @Transactional
     public void startJob (ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -82,7 +79,6 @@ public class WorkerCommandService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
                 fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
-    // 의뢰인이 보낸 요청 승낙하기 혹은 거절하기
     @Transactional
     public void yesOrNo2RequestOfClient(YesOrNoClientsRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -91,15 +87,13 @@ public class WorkerCommandService {
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
             fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
-
     @Transactional
     public void contiuneJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
-        jobUtil.withdrawalExistingScheduledTask(matching.getId());
+        reservationCancelUtil.withdrawalExistingScheduledTask(matching.getId());
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
     }
-
     @Transactional
     public JobCertifiationResponse certificateJob(ChangeStatusWorkerRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -111,7 +105,6 @@ public class WorkerCommandService {
         certificationRepository.save(certification);
         return new JobCertifiationResponse(url);
     }
-
     @Transactional
     public void finishingJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -121,7 +114,6 @@ public class WorkerCommandService {
         changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START, MatchingStatus.REJECT);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
     }
-
     @Transactional
     public void deleteWorker() {
         Member me = userAccessUtil.getMember();
