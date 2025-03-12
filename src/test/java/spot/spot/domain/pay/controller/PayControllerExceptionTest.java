@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
@@ -48,6 +49,9 @@ public class PayControllerExceptionTest {
 
     @MockitoBean
     ClientCommandService clientCommandService;
+
+    @MockitoBean
+    ClientQueryService clientQueryService;
 
     @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;

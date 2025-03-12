@@ -11,12 +11,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.job.repository.jpa.MatchingRepository;
-import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.Matching;
+import spot.spot.domain.job.command.repository.jpa.CertificationRepository;
+import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.pay.service.PayService;
@@ -38,6 +40,9 @@ class PayRepositoryDslTest {
 
     @Autowired
     ClientCommandService clientCommandService;
+
+    @Autowired
+    ClientQueryService clientQueryService;
 
     @Autowired
     PayService payService;
