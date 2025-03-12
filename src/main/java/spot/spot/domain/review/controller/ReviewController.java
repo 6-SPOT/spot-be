@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.review.dto.request.ReviewRequestDto;
+import spot.spot.domain.review.dto.response.CompletedJobReview;
 import spot.spot.domain.review.dto.response.ReviewResponseDto;
 import spot.spot.domain.review.service.ReviewService;
 import spot.spot.global.security.util.UserAccessUtil;
@@ -18,20 +19,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
-    private final UserAccessUtil userAccessUtil;
 
     @PostMapping
     public void createReview(
             @RequestBody @Valid ReviewRequestDto requestDto) {
-        Member currentMember = userAccessUtil.getMember();
-        reviewService.createReview(currentMember.getId(), requestDto);
+        reviewService.createReview(requestDto);
     }
 
     @GetMapping("/{jobId}")
-    public List<ReviewResponseDto> getReviewByJobId(@PathVariable Long jobId) {
+    public List<CompletedJobReview> getReviewByJobId(@PathVariable Long jobId) {
         log.info("{}",jobId);
         return reviewService.getReviewsByJobId(jobId);
     }
+
+//    @GetMapping("/mypage")
+//    public List<>
 
     @GetMapping("/ok")
     public void ok() {

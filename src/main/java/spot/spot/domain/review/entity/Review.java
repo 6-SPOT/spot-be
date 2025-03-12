@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.global.auditing.entitiy.CreatedAndDeleted;
+import spot.spot.global.auditing.entitiy.CreatedAndDeletedAndUpdated;
 
 @Getter
 @Builder
@@ -13,7 +14,7 @@ import spot.spot.global.auditing.entitiy.CreatedAndDeleted;
 @Entity
 @Table(name = "review")
 
-public class Review extends CreatedAndDeleted {
+public class Review extends CreatedAndDeletedAndUpdated {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
