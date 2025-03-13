@@ -229,10 +229,12 @@ public class PayService {
         String redirectUri = request.getRequestURL().toString();
 
         if (redirectUri.contains("localhost:8080")) {
-            return "http://localhost:3000";
+            redirectUri = "https://ilmatch.net";
+        } else if (redirectUri.contains("ilmatch.net")) {
+            redirectUri = "http://localhost:3000";
         }
 
-        return "https://ilmatch.net"; // 기본값
+        return redirectUri; // 기본값
     }
 
     private void depositToKlaytn(int peb) {
