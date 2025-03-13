@@ -42,7 +42,7 @@ public class SwaggerConfig {
                     + "<p>(2) 한글 indexing 된 것은 옛날 산물 혹은 Health Check.</p>"
                     + "<hr/>"
                     + "<h2>일 상태 전개도</h2>"
-                    + "<div style='text-align:center;'>"
+                    + "<div align='center'>"
                     + "<img src='https://soomin-bucket-1.s3.ap-northeast-2.amazonaws.com/static/Job_%EC%83%81%ED%83%9C_%EB%B3%80%EA%B2%BD_%EC%A0%84%EA%B0%9C%EB%8F%84.png' style='max-width:500px; border-radius:10px; box-shadow:2px 2px 10px rgba(0,0,0,0.1);'/>"
                     + "</div>"
                     + "</div>"
