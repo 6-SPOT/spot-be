@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
+import spot.spot.domain.job.query.service._docs.ClientQueryServiceDocs;
 import spot.spot.domain.job.query.util.DistanceCalculateUtil;
 import spot.spot.domain.job.query.dto.response.AttenderResponse;
 import spot.spot.domain.job.query.dto.response.NearByWorkersResponse;
@@ -27,7 +28,7 @@ import spot.spot.global.security.util.UserAccessUtil;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ClientQueryService {
+public class ClientQueryService implements ClientQueryServiceDocs {
     // Util
     private final DistanceCalculateUtil distanceCalculateUtil;
     private final UserAccessUtil userAccessUtil;
@@ -47,7 +48,7 @@ public class ClientQueryService {
 
     @Transactional(readOnly = true)
     public Slice<AttenderResponse> findJobAttenderList(long jobId, Pageable pageable) {
-        Slice<Worker> workers = searchingListQueryDsl.findWorkersByJobIdAndStatus(jobId, pageable);
+        Slice<Worker> workers = searchingListQueryDsl.findWorkersByJobId(jobId, pageable);
         List<AttenderResponse> responseList = clientQueryMapper.toResponseList(workers.getContent());
         return new SliceImpl<>(responseList, pageable, workers.hasNext());
     }
@@ -60,7 +61,7 @@ public class ClientQueryService {
     public Job findByTid(String tid) {
         return jobRepository.findByTid(tid).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_TITLE));
     }
-    //id로 찾기
+
     public Job findById(Long jobId) {
         return jobRepository.findById(jobId).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }

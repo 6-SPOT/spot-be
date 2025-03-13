@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import spot.spot.domain.job.query.dto.request.PositionRequest;
 import spot.spot.domain.job.query.dto.response.PositionResponse;
 import spot.spot.domain.job.query.mapper.PositionQueryMapper;
+import spot.spot.domain.job.query.service._docs.PositionQueryServiceDocs;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.global.response.format.ErrorCode;
@@ -16,7 +17,7 @@ import spot.spot.global.security.util.JwtUtil;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PositionQueryService {
+public class PositionQueryService implements PositionQueryServiceDocs {
 
     private final SimpMessageSendingOperations template;
     private final MemberRepository memberRepository;
