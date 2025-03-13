@@ -16,12 +16,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import spot.spot.domain.chat.service.ChatService;
+import spot.spot.domain.job.command.controller.ClientCommandController;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.service.ClientCommandService;
 import spot.spot.domain.job.command.service.WorkerCommandService;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.service.MemberService;
-import spot.spot.domain.notification.service.FcmService;
+import spot.spot.domain.notification.command.service.FcmService;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.domain.pay.service.PointService;
 import spot.spot.global.redis.service.TokenService;
@@ -36,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = ClientCommandController.class)
 @ActiveProfiles("local")
 @WithMockUser(username = "testUser")
 @ImportAutoConfiguration(exclude = OAuth2ClientAutoConfiguration.class)
@@ -50,6 +52,9 @@ class Job4ClientControllerTest {
 
     @MockitoBean
     ClientCommandService clientCommandService;
+
+    @MockitoBean
+    ClientQueryService clientQueryService;
 
     @MockitoBean
     ChatService chatService;

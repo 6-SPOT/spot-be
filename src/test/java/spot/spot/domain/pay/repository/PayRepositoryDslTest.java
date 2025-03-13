@@ -1,10 +1,8 @@
 package spot.spot.domain.pay.repository;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -12,23 +10,29 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.command.entity.Matching;
 import spot.spot.domain.job.command.repository.jpa.CertificationRepository;
-import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.pay.service.PayService;
+import spot.spot.domain.pay.util.PayUtil;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
+import static org.mockito.BDDMockito.*;
+
 @SpringBootTest
 @WithMockUser(username = "1")
+@Transactional
+@ActiveProfiles("local")
 class PayRepositoryDslTest {
 
     @Autowired
@@ -36,6 +40,9 @@ class PayRepositoryDslTest {
 
     @Autowired
     ClientCommandService clientCommandService;
+
+    @Autowired
+    ClientQueryService clientQueryService;
 
     @Autowired
     PayService payService;
@@ -52,14 +59,8 @@ class PayRepositoryDslTest {
     @MockitoBean
     AwsS3ObjectStorage awsS3ObjectStorage;
 
-    @Autowired
-    private ClientQueryService clientQueryService;
-
-    @BeforeEach
-    void before() {
-        matchingRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
-    }
+    @MockitoBean
+    PayUtil payUtil;
 
     @DisplayName("매칭정보로 해당하는 일의 가격 정보를 조회할 수 있다.")
     @Test
@@ -80,8 +81,11 @@ class PayRepositoryDslTest {
         Member member = memberRepository.save(testMember);
 
         RegisterJobRequest request = new RegisterJobRequest("title", "content", validAmount, 0, 12.1111, 12.1111);
-        BDDMockito.given(awsS3ObjectStorage.uploadFile(file))
+        given(awsS3ObjectStorage.uploadFile(file))
                 .willReturn("https://s3-bucket.com/test-file.txt");
+        doNothing()
+                .when(payUtil)
+                .insertFromSchedule(any());
 
         RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
         Job findJob = clientQueryService.findById(registerJobResponse.jobId());

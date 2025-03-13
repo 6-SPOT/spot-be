@@ -47,6 +47,11 @@ public class ClientCommandController implements ClientCommandDocs {
         clientCommandService.requestWithdrawal(request);
     }
 
+    @PostMapping("/withdrawal/test")
+    public void requestWithdrawalTest(@RequestBody ChangeStatusClientRequest request) {
+        clientCommandService.requestWithdrawalTest(request);
+    }
+
     @PatchMapping("/confirm-or-reject")
     public void confirmOrRejectJob(@RequestBody YesOrNoWorkersRequest request) {
         clientCommandService.confirmOrRejectJob(request);

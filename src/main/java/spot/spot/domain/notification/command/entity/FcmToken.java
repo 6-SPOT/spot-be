@@ -1,4 +1,4 @@
-package spot.spot.domain.notification.entity;
+package spot.spot.domain.notification.command.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

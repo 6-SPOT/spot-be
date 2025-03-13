@@ -21,8 +21,8 @@ import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.domain.notification.service.FcmUtil;
+import spot.spot.domain.notification.command.dto.response.FcmDTO;
+import spot.spot.domain.notification.command.service.FcmUtil;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -97,6 +97,19 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
             fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+    }
+
+    @Transactional
+    public void requestWithdrawalTest(ChangeStatusClientRequest request) {
+        Member owner = userAccessUtil.getMember();
+        Member worker = memberRepository
+                .findById(request.workerId()).orElseThrow(() -> new GlobalException(
+                        ErrorCode.MEMBER_NOT_FOUND));
+        Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        reservationCancelUtil.scheduledSleepMatching2CancelTest(matching);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
+                fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional

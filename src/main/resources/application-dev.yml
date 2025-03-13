@@ -36,7 +36,8 @@ spring:
               - profile_image
               - account_email
             client-name: Kakao
-            redirect-uri: https://ilmatch.net/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+#            redirect-uri: https://ilmatch.net/login/oauth2/code/kakao
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -50,8 +51,13 @@ spring:
       port: 6379
       password: 1234
 
+#kakao:
+#  pay:
+#    approval_url: https://ilmatch.net/payment/success
+#    fail_url: https://ilmatch.net/payment/fail
+#    cancel_url: https://ilmatch.net/payment/cancel
 kakao:
   pay:
-    approval_url: https://ilmatch.net/payment/success
-    fail_url: https://ilmatch.net/payment/fail
-    cancel_url: https://ilmatch.net/payment/cancel
+    approval_url: http://localhost:8080/payment/success
+    fail_url: http://localhost:8080/payment/fail
+    cancel_url: http://localhost:8080/payment/cancel

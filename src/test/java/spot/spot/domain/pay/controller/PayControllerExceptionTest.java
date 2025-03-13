@@ -15,12 +15,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
 import spot.spot.domain.pay.entity.dto.request.PayReadyRequestDto;
 import spot.spot.domain.pay.entity.dto.response.PayApproveResponseDto;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
+import spot.spot.domain.pay.service.PayMockService;
 import spot.spot.domain.pay.service.PayService;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -47,7 +49,13 @@ public class PayControllerExceptionTest {
     PayService payService;
 
     @MockitoBean
+    PayMockService payMockService;
+
+    @MockitoBean
     ClientCommandService clientCommandService;
+
+    @MockitoBean
+    ClientQueryService clientQueryService;
 
     @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;

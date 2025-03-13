@@ -16,6 +16,7 @@ import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
 import spot.spot.domain.pay.entity.dto.request.PayReadyRequestDto;
 import spot.spot.domain.pay.entity.dto.response.PayApproveResponseDto;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
+import spot.spot.domain.pay.service.PayMockService;
 import spot.spot.domain.pay.service.PayService;
 
 @RestController
@@ -25,6 +26,7 @@ import spot.spot.domain.pay.service.PayService;
 public class PayController {
 
     private final PayService payService;
+    private final PayMockService payMockService;
     private final ClientQueryService clientQueryService;
     private final ClientCommandService clientCommandService;
 
@@ -47,4 +49,25 @@ public class PayController {
         clientCommandService.updateTidToJob(findJob, tid);
         return payReadyResponseDto;
     }
+
+    @PostMapping("/deposit/test")
+    public PayApproveResponseDto payApproveTest(@Valid @RequestBody PayApproveRequestDto request, Authentication auth) {
+        Job job = clientQueryService.findByTid(request.tid());
+        return payMockService.payApprove(
+                auth.getName(),
+                job,
+                request.pgToken(),
+                request.totalAmount());
+    }
+
+    @Transactional
+    @PostMapping("/ready/test")
+    public PayReadyResponseDto payReadyTest(@Valid @RequestBody PayReadyRequestDto request, Authentication auth) {
+        Job findJob = clientQueryService.findById(request.jobId());
+        PayReadyResponseDto payReadyResponseDto = payMockService.payReady(auth.getName(), request.content(), request.amount(), request.point(), findJob);
+        String tid = payReadyResponseDto.tid();
+        clientCommandService.updateTidToJob(findJob, tid);
+        return payReadyResponseDto;
+    }
+
 }

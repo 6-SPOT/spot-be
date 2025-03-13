@@ -1,18 +1,11 @@
 package spot.spot.domain.job.command.service._docs;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.request.YesOrNoWorkersRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.entity.Job;
-import spot.spot.domain.job.command.entity.Matching;
-import spot.spot.domain.job.command.entity.MatchingStatus;
-import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.global.response.format.ErrorCode;
-import spot.spot.global.response.format.GlobalException;
 
 public interface ClientCommandServiceDocs {
     // 1) 일 등록

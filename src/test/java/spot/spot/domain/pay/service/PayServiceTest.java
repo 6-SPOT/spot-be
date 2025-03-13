@@ -27,6 +27,7 @@ import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.entity.dto.response.*;
 import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
+import spot.spot.domain.pay.util.PayUtil;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
@@ -36,7 +37,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 @SpringBootTest
 @ActiveProfiles("local")
@@ -59,6 +60,9 @@ public class PayServiceTest {
     @Autowired
     private ClientCommandService clientCommandService;
 
+    @Autowired
+    private ClientQueryService clientQueryService;
+
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
 
@@ -75,9 +79,10 @@ public class PayServiceTest {
     private ConnectToKlaytnNetwork connectToKlaytnNetwork;
 
     @MockitoBean
+    PayUtil payUtil;
+
+    @MockitoBean
     private SearchingOneQueryDsl searchingOneQueryDsl;
-    @Autowired
-    private ClientQueryService clientQueryService;
 
     @BeforeEach
     void setUp() {
@@ -109,7 +114,10 @@ public class PayServiceTest {
                 any(HttpEntity.class),
                 eq(PayReadyResponse.class)
         )).thenReturn(mockPayReadyResponse);
-        BDDMockito.given(memberService.findById(anyString())).willReturn(mockMember);
+        given(memberService.findById(anyString())).willReturn(mockMember);
+        doNothing()
+                .when(payUtil)
+                .insertFromSchedule(any());
 
         ///when
         PayReadyResponseDto result = payService.payReady(String.valueOf(mockMember.getId()), "음쓰 버려주실 분~", 10000, 500, mockJob);
@@ -147,6 +155,9 @@ public class PayServiceTest {
         when(exchangeRateByBithumbApi.exchangeToKaia(anyInt())).thenReturn(1.2);
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
         when(klayAboutJobRepository.save(any(KlayAboutJob.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doNothing()
+                .when(payUtil)
+                .deleteFromSchedule(any());
 
         // Mock 객체로 실제 API 호출을 대체
         when(payAPIRequestService.payAPIRequest(
@@ -165,7 +176,7 @@ public class PayServiceTest {
     }
 
     @Test
-    @DisplayName("카카오페이 주문 조회API를 호출하면 구매자, 판매자, 금액, 일타이틀 값이 반환된다.")
+    @DisplayName("카카오페이 주문 조회 API를 호출하면 구매자, 판매자, 금액, 일 타이틀 값이 반환된다.")
     void payOrder() {
         ///given
         //payOrderResponse mock 생성
