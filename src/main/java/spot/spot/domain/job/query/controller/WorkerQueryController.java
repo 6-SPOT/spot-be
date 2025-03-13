@@ -3,6 +3,7 @@ package spot.spot.domain.job.query.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.service.WorkerQueryService;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/job/worker")
 @RequiredArgsConstructor

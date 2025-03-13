@@ -33,8 +33,8 @@ public class WorkerQueryService {
 
     public Slice<NearByJobResponse> getNearByJobList(Double lat, Double lng, int zoom, Pageable pageable) {
         Member member = userAccessUtil.getMember();
-        lat = lat == null? Double.valueOf(member.getLat()) : lat;
-        lng = lng == null? Double.valueOf(member.getLng()): lng;
+        lat = lat == null? member.getLat() : lat;
+        lng = lng == null? member.getLng(): lng;
         return jobSearchQueryDSLService.findNearByJobs(lat, lng, zoom, pageable);
     }
     // 일 하나 상세 확인
