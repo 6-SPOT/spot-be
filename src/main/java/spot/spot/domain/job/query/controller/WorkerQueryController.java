@@ -28,7 +28,7 @@ public class WorkerQueryController implements WorkerQueryDocs {
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return workerQueryService.getNearByJobList("dsl", lat, lng, zoom, pageable);
+        return workerQueryService.getNearByJobList(lat, lng, zoom, pageable);
     }
 
     @GetMapping(value = "/get")

@@ -31,10 +31,10 @@ public class WorkerQueryService {
     private final SearchingOneQueryDsl searchingOneQueryDsl;
     private final SearchingListQueryDsl searchingListQueryDsl;
 
-    public Slice<NearByJobResponse> getNearByJobList(String impl, Double lat, Double lng, int zoom, Pageable pageable) {
+    public Slice<NearByJobResponse> getNearByJobList(Double lat, Double lng, int zoom, Pageable pageable) {
         Member member = userAccessUtil.getMember();
-        lat = lat == null? member.getLat() : lat;
-        lng = lng == null? member.getLng() : lng;
+        lat = lat == null? Double.valueOf(member.getLat()) : lat;
+        lng = lng == null? Double.valueOf(member.getLng()): lng;
         return jobSearchQueryDSLService.findNearByJobs(lat, lng, zoom, pageable);
     }
     // 일 하나 상세 확인
