@@ -61,6 +61,9 @@ public class PayServiceTest {
     @Autowired
     private ClientCommandService clientCommandService;
 
+    @Autowired
+    private ClientQueryService clientQueryService;
+
     @MockitoBean
     private PayAPIRequestService payAPIRequestService;
 
@@ -80,7 +83,7 @@ public class PayServiceTest {
     PayUtil payUtil;
 
     @MockitoBean
-    private MatchingDsl matchingDsl;
+    private SearchingOneQueryDsl searchingOneQueryDsl;
 
     @BeforeEach
     void setUp() {

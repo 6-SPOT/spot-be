@@ -12,12 +12,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.jpa.JobRepository;
-import spot.spot.domain.job.repository.jpa.MatchingRepository;
-import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.repository.jpa.JobRepository;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
@@ -48,7 +49,10 @@ class PayUtilTest {
     PayService payService;
 
     @Autowired
-    ClientService clientService;
+    ClientQueryService clientQueryService;
+
+    @Autowired
+    ClientCommandService clientCommandService;
 
     @Autowired
     MemberService memberService;
@@ -105,7 +109,7 @@ class PayUtilTest {
         Member findMember = memberService.findByNickname("nickname");
         when(userAccessUtil.getMember()).thenReturn(findMember);
         RegisterJobRequest request = new RegisterJobRequest("title", "content", 10000, 0, 12.1111, 12.1111);
-        RegisterJobResponse registerJobResponse = clientService.registerJob(request, file);
+        RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
         String mockTid = "T1234ABCD5678";
         String mockPcUrl = "https://kakaopay-mock.com/pc";
         String mockMobileUrl = "https://kakaopay-mock.com/mobile";
@@ -117,7 +121,7 @@ class PayUtilTest {
                 eq(PayReadyResponse.class)
         )).thenReturn(mockPayReadyResponse);
 
-        Job findJob = clientService.findById(registerJobResponse.jobId());
+        Job findJob = clientQueryService.findById(registerJobResponse.jobId());
         ///when
         payService.payReady(String.valueOf(findMember.getId()), "content", 10000, 0, findJob);
         PayHistory findPayHistory = payService.findByJob(findJob);
@@ -148,9 +152,9 @@ class PayUtilTest {
         Member findMember = memberService.findByNickname("nickname");
         when(userAccessUtil.getMember()).thenReturn(findMember);
         RegisterJobRequest request = new RegisterJobRequest("title", "content", 10000, 0, 12.1111, 12.1111);
-        RegisterJobResponse registerJobResponse = clientService.registerJob(request, file);
+        RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
 
-        Job findJob = clientService.findById(registerJobResponse.jobId());
+        Job findJob = clientQueryService.findById(registerJobResponse.jobId());
         String mockTid = "T1234ABCD5678";
         String mockPcUrl = "https://kakaopay-mock.com/pc";
         String mockMobileUrl = "https://kakaopay-mock.com/mobile";
