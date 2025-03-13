@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -3,12 +3,8 @@ package spot.spot.domain.review.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.thymeleaf.spring6.processor.SpringActionTagProcessor;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 import spot.spot.global.auditing.entitiy.CreatedAndDeleted;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder

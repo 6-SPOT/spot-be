@@ -2,9 +2,8 @@ package spot.spot.domain.pay.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import spot.spot.domain.job.entity.Job;
+import spot.spot.domain.job.command.entity.Job;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,8 +25,8 @@ public class PayHistory {
     @Setter
     private String worker;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
     @Setter

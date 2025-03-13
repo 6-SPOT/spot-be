@@ -60,3 +60,12 @@ kafka:
   url: kafka:9092
   group: spot
 
+management:
+  endpoints:
+    prometheus:
+      enabled: true
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: prometheus
+

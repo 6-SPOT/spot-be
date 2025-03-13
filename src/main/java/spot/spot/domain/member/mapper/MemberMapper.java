@@ -4,7 +4,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import spot.spot.domain.job.dto.response.NearByWorkersResponse;
+import spot.spot.domain.job.query.dto.response.NearByWorkersResponse;
 import spot.spot.domain.member.entity.Member;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.WARN)

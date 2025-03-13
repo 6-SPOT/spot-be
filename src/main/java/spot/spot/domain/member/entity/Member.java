@@ -6,8 +6,7 @@ import java.util.List;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-import spot.spot.domain.job.entity.Matching;
+import spot.spot.domain.job.command.entity.Matching;
 import spot.spot.domain.notification.entity.FcmToken;
 import spot.spot.domain.notification.entity.Notification;
 

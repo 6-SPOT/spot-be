@@ -24,8 +24,8 @@ import spot.spot.domain.chat.repository.ChatParticipantRepository;
 import spot.spot.domain.chat.repository.ChatRoomRepository;
 import spot.spot.domain.chat.repository.MongoChatMessageRepository;
 import spot.spot.domain.chat.repository.ReadStatusRepository;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.repository.jpa.JobRepository;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 

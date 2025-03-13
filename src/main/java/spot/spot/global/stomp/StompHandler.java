@@ -62,5 +62,4 @@ public class StompHandler implements ChannelInterceptor {
 		Objects.requireNonNull(accessor.getSessionAttributes()).put("memberId", memberId);
 		return message;
 	}
-
 }

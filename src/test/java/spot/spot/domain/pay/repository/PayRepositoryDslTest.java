@@ -10,13 +10,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import spot.spot.domain.job.dto.request.RegisterJobRequest;
-import spot.spot.domain.job.dto.response.RegisterJobResponse;
-import spot.spot.domain.job.entity.Job;
-import spot.spot.domain.job.entity.Matching;
-import spot.spot.domain.job.repository.jpa.MatchingRepository;
-import spot.spot.domain.job.service.ClientService;
+import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
+import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.Matching;
+import spot.spot.domain.job.command.repository.jpa.CertificationRepository;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
+import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.pay.service.PayService;
@@ -32,7 +35,7 @@ class PayRepositoryDslTest {
     PayRepositoryDsl payRepositoryDsl;
 
     @Autowired
-    ClientService clientService;
+    ClientCommandService clientCommandService;
 
     @Autowired
     PayService payService;
@@ -43,8 +46,14 @@ class PayRepositoryDslTest {
     @Autowired
     MatchingRepository matchingRepository;
 
+    @Autowired
+    CertificationRepository certificationRepository;
+
     @MockitoBean
     AwsS3ObjectStorage awsS3ObjectStorage;
+
+    @Autowired
+    private ClientQueryService clientQueryService;
 
     @BeforeEach
     void before() {
@@ -74,8 +83,8 @@ class PayRepositoryDslTest {
         BDDMockito.given(awsS3ObjectStorage.uploadFile(file))
                 .willReturn("https://s3-bucket.com/test-file.txt");
 
-        RegisterJobResponse registerJobResponse = clientService.registerJob(request, file);
-        Job findJob = clientService.findById(registerJobResponse.jobId());
+        RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
+        Job findJob = clientQueryService.findById(registerJobResponse.jobId());
         payService.payReady(String.valueOf(member.getId()), request.content(), request.money(), request.point(), findJob);
         Matching matching = matchingRepository.findByMemberAndJob_Id(member, findJob.getId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
 
