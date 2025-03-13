@@ -1,4 +1,4 @@
-package spot.spot.domain.notification.dto.response;
+package spot.spot.domain.notification.command.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

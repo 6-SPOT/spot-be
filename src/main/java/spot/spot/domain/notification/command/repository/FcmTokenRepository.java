@@ -1,12 +1,10 @@
-package spot.spot.domain.notification.repository;
+package spot.spot.domain.notification.command.repository;
 
-import feign.Param;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.notification.entity.FcmToken;
+import spot.spot.domain.notification.command.entity.FcmToken;
 
 public interface FcmTokenRepository extends JpaRepository<FcmToken, Long> {
 

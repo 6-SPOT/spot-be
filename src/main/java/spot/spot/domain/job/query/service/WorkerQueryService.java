@@ -26,9 +26,6 @@ import spot.spot.global.security.util.UserAccessUtil;
 public class WorkerQueryService {
     // Util
     private final UserAccessUtil userAccessUtil;
-    // 거리 계산용 3가지
-    private final SearchingJobJPQLQueryUtil searchingJobJPQLService;
-    private final SearchingJobNativeQueryUtil jobSearchNativeService;
     private final SearchingJobQueryDSLUtil jobSearchQueryDSLService;
     // queryDSL
     private final SearchingOneQueryDsl searchingOneQueryDsl;
@@ -38,14 +35,7 @@ public class WorkerQueryService {
         Member member = userAccessUtil.getMember();
         lat = lat == null? member.getLat() : lat;
         lng = lng == null? member.getLng() : lng;
-
-        SearchingJobQueryUtil service = switch (impl.toLowerCase()) {
-            case "jpql" -> searchingJobJPQLService;
-            case "native" -> jobSearchNativeService;
-            case "dsl" -> jobSearchQueryDSLService;
-            default -> throw new GlobalException(ErrorCode.INVALID_SEARCH_METHOD);
-        };
-        return service.findNearByJobs(lat, lng, zoom, pageable);
+        return jobSearchQueryDSLService.findNearByJobs(lat, lng, zoom, pageable);
     }
     // 일 하나 상세 확인
     public JobDetailResponse getOneJob (long jobId) {

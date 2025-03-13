@@ -1,4 +1,4 @@
-package spot.spot.domain.notification.service;
+package spot.spot.domain.notification.command.service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.domain.notification.entity.FcmToken;
-import spot.spot.domain.notification.repository.FcmTokenRepository;
+import spot.spot.domain.notification.command.dto.response.FcmDTO;
+import spot.spot.domain.notification.command.entity.FcmToken;
+import spot.spot.domain.notification.command.repository.FcmTokenRepository;
 import spot.spot.global.logging.ColorLogger;
 
 @Slf4j

@@ -157,7 +157,7 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
             .leftJoin(member).on(member.id.eq(matching.member.id))
             .where(
                 member.id.eq(memberId),
-                matching.status.isNull().or(matching.status.ne(MatchingStatus.OWNER)) // NULL 값 처리 추가
+                matching.status.ne(MatchingStatus.OWNER) // NULL 값 처리 추가
             )
             .fetch();
     }
