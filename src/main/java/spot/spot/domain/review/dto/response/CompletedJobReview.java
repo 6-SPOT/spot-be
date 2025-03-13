@@ -2,7 +2,9 @@ package spot.spot.domain.review.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class CompletedJobReview {
     @Schema(description = "리뷰 id입니다.")

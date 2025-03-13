@@ -4,12 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.review.dto.request.ReviewRequestDto;
 import spot.spot.domain.review.dto.response.CompletedJobReview;
-import spot.spot.domain.review.dto.response.ReviewResponseDto;
 import spot.spot.domain.review.service.ReviewService;
-import spot.spot.global.security.util.UserAccessUtil;
 
 import java.util.List;
 
@@ -29,7 +26,7 @@ public class ReviewController {
     @GetMapping("/{jobId}")
     public List<CompletedJobReview> getReviewByJobId(@PathVariable Long jobId) {
         log.info("{}",jobId);
-        return reviewService.getReviewsByJobId(jobId);
+        return reviewService.getReviewsByJobId1(jobId);
     }
 
 //    @GetMapping("/mypage")
