@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import spot.spot.domain.job.query.dto.request.AttenderResponse;
+import spot.spot.domain.job.query.dto.response.AttenderResponse;
 import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.entity.WorkerAbility;
 
