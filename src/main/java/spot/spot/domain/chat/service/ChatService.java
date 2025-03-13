@@ -53,33 +53,33 @@ public class ChatService {
 			() -> new EntityNotFoundException("member cannot find")
 		);
 
-		MongoChatMessage mongoChatMessage = MongoChatMessage.builder()
-			.chatRoomId(chatRoom.getId())
-			.senderId(sender.getId())
-			.senderNickName(sender.getNickname())
-			.content(chatMessageDto.content())
-			.build();
-		mongoChatMessageRepository.save(mongoChatMessage);
-
-		// 메시지 저장
-		// ChatMessage chatMessage = ChatMessage.builder()
-		// 	.chatRoom(chatRoom)
-		// 	.member(sender)
+		// MongoChatMessage mongoChatMessage = MongoChatMessage.builder()
+		// 	.chatRoomId(chatRoom.getId())
+		// 	.senderId(sender.getId())
+		// 	.senderNickName(sender.getNickname())
 		// 	.content(chatMessageDto.content())
 		// 	.build();
-		// chatMessageRepository.save(chatMessage);
+		// mongoChatMessageRepository.save(mongoChatMessage);
+
+		// 메시지 저장
+		ChatMessage chatMessage = ChatMessage.builder()
+			.chatRoom(chatRoom)
+			.member(sender)
+			.content(chatMessageDto.content())
+			.build();
+		chatMessageRepository.save(chatMessage);
 
 		// 본인을 제외한 나머지 안읽음 처리
-		// List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-		// chatParticipants.forEach(chatParticipant -> {
-		// 	ReadStatus readStatus = ReadStatus.builder()
-		// 		.chatRoom(chatRoom)
-		// 		.member(chatParticipant.getMember())
-		// 		.chatMessage(chatMessage)
-		// 		.isRead(chatParticipant.getMember().equals(sender))
-		// 		.build();
-		// 	readStatusRepository.save(readStatus);
-		// });
+		List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+		chatParticipants.forEach(chatParticipant -> {
+			ReadStatus readStatus = ReadStatus.builder()
+				.chatRoom(chatRoom)
+				.member(chatParticipant.getMember())
+				.chatMessage(chatMessage)
+				.isRead(chatParticipant.getMember().equals(sender))
+				.build();
+			readStatusRepository.save(readStatus);
+		});
 	}
 
 	// 이전 메시지 가져오기
@@ -99,13 +99,13 @@ public class ChatService {
 		}
 
 		// TODO: 여기서 패치조인 필요
-		List<MongoChatMessage> chatMessages = mongoChatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
-			chatRoom.getId());
-		// List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
+		// List<MongoChatMessage> chatMessages = mongoChatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
+		// 	chatRoom.getId());
+		List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
 		return new ArrayList<>(chatMessages.stream()
 			.map(chatMessage -> ChatMessageResponse.builder()
 				.content(chatMessage.getContent())
-				.sender(chatMessage.getSenderNickName())
+				.sender(chatMessage.getMember().getNickname())
 				.build())
 			.toList());
 	}
@@ -157,7 +157,7 @@ public class ChatService {
 		// 생성
 		ChatRoom chatRoom = ChatRoom.builder()
 			.job(job)
-			.title(job.getId().toString())
+			.title(job.getTitle() + " : " + member.getNickname() + " - " + otherMember.getNickname())
 			.createdAt(LocalDateTime.now())
 			.build();
 		ChatRoom saved = chatRoomRepository.save(chatRoom);
