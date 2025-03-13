@@ -100,6 +100,19 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     }
 
     @Transactional
+    public void requestWithdrawalTest(ChangeStatusClientRequest request) {
+        Member owner = userAccessUtil.getMember();
+        Member worker = memberRepository
+                .findById(request.workerId()).orElseThrow(() -> new GlobalException(
+                        ErrorCode.MEMBER_NOT_FOUND));
+        Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
+        reservationCancelUtil.scheduledSleepMatching2CancelTest(matching);
+        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
+                fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+    }
+
+    @Transactional
     public Job updateTidToJob(Job findJob, String tid) {
         findJob.setTid(tid);
         return findJob;

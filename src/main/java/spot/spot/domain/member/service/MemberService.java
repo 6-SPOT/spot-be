@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.Member;
@@ -73,5 +74,9 @@ public class MemberService {
             return findByNickname(nickname);
         }
         throw new GlobalException(ErrorCode.EMPTY_MEMBER);
+    }
+
+    public Member findMemberByJobInfo(Job job) {
+        return memberQueryRepository.findMemberByMatchingOwner(job).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
