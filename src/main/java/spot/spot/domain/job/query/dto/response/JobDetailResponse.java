@@ -34,6 +34,8 @@ public class JobDetailResponse{
     private String nickname;
     @Schema(description = "의뢰인 프로필 사진")
     private String clientImg;
-    @Schema(description = "내가 신청한 일인가")
+    @Schema(description = "요청한 사용자와 일의 관계")
     private MatchingStatus myStatus;
+    @Schema(description = "내가 이 일의 주인인가")
+    private boolean isOwner;
 }
