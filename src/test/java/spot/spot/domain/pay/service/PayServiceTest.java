@@ -38,7 +38,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("local")
@@ -177,7 +176,7 @@ public class PayServiceTest {
     }
 
     @Test
-    @DisplayName("카카오페이 주문 조회API를 호출하면 구매자, 판매자, 금액, 일타이틀 값이 반환된다.")
+    @DisplayName("카카오페이 주문 조회 API를 호출하면 구매자, 판매자, 금액, 일 타이틀 값이 반환된다.")
     void payOrder() {
         ///given
         //payOrderResponse mock 생성

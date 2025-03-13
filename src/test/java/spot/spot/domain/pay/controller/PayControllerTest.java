@@ -22,6 +22,7 @@ import spot.spot.domain.pay.entity.dto.request.PayApproveRequestDto;
 import spot.spot.domain.pay.entity.dto.request.PayReadyRequestDto;
 import spot.spot.domain.pay.entity.dto.response.PayApproveResponseDto;
 import spot.spot.domain.pay.entity.dto.response.PayReadyResponseDto;
+import spot.spot.domain.pay.service.PayMockService;
 import spot.spot.domain.pay.service.PayService;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -43,6 +44,9 @@ class PayControllerTest {
 
     @MockitoBean
     private PayService payService;
+
+    @MockitoBean
+    private PayMockService payMockService;
 
     @MockitoBean
     private ClientCommandService clientCommandService;

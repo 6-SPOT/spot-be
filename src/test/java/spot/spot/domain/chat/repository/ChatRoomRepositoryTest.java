@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import org.springframework.test.context.ActiveProfiles;
 import spot.spot.domain.chat.entity.ChatParticipant;
 import spot.spot.domain.chat.entity.ChatRoom;
 import spot.spot.domain.job.command.entity.Job;
@@ -23,6 +24,7 @@ import spot.spot.global.config.QuerydslConfig;
 
 @DataJpaTest
 @Import({QuerydslConfig.class, JpaAuditingConfig.class})
+@ActiveProfiles("local")
 class ChatRoomRepositoryTest {
 
 	@Autowired
