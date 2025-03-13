@@ -24,10 +24,10 @@ public class StompChatController {
 	@MessageMapping("/{roomId}") // roomId로 메세지 보내기
 	public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto, SimpMessageHeaderAccessor headerAccessor) {
 		Long memberId = (Long) headerAccessor.getSessionAttributes().get("memberId");
-		// chatService.saveMessage(roomId, chatMessageDto, memberId);
-		KafkaMessage kafkaMessage = new KafkaMessage(roomId, chatMessageDto.content());
-		kafkaTemplate.send("chat-topic", kafkaMessage);
-		// messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageDto);
+		chatService.saveMessage(roomId, chatMessageDto, memberId);
+		// KafkaMessage kafkaMessage = new KafkaMessage(roomId, chatMessageDto.content());
+		// kafkaTemplate.send("chat-topic", kafkaMessage);
+		messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageDto);
 	}
 
 

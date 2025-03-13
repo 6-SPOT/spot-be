@@ -1,6 +1,7 @@
 package spot.spot.domain.chat.entity;
 
 import org.hibernate.annotations.Comment;
+import org.web3j.abi.datatypes.Bool;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,13 +47,13 @@ public class ReadStatus {
 
 	@Comment("읽음 여부")
 	@Setter
-	private boolean isRead;
+	private Boolean isRead;
 
 	@Builder
-	public ReadStatus(ChatRoom chatRoom, Member member, ChatMessage chatMessage, boolean isRead) {
+	public ReadStatus(ChatRoom chatRoom, Member member, ChatMessage chatMessage, Boolean isRead) {
 		this.chatRoom = chatRoom;
 		this.member = member;
 		this.chatMessage = chatMessage;
-		this.isRead = isRead;
+		this.isRead = (isRead != null) ? isRead : false;
 	}
 }

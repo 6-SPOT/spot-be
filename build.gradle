@@ -111,6 +111,10 @@ dependencies {
 	//kafka
 	implementation "org.springframework.kafka:spring-kafka"
 
+	// mongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+
 }
 
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
