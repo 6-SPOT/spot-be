@@ -13,6 +13,7 @@ import spot.spot.domain.job.query.util._docs.DistanceCalculateUtilDocs;
 public interface WorkerQueryMapper {
 
     @Mapping(target = "dist", ignore = true)
+    @Mapping(target = "picture", source = "img")
     NearByJobResponse toNearByJobResponse(Job job);
 
     default List<NearByJobResponse> toNearByJobResponseList(List<Job> jobs, Location location) {
