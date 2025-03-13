@@ -1,12 +1,10 @@
 package spot.spot.domain.chat.kafka;
 
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.dto.request.ChatMessageCreateRequest;
-import spot.spot.global.kafka.KafkaMessage;
 
 // @Service
 // @RequiredArgsConstructor

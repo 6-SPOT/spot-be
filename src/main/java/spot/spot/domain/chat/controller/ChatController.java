@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.dto.request.ChatRoomCreateRequest;
+import spot.spot.domain.chat.dto.response.ChatHistoryResponse;
 import spot.spot.domain.chat.dto.response.ChatListResponse;
 import spot.spot.domain.chat.dto.response.ChatMessageResponse;
 import spot.spot.domain.chat.service.ChatService;
@@ -50,9 +51,11 @@ public class ChatController {
 	public ResponseEntity<?> getChatHistory(@PathVariable Long roomId, Authentication authentication) {
 		Long memberId = Long.parseLong(authentication.getName());
 		List<ChatMessageResponse> chatMessageResponses = chatService.getChatHistory(roomId, memberId);
-
-
-		return new ResponseEntity<>(chatMessageResponses, HttpStatus.OK);
+		ChatHistoryResponse chatHistoryResponse = ChatHistoryResponse.builder()
+			.currentMemberId(memberId)
+			.messages(chatMessageResponses)
+			.build();
+		return new ResponseEntity<>(chatHistoryResponse, HttpStatus.OK);
 	}
 
 	// 채팅 메세지 읽음 처리

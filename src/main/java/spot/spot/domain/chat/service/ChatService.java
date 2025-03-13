@@ -18,11 +18,9 @@ import spot.spot.domain.chat.entity.ChatMessage;
 import spot.spot.domain.chat.entity.ChatParticipant;
 import spot.spot.domain.chat.entity.ChatRoom;
 import spot.spot.domain.chat.entity.ReadStatus;
-import spot.spot.domain.chat.mongodb.MongoChatMessage;
 import spot.spot.domain.chat.repository.ChatMessageRepository;
 import spot.spot.domain.chat.repository.ChatParticipantRepository;
 import spot.spot.domain.chat.repository.ChatRoomRepository;
-import spot.spot.domain.chat.repository.MongoChatMessageRepository;
 import spot.spot.domain.chat.repository.ReadStatusRepository;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
@@ -40,11 +38,11 @@ public class ChatService {
 	private final ReadStatusRepository readStatusRepository;
 	private final MemberRepository memberRepository;
 	private final JobRepository jobRepository;
-	private final MongoChatMessageRepository mongoChatMessageRepository;
+	// private final MongoChatMessageRepository mongoChatMessageRepository;
 
 
 	@Transactional
-	public void saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto, Long memberId) {
+	public ChatMessageResponse saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
 			() -> new EntityNotFoundException("room cannot find")
 		);
@@ -80,6 +78,12 @@ public class ChatService {
 				.build();
 			readStatusRepository.save(readStatus);
 		});
+
+		return ChatMessageResponse.builder()
+			.senderId(sender.getId())
+			.senderNickname(sender.getNickname())
+			.content(chatMessageDto.content())
+			.build();
 	}
 
 	// 이전 메시지 가져오기
@@ -105,7 +109,8 @@ public class ChatService {
 		return new ArrayList<>(chatMessages.stream()
 			.map(chatMessage -> ChatMessageResponse.builder()
 				.content(chatMessage.getContent())
-				.sender(chatMessage.getMember().getNickname())
+				.senderId(chatMessage.getMember().getId())
+				.senderNickname(chatMessage.getMember().getNickname())
 				.build())
 			.toList());
 	}
