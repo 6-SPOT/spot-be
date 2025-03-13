@@ -12,7 +12,7 @@ public class NearByJobResponse {
     @Schema(description = "일의 제목")
     private String title;
     @Schema(description = "일의 내용")
-    private String contnent;
+    private String content;
     @Schema(description = "일의 프로필 사진")
     private String picture;
     @Schema(description = "위도")
