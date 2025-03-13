@@ -21,7 +21,7 @@ import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.service.ClientCommandService;
 import spot.spot.domain.job.command.service.WorkerCommandService;
 import spot.spot.domain.member.service.MemberService;
-import spot.spot.domain.notification.service.FcmService;
+import spot.spot.domain.notification.command.service.FcmService;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.domain.pay.service.PointService;
 import spot.spot.global.redis.service.TokenService;

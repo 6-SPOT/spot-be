@@ -1,22 +1,10 @@
 package spot.spot.domain.job.command.service._docs;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.request.ChangeStatusWorkerRequest;
 import spot.spot.domain.job.command.dto.request.RegisterWorkerRequest;
 import spot.spot.domain.job.command.dto.request.YesOrNoClientsRequest;
 import spot.spot.domain.job.command.dto.response.JobCertifiationResponse;
-import spot.spot.domain.job.command.entity.Certification;
-import spot.spot.domain.job.command.entity.Job;
-import spot.spot.domain.job.command.entity.Matching;
-import spot.spot.domain.job.command.entity.MatchingStatus;
-import spot.spot.domain.member.entity.Member;
-import spot.spot.domain.member.entity.Worker;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.domain.pay.entity.PayHistory;
-import spot.spot.domain.pay.entity.PayStatus;
-import spot.spot.global.response.format.ErrorCode;
-import spot.spot.global.response.format.GlobalException;
 
 public interface WorkerCommandServiceDocs {
     // 일 등록하기

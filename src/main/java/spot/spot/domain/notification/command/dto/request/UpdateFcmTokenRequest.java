@@ -1,4 +1,4 @@
-package spot.spot.domain.notification.dto.request;
+package spot.spot.domain.notification.command.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

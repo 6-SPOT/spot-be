@@ -1,16 +1,15 @@
-package spot.spot.domain.notification.service;
+package spot.spot.domain.notification.command.service;
 
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
-import spot.spot.domain.notification.dto.request.FcmTestRequest;
-import spot.spot.domain.notification.dto.request.UpdateFcmTokenRequest;
-import spot.spot.domain.notification.dto.response.FcmDTO;
-import spot.spot.domain.notification.entity.FcmToken;
-import spot.spot.domain.notification.repository.FcmTokenRepository;
+import spot.spot.domain.notification.command.dto.request.FcmTestRequest;
+import spot.spot.domain.notification.command.dto.request.UpdateFcmTokenRequest;
+import spot.spot.domain.notification.command.dto.response.FcmDTO;
+import spot.spot.domain.notification.command.entity.FcmToken;
+import spot.spot.domain.notification.command.repository.FcmTokenRepository;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
