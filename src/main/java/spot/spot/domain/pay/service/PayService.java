@@ -21,6 +21,7 @@ import spot.spot.domain.pay.entity.dto.response.*;
 import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
 import spot.spot.domain.pay.repository.PayRepositoryDsl;
+import spot.spot.domain.pay.util.PayUtil;
 import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
@@ -51,6 +52,7 @@ public class PayService {
     private final ConnectToKlaytnNetwork connectToKlaytnNetwork;
     private final KlayAboutJobRepository klayAboutJobRepository;
     private final PayAPIRequestService payAPIRequestService;
+    private final PayUtil payUtil;
 
     //결제준비 (결제페이지로 이동)
     public PayReadyResponseDto payReady(String memberId, String content, int amount, int point, Job job) {
@@ -61,7 +63,8 @@ public class PayService {
 
         ///결제 내역 기록 및 결제 준비
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        savePayHistory(findMember.getNickname(), amount, point, job);
+        PayHistory payHistory = savePayHistory(findMember.getNickname(), amount, point, job);
+        payUtil.insertFromSchedule(payHistory);
         PayReadyResponse payReadyResponse = payAPIRequestService.payAPIRequest("ready", requestEntity, PayReadyResponse.class);
         return PayReadyResponseDto.of(payReadyResponse);
     }
@@ -77,6 +80,14 @@ public class PayService {
         String worker = workerNicknameByJob.orElse("");
         PayHistory payHistory = payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
         updatePayHistory(payHistory, PayStatus.PROCESS, worker);
+
+        ///결제 시간이 지난 결제건은 결제 불가
+        if (payHistory.getPayStatus().equals(PayStatus.FAIL)) {
+            throw new GlobalException(ErrorCode.ALREADY_PAY_FAIL);
+        }
+
+        ///결제 승인 시 스케쥴러에서 삭제함
+        payUtil.deleteFromSchedule(payHistory);
 
         ///클레이튼에 전송
         double peb = exchangeToPebAndSaveExchangeInfo(job, totalAmount);
@@ -115,6 +126,7 @@ public class PayService {
 
         ///결제 내역 업데이트
         updatePayHistory(payHistory, PayStatus.FAIL, payHistory.getWorker());
+        payUtil.deleteFromSchedule(payHistory);
 
         ///클레이튼에 전송
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
