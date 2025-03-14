@@ -20,7 +20,7 @@ import spot.spot.global.security.util.UserAccessUtil;
 public class FcmService {
     private final FcmTokenRepository fcmTokenRepository;
     private final UserAccessUtil userAccessUtil;
-    private final FcmUtil fcmUtil;
+    private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
     private final MemberRepository memberRepository;
 
     public void saveFcmToken(UpdateFcmTokenRequest request) {
@@ -36,7 +36,7 @@ public class FcmService {
         Member receiver = memberRepository.findById(request.receiver_id())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         log.info("test sending 보내는 중---- id: {}, 내용물: {}", request.receiver_id(), request.content());
-        fcmUtil.singleFcmSend(receiver.getId(),
+        fcmAsyncSendingUtil.singleFcmSend(receiver.getId(),
             FcmDTO.builder().title(String.valueOf(receiver.getId())).body(request.content()).build());
     }
 }
