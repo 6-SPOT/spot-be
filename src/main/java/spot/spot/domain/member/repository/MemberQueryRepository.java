@@ -65,4 +65,15 @@ public class MemberQueryRepository {
                         .fetchOne()
         );
     }
+
+    public Optional<Member> findOneFinisherOfJob (long jobId) {
+        return Optional.ofNullable(
+            jpaQueryFactory
+            .select(member)
+            .from(matching)
+            .join(member).on(member.id.eq(matching.member.id))
+            .where(matching.job.id.eq(jobId).and(matching.status.eq(MatchingStatus.FINISH)))
+            .limit(1)
+            .fetchOne());
+    }
 }

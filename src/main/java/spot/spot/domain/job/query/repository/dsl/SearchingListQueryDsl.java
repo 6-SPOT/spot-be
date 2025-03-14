@@ -17,8 +17,11 @@ import org.springframework.stereotype.Repository;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.command.entity.MatchingStatus;
+import spot.spot.domain.job.command.entity.QCertification;
 import spot.spot.domain.job.command.entity.QJob;
 import spot.spot.domain.job.command.entity.QMatching;
+import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
+import spot.spot.domain.job.query.repository.dsl._docs.SearchingListQueryDocs;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.domain.member.entity.QWorkerAbility;
@@ -26,7 +29,7 @@ import spot.spot.domain.member.entity.Worker;
 
 @Repository
 @RequiredArgsConstructor
-public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하는 방법
+public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 코드로 쿼리문을 build 하는 방법
 
     private final JPAQueryFactory queryFactory;
     private final QJob job = QJob.job;
@@ -74,7 +77,7 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
         return new SliceImpl<>(jobs, pageable, hasNext);
     }
 
-    public Slice<Worker> findWorkersByJobIdAndStatus(Long jobId, Pageable pageable) {
+    public Slice<Worker> findWorkersByJobId(Long jobId, Pageable pageable) {
         List<Worker> workers = queryFactory
             .selectFrom(worker)
             .join(worker.member, member).fetchJoin()
@@ -157,9 +160,21 @@ public class SearchingListQueryDsl {  // java 코드로 쿼리문을 build 하�
             .leftJoin(member).on(member.id.eq(matching.member.id))
             .where(
                 member.id.eq(memberId),
-                matching.status.isNull().or(matching.status.ne(MatchingStatus.OWNER)) // NULL 값 처리 추가
+                matching.status.ne(MatchingStatus.OWNER) // NULL 값 처리 추가
             )
             .fetch();
     }
 
+    @Override
+    public List<CertificationImgResponse> findWorkersCertificationImgList(long jobId) {
+        QCertification certification = QCertification.certification;
+
+        return queryFactory
+            .select(Projections.constructor(CertificationImgResponse.class,
+                certification.img))
+            .from(certification)
+            .join(matching).on(certification.matching.id.eq(matching.id))
+            .where(matching.job.id.eq(jobId).and(matching.status.notIn(MatchingStatus.OWNER, MatchingStatus.ATTENDER, MatchingStatus.REQUEST)))
+            .fetch();
+    }
 }

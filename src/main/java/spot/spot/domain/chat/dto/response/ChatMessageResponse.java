@@ -5,7 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record ChatMessageResponse(
-	@NotBlank String sender,
+	@NotBlank Long senderId,
+	String senderNickname,
 	String content
 ) {
 }

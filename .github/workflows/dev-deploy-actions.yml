@@ -129,5 +129,5 @@ jobs:
         run: |
           aws deploy create-deployment \
             --application-name be \
-            --deployment-group-name be-server \
+            --deployment-group-name be \
             --s3-location bucket=testnet-spot-deploy,key=be.zip,bundleType=zip

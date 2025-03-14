@@ -38,10 +38,11 @@ public class ChatService {
 	private final ReadStatusRepository readStatusRepository;
 	private final MemberRepository memberRepository;
 	private final JobRepository jobRepository;
+	// private final MongoChatMessageRepository mongoChatMessageRepository;
 
 
 	@Transactional
-	public void saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto, Long memberId) {
+	public ChatMessageResponse saveMessage(Long roomId, ChatMessageCreateRequest chatMessageDto, Long memberId) {
 		ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
 			() -> new EntityNotFoundException("room cannot find")
 		);
@@ -50,10 +51,19 @@ public class ChatService {
 			() -> new EntityNotFoundException("member cannot find")
 		);
 
+		// MongoChatMessage mongoChatMessage = MongoChatMessage.builder()
+		// 	.chatRoomId(chatRoom.getId())
+		// 	.senderId(sender.getId())
+		// 	.senderNickName(sender.getNickname())
+		// 	.content(chatMessageDto.content())
+		// 	.build();
+		// mongoChatMessageRepository.save(mongoChatMessage);
+
 		// 메시지 저장
 		ChatMessage chatMessage = ChatMessage.builder()
 			.chatRoom(chatRoom)
 			.member(sender)
+			.createdAt(LocalDateTime.now())
 			.content(chatMessageDto.content())
 			.build();
 		chatMessageRepository.save(chatMessage);
@@ -69,6 +79,12 @@ public class ChatService {
 				.build();
 			readStatusRepository.save(readStatus);
 		});
+
+		return ChatMessageResponse.builder()
+			.senderId(sender.getId())
+			.senderNickname(sender.getNickname())
+			.content(chatMessageDto.content())
+			.build();
 	}
 
 	// 이전 메시지 가져오기
@@ -86,12 +102,16 @@ public class ChatService {
 		if (!isRoomMember) {
 			throw new IllegalArgumentException("본인이 속하지 않은 채팅방입니다.");
 		}
+
 		// TODO: 여기서 패치조인 필요
+		// List<MongoChatMessage> chatMessages = mongoChatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
+		// 	chatRoom.getId());
 		List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
 		return new ArrayList<>(chatMessages.stream()
 			.map(chatMessage -> ChatMessageResponse.builder()
 				.content(chatMessage.getContent())
-				.sender(chatMessage.getMember().getNickname())
+				.senderId(chatMessage.getMember().getId())
+				.senderNickname(chatMessage.getMember().getNickname())
 				.build())
 			.toList());
 	}
@@ -105,7 +125,7 @@ public class ChatService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("member not found"));
 		List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndMember(chatRoom, member);
-		readStatuses.forEach(readStatus -> readStatus.setRead(true));
+		readStatuses.forEach(readStatus -> readStatus.setIsRead(true));
 	}
 
 	// 내 채팅방 목록 가져오기
@@ -143,7 +163,7 @@ public class ChatService {
 		// 생성
 		ChatRoom chatRoom = ChatRoom.builder()
 			.job(job)
-			.title(job.getId().toString())
+			.title(job.getTitle() + " : " + member.getNickname() + " - " + otherMember.getNickname())
 			.createdAt(LocalDateTime.now())
 			.build();
 		ChatRoom saved = chatRoomRepository.save(chatRoom);

@@ -1,6 +1,7 @@
 package spot.spot.domain.job.query.repository.dsl;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -51,7 +52,11 @@ public class SearchingOneQueryDsl {
                 member.id,
                 member.nickname,
                 member.img,
-                myMatching.status
+                myMatching.status,
+                new CaseBuilder()
+                    .when(member.id.eq(memberId)) // member.id가 memberId와 같으면 true
+                    .then(true)
+                    .otherwise(false)
             ))
             .from(job)
             .join(matching).on(job.id.eq(matching.job.id))

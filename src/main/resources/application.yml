@@ -34,6 +34,10 @@ spring:
   kafka:
     admin:
       operation-timeout:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: my-group
+
 
 # 서버 설정
 server:
@@ -98,3 +102,7 @@ management:
       base-path: /api/actuator
       exposure:
         include: prometheus
+
+mongodb:
+  client: mongodb://localhost:27017
+  name : test

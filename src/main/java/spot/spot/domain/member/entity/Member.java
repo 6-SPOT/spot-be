@@ -7,8 +7,8 @@ import java.util.List;
 import lombok.*;
 
 import spot.spot.domain.job.command.entity.Matching;
-import spot.spot.domain.notification.entity.FcmToken;
-import spot.spot.domain.notification.entity.Notification;
+import spot.spot.domain.notification.command.entity.FcmToken;
+import spot.spot.domain.notification.command.entity.Notification;
 
 @Getter
 @Entity
