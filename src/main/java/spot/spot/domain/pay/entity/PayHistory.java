@@ -25,7 +25,7 @@ public class PayHistory {
     @Setter
     private String worker;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
