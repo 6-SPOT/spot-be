@@ -28,5 +28,5 @@ public interface SearchingListQueryDocs {
     // 해결사가 봤을 때, 맡은 일의 현황 리스트 반환
     public List<JobSituationResponse> findJobSituationsByWorker(long memberId);
     // 해결사의 인증 사진 리스트 반환
-    public List<CertificationImgResponse> findWorkersCertificationImgList(long jobId, long workerId);
+    public List<CertificationImgResponse> findWorkersCertificationImgList(long jobId);
 }

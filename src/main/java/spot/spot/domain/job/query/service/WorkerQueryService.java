@@ -48,7 +48,7 @@ public class WorkerQueryService implements WorkerQueryServiceDocs {
     }
 
 
-    public List<CertificationImgResponse> getWorkersCertificationImgList(long jobId, long workerId) {
-        return searchingListQueryDsl.findWorkersCertificationImgList(jobId, workerId);
+    public List<CertificationImgResponse> getWorkersCertificationImgList(long jobId) {
+        return searchingListQueryDsl.findWorkersCertificationImgList(jobId);
     }
 }

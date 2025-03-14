@@ -16,5 +16,5 @@ public interface WorkerQueryServiceDocs {
     // 해결사의 일 현황표
     public List<JobSituationResponse> getMyJobSituations();
     // 해결사의 인증 사진 리스트 얻기
-    public List<CertificationImgResponse> getWorkersCertificationImgList(long jobId, long workerId);
+    public List<CertificationImgResponse> getWorkersCertificationImgList(long jobId);
 }

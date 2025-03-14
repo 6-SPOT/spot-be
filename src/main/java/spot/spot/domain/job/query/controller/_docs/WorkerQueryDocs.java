@@ -45,8 +45,5 @@ public interface WorkerQueryDocs {
     @Operation(summary = "해결사의 job_id에 해당하는 일에 대한 인증 사진 리스트",
         description = "해결사의 job_id에 해당하는 일에 대한 인증 사진 리스트을 볼 수 있는 API")
     @GetMapping
-    public List<CertificationImgResponse> getWorkersCertificationImgList(
-        @RequestParam long jobId,
-        @RequestParam long workerId
-    );
+    public List<CertificationImgResponse> getWorkersCertificationImgList(@RequestParam long jobId);
 }
