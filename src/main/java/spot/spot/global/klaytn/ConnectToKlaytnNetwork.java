@@ -83,11 +83,13 @@ public class ConnectToKlaytnNetwork {
         return getTxHash(fromAddress, tx);
     }
 
-    public String transfer(int amount, String toAddress) {
+    public String transfer(double amount, String toAddress) {
         if(amount <= 0) {
             throw new GlobalException(ErrorCode.LOW_AMOUNT);
+        } else if (amount < 1) {
+            amount = 1.0;
         }
-        BigInteger amountBigInt = BigInteger.valueOf(amount);
+        BigInteger amountBigInt = BigInteger.valueOf((long) amount);
         BigInteger nonce = getNonce(toAddress);
         BigInteger gasPrice = getGasPrice();
         String valueHex = Numeric.toHexStringWithPrefixZeroPadded(amountBigInt, 64);

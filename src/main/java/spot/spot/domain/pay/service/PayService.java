@@ -131,7 +131,7 @@ public class PayService {
         ///클레이튼에 전송
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
         double amtKlay = klayAboutJob.getAmtKlay();
-        transferToKlaytn((int) amtKlay);
+        transferToKlaytn(amtKlay);
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayCancelResponse payCancelResponse = payAPIRequestService.payAPIRequest("cancel", requestEntity, PayCancelResponse.class);
         return PayCancelResponseDto.of(payCancelResponse);
@@ -149,7 +149,7 @@ public class PayService {
         ///클레이튼에 전송
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
         double amtKlay = klayAboutJob.getAmtKlay();
-        transferToKlaytn((int) amtKlay);
+        transferToKlaytn(amtKlay);
         return PaySuccessResponseDto.of(returnPoint);
     }
 
@@ -242,7 +242,7 @@ public class PayService {
         connectToKlaytnNetwork.deposit(peb, singleKeyring.getAddress());
     }
 
-    private void transferToKlaytn(int amtKlay) {
+    private void transferToKlaytn(double amtKlay) {
         SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
         connectToKlaytnNetwork.transfer(amtKlay, singleKeyring.getAddress());
     }
