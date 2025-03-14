@@ -108,7 +108,7 @@ public class PayMockService {
         ///클레이튼에 전송
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
         double amtKlay = klayAboutJob.getAmtKlay();
-        transferToKlaytn((int) amtKlay);
+        transferToKlaytn(amtKlay);
         PayCancelResponse payCancelResponse = new PayCancelResponse();
         PayCancelResponse.Amount payCancelAmount = new PayCancelResponse.Amount();
         PayCancelResponse.Amount mockAmount = payCancelAmount.create(amount, 0);
@@ -142,7 +142,7 @@ public class PayMockService {
         connectToKlaytnNetwork.deposit(peb, singleKeyring.getAddress());
     }
 
-    private void transferToKlaytn(int amtKlay) {
+    private void transferToKlaytn(double amtKlay) {
         SingleKeyring singleKeyring = connectToKlaytnNetwork.getSingleKeyring();
         connectToKlaytnNetwork.transfer(amtKlay, singleKeyring.getAddress());
     }
