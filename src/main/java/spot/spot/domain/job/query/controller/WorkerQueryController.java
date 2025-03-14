@@ -46,10 +46,7 @@ public class WorkerQueryController implements WorkerQueryDocs {
     }
 
     @GetMapping("/certificate")
-    public List<CertificationImgResponse> getWorkersCertificationImgList(
-        @RequestParam long jobId,
-        @RequestParam long workerId
-    ) {
-        return workerQueryService.getWorkersCertificationImgList(jobId, workerId);
+    public List<CertificationImgResponse> getWorkersCertificationImgList(@RequestParam long jobId) {
+        return workerQueryService.getWorkersCertificationImgList(jobId);
     }
 }

@@ -166,7 +166,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     }
 
     @Override
-    public List<CertificationImgResponse> findWorkersCertificationImgList(long jobId, long workerId) {
+    public List<CertificationImgResponse> findWorkersCertificationImgList(long jobId) {
         QCertification certification = QCertification.certification;
 
         return queryFactory
@@ -174,7 +174,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
                 certification.img))
             .from(certification)
             .join(matching).on(certification.matching.id.eq(matching.id))
-            .where(matching.member.id.eq(workerId).and(matching.job.id.eq(jobId)))
+            .where(matching.job.id.eq(jobId).and(matching.status.notIn(MatchingStatus.OWNER, MatchingStatus.ATTENDER, MatchingStatus.REQUEST)))
             .fetch();
     }
 }
