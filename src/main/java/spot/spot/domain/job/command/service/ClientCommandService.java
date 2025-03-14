@@ -123,7 +123,7 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
-        int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching.getId());
+        int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching.getId(), worker.getId());
         if (matching.getStatus().equals(MatchingStatus.CONFIRM)) {
             payService.payTransfer(String.valueOf(worker.getId()), payAmountByMatchingJob, matching.getJob());
         }

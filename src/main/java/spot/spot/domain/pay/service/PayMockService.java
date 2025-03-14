@@ -84,12 +84,10 @@ public class PayMockService {
         double peb = exchangeToPebAndSaveExchangeInfo(job, totalAmount);
         depositToKlaytn((int) peb);
 
-        Long id = job.getId();
-        String StringIdNumber = String.valueOf(id);
         ///결제 승인
         PayApproveResponse payApproveResponse = new PayApproveResponse();
         PayApproveResponse.Amount amount = new PayApproveResponse.Amount(totalAmount, 0, 0, 0, 0, 0);
-        PayApproveResponse mockPayApproveResponse = payApproveResponse.create("mockTid_" + StringIdNumber, domain, findMember.getNickname(), amount, job.getContent());
+        PayApproveResponse mockPayApproveResponse = payApproveResponse.create(job.getTid(), domain, findMember.getNickname(), amount, job.getContent());
 
         return PayApproveResponseDto.of(mockPayApproveResponse);
     }
@@ -170,8 +168,8 @@ public class PayMockService {
         return member.getPoint() + amount;
     }
 
-    public int findPayAmountByMatchingJob(Long matchingId) {
-        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId);
+    public int findPayAmountByMatchingJob(Long matchingId, Long workerId) {
+        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId, workerId);
     }
 
     public PayHistory findByJob(Job job) {
