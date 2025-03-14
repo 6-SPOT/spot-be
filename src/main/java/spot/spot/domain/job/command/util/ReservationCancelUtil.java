@@ -72,7 +72,7 @@ public class ReservationCancelUtil implements ReservationCancelUtilDocs {
             }
             changeJobStatusCommandDsl.updateMatchingStatus(matching_id, MatchingStatus.CANCEL);
             scheduledTasks.remove(matching_id);
-            int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching_id);
+            int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching_id, matching.getMember().getId());
             payService.payCancel(matching.getJob(), payAmountByMatchingJob);
             log.info("Matching-{}는 해결사의 노쇼로 인해 취소되었음을 알립니다.", matching_id);
             return 0;
@@ -89,7 +89,7 @@ public class ReservationCancelUtil implements ReservationCancelUtilDocs {
             }
             changeJobStatusCommandDsl.updateMatchingStatus(matching_id, MatchingStatus.CANCEL);
             scheduledTasks.remove(matching_id);
-            int payAmountByMatchingJob = payMockService.findPayAmountByMatchingJob(matching_id);
+            int payAmountByMatchingJob = payMockService.findPayAmountByMatchingJob(matching_id, matching.getMember().getId());
             payMockService.payCancel(matching.getJob(), payAmountByMatchingJob);
             log.info("Matching-{}는 해결사의 노쇼로 인해 취소되었음을 알립니다.", matching_id);
             return 0;

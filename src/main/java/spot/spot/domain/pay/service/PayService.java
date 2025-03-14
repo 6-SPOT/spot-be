@@ -272,8 +272,8 @@ public class PayService {
         return payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }
 
-    public int findPayAmountByMatchingJob(Long matchingId) {
-        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId);
+    public int findPayAmountByMatchingJob(Long matchingId, Long workerId) {
+        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId, workerId);
     }
 
     private HttpHeaders getHeaders() {

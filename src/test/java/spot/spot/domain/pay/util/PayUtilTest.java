@@ -30,6 +30,7 @@ import spot.spot.domain.pay.repository.KlayAboutJobRepository;
 import spot.spot.domain.pay.repository.PayHistoryRepository;
 import spot.spot.domain.pay.service.PayAPIRequestService;
 import spot.spot.domain.pay.service.PayService;
+import spot.spot.global.config.FireBaseConfig;
 import spot.spot.global.security.util.UserAccessUtil;
 import spot.spot.global.util.AwsS3ObjectStorage;
 
