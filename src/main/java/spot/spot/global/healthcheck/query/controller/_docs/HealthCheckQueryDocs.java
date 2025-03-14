@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import spot.spot.global.healthcheck.command.dto.SampleDto;
 import spot.spot.global.logging.Logging;
 
-@Tag(name = "다. HEALTH CHECK QUERY API", description = "<br/> GET METHOD Health Checking")
+@Tag(name = "하. HEALTH CHECK QUERY API", description = "<br/> GET METHOD Health Checking")
 public interface HealthCheckQueryDocs {
     // 예외 발생 테스트 (정의된 예외)
     @GetMapping
