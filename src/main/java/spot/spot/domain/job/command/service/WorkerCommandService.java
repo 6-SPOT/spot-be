@@ -25,7 +25,8 @@ import spot.spot.domain.member.repository.AbilityRepository;
 import spot.spot.domain.member.repository.WorkerAbilityRepository;
 import spot.spot.domain.member.repository.WorkerRepository;
 import spot.spot.domain.notification.command.dto.response.FcmDTO;
-import spot.spot.domain.notification.command.service.FcmUtil;
+import spot.spot.domain.notification.command.service.FcmAsyncSendingUtil;
+import spot.spot.domain.notification.command.service.FcmMessageUtil;
 import spot.spot.domain.pay.entity.PayHistory;
 import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.service.PayService;
@@ -40,7 +41,7 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 public class WorkerCommandService implements WorkerCommandServiceDocs {
     // Util
     private final UserAccessUtil userAccessUtil;
-    private final FcmUtil fcmUtil;
+    private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
     private final WorkerCommandMapper workerCommandMapper;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final ReservationCancelUtil reservationCancelUtil;
@@ -52,6 +53,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final CertificationRepository certificationRepository;
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
     private final PayService payService;
+    private final FcmMessageUtil fcmMessageUtil;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -66,8 +68,8 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
         matchingRepository.save(matching);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
-            fcmUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
+            fcmMessageUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
     @Transactional
     public void startJob (ChangeStatusWorkerRequest request) {
@@ -76,16 +78,16 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         PayHistory payHistory = payService.findByJob(job);
         payService.updatePayHistory(payHistory, PayStatus.PROCESS, worker.getNickname());
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-                fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
     @Transactional
     public void yesOrNo2RequestOfClient(YesOrNoClientsRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
-            fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
+            fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
     @Transactional
     public void contiuneJob(ChangeStatusWorkerRequest request) {
