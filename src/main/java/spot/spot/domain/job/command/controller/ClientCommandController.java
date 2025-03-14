@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.controller._docs.ClientCommandDocs;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
+import spot.spot.domain.job.command.dto.request.ConfirmOrRejectRequest;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.request.YesOrNoWorkersRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
@@ -53,7 +54,7 @@ public class ClientCommandController implements ClientCommandDocs {
     }
 
     @PatchMapping("/confirm-or-reject")
-    public void confirmOrRejectJob(@RequestBody YesOrNoWorkersRequest request) {
+    public void confirmOrRejectJob(@RequestBody ConfirmOrRejectRequest request) {
         clientCommandService.confirmOrRejectJob(request);
     }
 }
