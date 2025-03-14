@@ -1,6 +1,7 @@
 package spot.spot.global.stomp;
 
 
+import static org.springframework.messaging.simp.stomp.StompCommand.*;
 import static spot.spot.global.util.ConstantUtil.PERMIT_ALL;
 import io.jsonwebtoken.Claims;
 import java.util.Objects;
@@ -43,6 +44,9 @@ public class StompHandler implements ChannelInterceptor {
 		String atk = stompUtil.getAccessToken(accessor);
 		log.info("STOMP 접근 명령어={}", accessor.getCommand());
 		try {
+			if (accessor.getCommand() == DISCONNECT) {
+				return message;
+			}
 			if(atk == null) throw new MessagingException("JWT TOKEN is NULL");
 			switch (accessor.getCommand()) {
 				case CONNECT:
