@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
 import spot.spot.domain.job.query.dto.response.JobDetailResponse;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
@@ -37,9 +38,15 @@ public interface WorkerQueryDocs {
     );
 
     @Operation(summary = "내가 신청하거나 진행 중인 일 현황 조회",
-        description = """
-        내가 신청하거나 진행 중인 일의 현황을 볼 수 있는 API
-        """)
+        description = "내가 신청하거나 진행 중인 일의 현황을 볼 수 있는 API")
     @GetMapping
     public List<JobSituationResponse> getMyJobSituations();
+
+    @Operation(summary = "해결사의 job_id에 해당하는 일에 대한 인증 사진 리스트",
+        description = "해결사의 job_id에 해당하는 일에 대한 인증 사진 리스트을 볼 수 있는 API")
+    @GetMapping
+    public List<CertificationImgResponse> getWorkersCertificationImgList(
+        @RequestParam long jobId,
+        @RequestParam long workerId
+    );
 }

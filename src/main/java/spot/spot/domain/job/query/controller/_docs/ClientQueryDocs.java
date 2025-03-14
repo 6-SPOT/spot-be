@@ -1,17 +1,13 @@
 package spot.spot.domain.job.query.controller._docs;
 
-import static spot.spot.global.util.ConstantUtil.AUTHORIZATION;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import spot.spot.domain.job.query.dto.request.AttenderResponse;
-import spot.spot.domain.job.query.dto.request.PositionRequest;
+import spot.spot.domain.job.query.dto.response.AttenderResponse;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.query.dto.response.NearByWorkersResponse;
 

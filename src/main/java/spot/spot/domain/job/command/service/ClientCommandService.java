@@ -22,7 +22,8 @@ import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.notification.command.dto.response.FcmDTO;
-import spot.spot.domain.notification.command.service.FcmUtil;
+import spot.spot.domain.notification.command.service.FcmAsyncSendingUtil;
+import spot.spot.domain.notification.command.service.FcmMessageUtil;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -34,7 +35,6 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @RequiredArgsConstructor
 public class ClientCommandService implements ClientCommandServiceDocs {
     // Util
-    private final DistanceCalculateUtil distanceCalculateUtil;
     private final UserAccessUtil userAccessUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     // Mapper
@@ -44,10 +44,11 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final MatchingRepository matchingRepository;
     // Query dsl
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
-    private final FcmUtil fcmUtil;
+    private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
     private final PayService payService;
     private final MemberRepository memberRepository;
     private final ReservationCancelUtil reservationCancelUtil;
+    private final FcmMessageUtil fcmMessageUtil;
 
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -70,8 +71,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(request.workerId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.REQUEST).build();
         matchingRepository.save(matching);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
-            fcmUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
+            fcmMessageUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
@@ -82,8 +83,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
             ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.ATTENDER);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-            fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
+            fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
@@ -95,8 +96,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
-            fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
+            fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
@@ -108,8 +109,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         reservationCancelUtil.scheduledSleepMatching2CancelTest(matching);
-        fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
-                fcmUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
+            fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
