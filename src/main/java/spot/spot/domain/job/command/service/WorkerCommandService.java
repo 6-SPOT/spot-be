@@ -24,10 +24,9 @@ import spot.spot.domain.member.entity.Worker;
 import spot.spot.domain.member.repository.AbilityRepository;
 import spot.spot.domain.member.repository.WorkerAbilityRepository;
 import spot.spot.domain.member.repository.WorkerRepository;
+import spot.spot.domain.member.service.MemberService;
 import spot.spot.domain.notification.dto.response.FcmDTO;
 import spot.spot.domain.notification.service.FcmUtil;
-import spot.spot.domain.pay.entity.PayHistory;
-import spot.spot.domain.pay.entity.PayStatus;
 import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
@@ -52,6 +51,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final CertificationRepository certificationRepository;
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
     private final PayService payService;
+    private final MemberService memberService;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
@@ -73,8 +73,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     public void startJob (ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
-        PayHistory payHistory = payService.findByJob(job);
-        payService.updatePayHistory(payHistory, PayStatus.PROCESS, worker.getNickname());
+        payService.updateStartJob(job, worker);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
         fcmUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
                 fcmUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());

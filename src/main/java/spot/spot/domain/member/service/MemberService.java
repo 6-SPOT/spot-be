@@ -77,6 +77,7 @@ public class MemberService {
     }
 
     public Member findMemberByJobInfo(Job job) {
-        return memberQueryRepository.findMemberByMatchingOwner(job).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        return memberQueryRepository.findMemberByMatchingOwner(job)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
