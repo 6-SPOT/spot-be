@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 
 import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.dto.request.ChatMessageCreateRequest;
+import spot.spot.domain.chat.dto.response.ChatMessageResponse;
 import spot.spot.domain.chat.service.ChatService;
 
 @Controller
@@ -17,12 +18,15 @@ public class StompChatController {
 
 	private final SimpMessageSendingOperations messageTemplate;
 	private final ChatService chatService;
+	// private final KafkaTemplate<String, KafkaMessage> kafkaTemplate;
 
 	@MessageMapping("/{roomId}") // roomId로 메세지 보내기
 	public void sendMessage(@DestinationVariable Long roomId, ChatMessageCreateRequest chatMessageDto, SimpMessageHeaderAccessor headerAccessor) {
 		Long memberId = (Long) headerAccessor.getSessionAttributes().get("memberId");
-		chatService.saveMessage(roomId, chatMessageDto, memberId);
-		messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageDto);
+		ChatMessageResponse chatMessageResponse = chatService.saveMessage(roomId, chatMessageDto, memberId);
+		// KafkaMessage kafkaMessage = new KafkaMessage(roomId, chatMessageDto.content());
+		// kafkaTemplate.send("chat-topic", kafkaMessage);
+		messageTemplate.convertAndSend("/api/topic/" + roomId, chatMessageResponse);
 	}
 
 
