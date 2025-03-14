@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
-import spot.spot.domain.job.command.service.ClientCommandService;
 import spot.spot.domain.job.v1.command.controller._docs.ClientCommandVersion1Docs;
 import spot.spot.domain.job.v1.command.service.ClientCommandVersion1Service;
 
