@@ -55,9 +55,11 @@ public class PayMockService {
         ///결제 내역 기록 및 결제 준비
         PayHistory payHistory = savePayHistory(findMember.getNickname(), amount, point, job);
         payUtil.insertFromSchedule(payHistory);
+        Long id = job.getId();
+        String StringIdNumber = String.valueOf(id);
 
         PayReadyResponse payReadyResponse = new PayReadyResponse();
-        PayReadyResponse mockPayReadyResponse = payReadyResponse.create("mockTid", "https://mock-redirect-pc-url.com/payment/success", "https://mock-redirect-mobile-url.com/payment/success");
+        PayReadyResponse mockPayReadyResponse = payReadyResponse.create("mockTid_" + StringIdNumber, "https://mock-redirect-pc-url.com/payment/success", "https://mock-redirect-mobile-url.com/payment/success");
         return PayReadyResponseDto.of(mockPayReadyResponse);
     }
 
@@ -82,10 +84,12 @@ public class PayMockService {
         double peb = exchangeToPebAndSaveExchangeInfo(job, totalAmount);
         depositToKlaytn((int) peb);
 
+        Long id = job.getId();
+        String StringIdNumber = String.valueOf(id);
         ///결제 승인
         PayApproveResponse payApproveResponse = new PayApproveResponse();
         PayApproveResponse.Amount amount = new PayApproveResponse.Amount(totalAmount, 0, 0, 0, 0, 0);
-        PayApproveResponse mockPayApproveResponse = payApproveResponse.create("mockTid", domain, findMember.getNickname(), amount, job.getContent());
+        PayApproveResponse mockPayApproveResponse = payApproveResponse.create("mockTid_" + StringIdNumber, domain, findMember.getNickname(), amount, job.getContent());
 
         return PayApproveResponseDto.of(mockPayApproveResponse);
     }
