@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
+import spot.spot.domain.job.command.dto.request.ConfirmOrRejectRequest;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.mapper.ClientCommandMapper;
 import spot.spot.domain.job.command.service._docs.ClientCommandServiceDocs;
@@ -20,6 +21,7 @@ import spot.spot.domain.job.command.repository.dsl.ChangeJobStatusCommandDsl;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.member.entity.Member;
+import spot.spot.domain.member.repository.MemberQueryRepository;
 import spot.spot.domain.member.repository.MemberRepository;
 import spot.spot.domain.notification.command.dto.response.FcmDTO;
 import spot.spot.domain.notification.command.service.FcmAsyncSendingUtil;
@@ -49,6 +51,7 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final MemberRepository memberRepository;
     private final ReservationCancelUtil reservationCancelUtil;
     private final FcmMessageUtil fcmMessageUtil;
+    private final MemberQueryRepository memberQueryRepository;
 
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -78,8 +81,7 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     @Transactional
     public void yesOrNo2RequestOfWorker(YesOrNoWorkersRequest request) {
         Member owner = userAccessUtil.getMember();
-        Member worker = memberRepository
-            .findById(request.attenderId()).orElseThrow(() -> new GlobalException(
+        Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.ATTENDER);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
@@ -120,8 +122,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     }
 
     @Transactional
-    public void confirmOrRejectJob(YesOrNoWorkersRequest request) {
-        Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+    public void confirmOrRejectJob(ConfirmOrRejectRequest request) {
+        Member worker = memberQueryRepository.findOneFinisherOfJob(request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
         int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching.getId(), worker.getId());

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.request.ChangeStatusClientRequest;
+import spot.spot.domain.job.command.dto.request.ConfirmOrRejectRequest;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.request.YesOrNoWorkersRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
@@ -51,5 +52,5 @@ public interface ClientCommandDocs {
     @Operation(summary = "해결사의 일 완료 요청을 반려 시키거나 확정",
         description = "요청한 job_id에 대한 해결사의 상태: FINISH -> CONFIRM or REJECT")
     @PatchMapping
-    public void confirmOrRejectJob(YesOrNoWorkersRequest request);
+    public void confirmOrRejectJob(ConfirmOrRejectRequest request);
 }
