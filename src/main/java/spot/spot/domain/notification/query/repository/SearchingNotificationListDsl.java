@@ -25,14 +25,15 @@ public class SearchingNotificationListDsl {
     public Slice<NotificationResponse> getMyNotificationList(long memberId, Pageable pageable) {
         List<NotificationResponse> list
             = queryFactory
-            .select(Projections.constructor(NotificationResponse.class,
+            .select(Projections.fields(NotificationResponse.class,
                 notification.id,
                 notification.createdAt,
                 notification.content,
-                notification.member.id.as("senderId"),
+                notification.member.id,
                 member.nickname,
-                member.img
-                ))
+                member.img,
+                notification.type
+            ))
             .from(notification)
             .join(member)
             .on(member.id.eq(notification.recevierId))
