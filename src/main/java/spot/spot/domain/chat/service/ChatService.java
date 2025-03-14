@@ -64,6 +64,7 @@ public class ChatService {
 			.chatRoom(chatRoom)
 			.member(sender)
 			.content(chatMessageDto.content())
+			.createdAt(LocalDateTime.now())
 			.build();
 		chatMessageRepository.save(chatMessage);
 
