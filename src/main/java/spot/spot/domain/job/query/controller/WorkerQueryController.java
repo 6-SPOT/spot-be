@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spot.spot.domain.job.query.controller._docs.WorkerQueryDocs;
+import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
 import spot.spot.domain.job.query.dto.response.JobDetailResponse;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
@@ -42,5 +43,13 @@ public class WorkerQueryController implements WorkerQueryDocs {
     @GetMapping("/dash-board")
     public List<JobSituationResponse> getMyJobSituations() {
         return workerQueryService.getMyJobSituations();
+    }
+
+    @GetMapping("/certificate")
+    public List<CertificationImgResponse> getWorkersCertificationImgList(
+        @RequestParam long jobId,
+        @RequestParam long workerId
+    ) {
+        return workerQueryService.getWorkersCertificationImgList(jobId, workerId);
     }
 }
