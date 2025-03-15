@@ -78,7 +78,7 @@ public class PayService {
         ///결제 내역 업데이트
         Optional<String> workerNicknameByJob = searchingOneQueryDsl.findWorkerNicknameByJob(job);
         String worker = workerNicknameByJob.orElse("");
-        PayHistory payHistory = payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+        PayHistory payHistory = payHistoryRepository.findByJobAndDepositor(job, findMember.getNickname()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
         updatePayHistory(payHistory, PayStatus.PROCESS, worker);
 
         ///결제 시간이 지난 결제건은 결제 불가
@@ -114,7 +114,8 @@ public class PayService {
 
     //결제 취소(등록 취소 시)
     public PayCancelResponseDto payCancel(Job job, int amount){
-        PayHistory payHistory = findByJob(job);
+        Member memberByJobInfo = memberService.findMemberByJobInfo(job);
+        PayHistory payHistory = findByJobWithDepositor(job, memberByJobInfo.getNickname());
 
         ///요청 파라미터 생성
         String totalAmount = String.valueOf(amount);
@@ -141,9 +142,10 @@ public class PayService {
     public PaySuccessResponseDto payTransfer(String workerId, int amount, Job job) {
         ///포인트로 반환
         int returnPoint = returnPoints(workerId, null, amount);
+        Member worker = memberService.findById(workerId);
 
         ///결제 내역 업데이트
-        PayHistory payHistory = findByJob(job);
+        PayHistory payHistory = findByJobWithWorker(job, worker.getNickname());
         updatePayHistory(payHistory, PayStatus.SUCCESS, payHistory.getWorker());
 
         ///클레이튼에 전송
@@ -168,11 +170,35 @@ public class PayService {
         return payHistoryRepository.save(payHistory);
     }
 
+    @Transactional
+    public PayHistory savePayHistory(String depositor,String worker, int payAmount, int point, Job job) {
+        PayHistory payHistory = PayHistory.builder()
+                .payAmount(payAmount)
+                .payPoint(point)
+                .depositor(depositor)
+                .worker(worker)
+                .job(job)
+                .payStatus(PayStatus.PROCESS)
+                .build();
+
+        return payHistoryRepository.save(payHistory);
+    }
+
     //매칭 시 PayHistory에 worker 업데이트
     public void updatePayHistory(PayHistory payHistory, PayStatus payStatus, String worker) {
         if(worker == null) throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
         payHistory.setWorker(worker);
         payHistory.setPayStatus(payStatus);
+    }
+
+    public void updateStartJob(Job job, Member worker) {
+        PayHistory payHistory = findByJobWithWorker(job, "");
+        if(payHistory != null){
+            updatePayHistory(payHistory, PayStatus.PROCESS, worker.getNickname());
+        }else {
+            Member ownerMember = memberService.findMemberByJobInfo(job);
+            savePayHistory(ownerMember.getNickname(), worker.getNickname(), job.getMoney(), 0, job);
+        }
     }
 
     private Map<String, String> createPaymentParameters(String partnerUserId, String tid, String itemName, String quantity, String totalAmount, String pgToken, boolean isCancel) {
@@ -268,8 +294,13 @@ public class PayService {
         return member.getPoint() + amount;
     }
 
-    public PayHistory findByJob(Job job) {
-        return payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    public PayHistory findByJobWithDepositor(Job job,String depositor) {
+        return payHistoryRepository.findByJobAndDepositor(job, depositor).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    }
+
+    public PayHistory findByJobWithWorker(Job job, String worker) {
+        Optional<PayHistory> optFindPayHistory = payHistoryRepository.findByJobAndWorker(job, worker);
+        return optFindPayHistory.orElse(null);
     }
 
     public int findPayAmountByMatchingJob(Long matchingId, Long workerId) {

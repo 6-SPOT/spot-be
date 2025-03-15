@@ -69,7 +69,7 @@ public class PayMockService {
         ///결제 내역 업데이트
         Optional<String> workerNicknameByJob = searchingOneQueryDsl.findWorkerNicknameByJob(job);
         String worker = workerNicknameByJob.orElse("");
-        PayHistory payHistory = payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+        PayHistory payHistory = payHistoryRepository.findByJobAndDepositor(job, findMember.getNickname()).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
         updatePayHistory(payHistory, PayStatus.PROCESS, worker);
 
         ///결제 시간이 지난 결제건은 결제 불가
@@ -94,8 +94,8 @@ public class PayMockService {
 
     //결제 취소(등록 취소 시)
     public PayCancelResponseDto payCancel(Job job, int amount){
-        PayHistory payHistory = findByJob(job);
         Member memberByJobInfo = memberService.findMemberByJobInfo(job);
+        PayHistory payHistory = findByJobWithDepositor(job, memberByJobInfo.getNickname());
 
         ///포인트로 반환
         int paybackAmount = payHistory.getPayAmount() + payHistory.getPayPoint();
@@ -172,7 +172,11 @@ public class PayMockService {
         return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId, workerId);
     }
 
-    public PayHistory findByJob(Job job) {
-        return payHistoryRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    public PayHistory findByJobWithDepositor(Job job, String depositor) {
+        return payHistoryRepository.findByJobAndDepositor(job, depositor).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+    }
+
+    public PayHistory findByJobWithWorker(Job job, String worker) {
+        return payHistoryRepository.findByJobAndWorker(job, worker).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }
 }

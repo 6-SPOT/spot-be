@@ -53,15 +53,17 @@ public class MemberQueryRepository {
     }
 
     public Optional<Member> findMemberByMatchingOwner(Job job) {
-        return Optional.ofNullable(jpaQueryFactory
-                .select(member)
-                .from(matching)
-                .innerJoin(member).on(matching.member.id.eq(member.id))
-                .where(
-                        matching.job.id.eq(job.getId())
-                                .and(matching.status.eq(MatchingStatus.OWNER))
-                )
-                .fetchOne());
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(member)
+                        .from(matching)
+                        .innerJoin(member).on(matching.member.id.eq(member.id))
+                        .where(
+                                matching.job.id.eq(job.getId())
+                                        .and(matching.status.eq(MatchingStatus.OWNER))
+                        )
+                        .fetchOne()
+        );
     }
 
     public Optional<Member> findOneFinisherOfJob (long jobId) {

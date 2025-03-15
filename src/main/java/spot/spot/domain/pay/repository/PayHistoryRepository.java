@@ -10,5 +10,7 @@ public interface PayHistoryRepository extends JpaRepository<PayHistory, Long> {
 
     Optional<PayHistory> findByDepositor(String depositor);
 
-    Optional<PayHistory> findByJob(Job job);
+    Optional<PayHistory> findByJobAndDepositor(Job job, String depositor);
+
+    Optional<PayHistory> findByJobAndWorker(Job job, String worker);
 }
