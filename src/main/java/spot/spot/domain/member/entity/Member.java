@@ -6,6 +6,9 @@ import java.util.List;
 
 import lombok.*;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Point;
 import spot.spot.domain.job.command.entity.Matching;
 import spot.spot.domain.notification.command.entity.FcmToken;
 import spot.spot.domain.notification.command.entity.Notification;
@@ -37,6 +40,10 @@ public class Member {
 
     @Setter
     private double lng; //경도
+
+    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
+    @JdbcTypeCode(SqlTypes.GEOMETRY)
+    private Point location;
 
     @Setter
     private int point;
