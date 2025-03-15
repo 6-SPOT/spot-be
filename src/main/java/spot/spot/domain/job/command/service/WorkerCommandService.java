@@ -2,11 +2,14 @@ package spot.spot.domain.job.command.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import spot.spot.domain.job.command.dto.response.JobCertifiationResponse;
 import spot.spot.domain.job.command.mapper.WorkerCommandMapper;
+import spot.spot.domain.job.command.repository.dsl.WorkerUpdatingCommandDsl;
 import spot.spot.domain.job.command.service._docs.WorkerCommandServiceDocs;
 import spot.spot.domain.job.command.util.ReservationCancelUtil;
 import spot.spot.domain.job.command.dto.request.ChangeStatusWorkerRequest;
@@ -40,6 +43,8 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Service
 @RequiredArgsConstructor
 public class WorkerCommandService implements WorkerCommandServiceDocs {
+    // Config
+    private final GeometryFactory geometryFactory;
     // Util
     private final UserAccessUtil userAccessUtil;
     private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
@@ -56,15 +61,19 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final PayService payService;
     private final MemberService memberService;
     private final FcmMessageUtil fcmMessageUtil;
+    private final WorkerUpdatingCommandDsl workerUpdatingCommandDsl;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
         Member member = userAccessUtil.getMember();
+        Point location = workerCommandMapper.mapLatLngToPoint(request.lat(), request.lng(), geometryFactory);
         Worker worker = workerCommandMapper.dtoToWorker(request, member);
+
+        workerUpdatingCommandDsl.updateLocationById(member.getId(), request.lat(), request.lng(), location);
         workerRepository.save(worker);
-        workerAbilityRepository.saveAll(
-            workerCommandMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
+        workerAbilityRepository.saveAll(workerCommandMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
+
     public void askingJob2Client(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId());
@@ -73,6 +82,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
             fcmMessageUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
+
     @Transactional
     public void startJob (ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -82,6 +92,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
             fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
+
     @Transactional
     public void yesOrNo2RequestOfClient(YesOrNoClientsRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -90,6 +101,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
             fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
+
     @Transactional
     public void contiuneJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -97,6 +109,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         reservationCancelUtil.withdrawalExistingScheduledTask(matching.getId());
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
     }
+
     @Transactional
     public JobCertifiationResponse certificateJob(ChangeStatusWorkerRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -108,6 +121,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         certificationRepository.save(certification);
         return new JobCertifiationResponse(url);
     }
+
     @Transactional
     public void finishingJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
@@ -117,6 +131,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START, MatchingStatus.REJECT);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
     }
+
     @Transactional
     public void deleteWorker() {
         Member me = userAccessUtil.getMember();

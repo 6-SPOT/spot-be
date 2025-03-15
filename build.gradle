@@ -108,7 +108,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 
-	//
+	// 공간데이터 활용
+	implementation 'org.hibernate:hibernate-spatial:6.1.7.Final' // Hibernate 6.x 버전
 
 	//kafka
 //	implementation "org.springframework.kafka:spring-kafka"
