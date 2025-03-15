@@ -22,9 +22,9 @@ public interface WorkerQueryDocs {
         """)
     @GetMapping
     public Slice<NearByJobResponse> nearByJobs(
-        @RequestParam Double lat,
-        @RequestParam Double lng,
-        @RequestParam Integer zoom,
+        @RequestParam(required = false) Double lat,
+        @RequestParam(required = false) Double lng,
+        @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable
     );
 

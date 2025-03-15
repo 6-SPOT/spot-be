@@ -10,6 +10,7 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -21,12 +22,14 @@ import spot.spot.domain.job.command.entity.QCertification;
 import spot.spot.domain.job.command.entity.QJob;
 import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
+import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.repository.dsl._docs.SearchingListQueryDocs;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.domain.member.entity.QWorkerAbility;
 import spot.spot.domain.member.entity.Worker;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 코드로 쿼리문을 build 하는 방법
@@ -38,9 +41,8 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     private final QMatching matching = QMatching.matching;
     private final QMember member = QMember.member;
 
-    public Slice<Job> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
-        QJob job = QJob.job;
-
+    public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
+        log.info("최신 query-dsl 사용 중");
         // Haversine을 이용한 거리 계산
         // Expressions.numberTemplate = queryDsl에서 숫자 계산에 쓰는 양식 -> sql 수식을 사용하면서도 Java 코드로서 사용 가능함.
         // NumberExpression<Double> = double 값을 반환함을 명시
@@ -48,10 +50,28 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
             "(6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({4})) * sin(radians({5}))))",
             lat, job.lat, job.lng, lng, lat, job.lat
             );
+
+        /*
+        * 위도는 적도에서 극지까지 거리가 일정하지만, 경도는 위도에 따라 달라진다.
+        * 위도는 1도가 항상 약 111.045km 이지만, 경도는 위도에 따라 1도의 거리가 달라짐(적도에서 최대, 극지에서 최소)
+        * 위도가 변하면 경도 1도의 실제거리가 달라지므로, 이를 위한 보정이 필요하다.
+        * 밑의 수식은 위도에 따른 경도의 보정값이다.
+        * */
         final  double rangeFilter = dist / (111.045 * Math.cos(Math.toRadians(lat)));
 
-        List<Job> jobs = queryFactory
-            .select(job)
+        List <NearByJobResponse> jobs = queryFactory
+            .select(Projections.constructor(
+                NearByJobResponse.class,
+                job.id,
+                job.title,
+                job.content,
+                job.img.as("picture"),
+                job.lat,
+                job.lng,
+                job.money,
+                distanceExpression,
+                job.tid
+            ))
             .from(job)
             .where(
                 job.startedAt.isNull(),
@@ -59,9 +79,9 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
                 job.lng.between(lng - rangeFilter, lng + rangeFilter),
                 distanceExpression.lt(dist)
             )
-            .orderBy(distanceExpression.asc())
+            .orderBy(distanceExpression.asc()) // ✅ 거리 기준 정렬
             .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1) // 한 개 더 확인해서 다음 페이지가 있는지 확인
+            .limit(pageable.getPageSize() + 1) // ✅ Slice 지원 위해 1개 더 조회
             .fetch();
 
         // 다음 페이지가 있는지 계산
