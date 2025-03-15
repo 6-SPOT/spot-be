@@ -46,4 +46,5 @@ public class Matching extends Updated {
 
     @OneToMany(mappedBy = "matching", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Certification> certificationList;
+
 }

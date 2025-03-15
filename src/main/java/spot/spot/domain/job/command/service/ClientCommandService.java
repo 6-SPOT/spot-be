@@ -2,6 +2,7 @@ package spot.spot.domain.job.command.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,8 @@ import spot.spot.global.util.AwsS3ObjectStorage;
 @Service
 @RequiredArgsConstructor
 public class ClientCommandService implements ClientCommandServiceDocs {
+    // Config
+    private final GeometryFactory geometryFactory;
     // Util
     private final UserAccessUtil userAccessUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
@@ -56,15 +59,10 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
-        Job newJob = jobRepository.save(clientCommandMapper.registerRequestToJob(url, request, " "));
-
-        Matching matching = Matching.builder()
-            .member(client)
-            .job(newJob)
-            .status(MatchingStatus.OWNER)
-            .build();
+        Job job = jobRepository.save(clientCommandMapper.registerRequestToJob(url, request, geometryFactory));
+        Matching matching = clientCommandMapper.toMatching(client, job, MatchingStatus.OWNER);
         matchingRepository.save(matching);
-        return RegisterJobResponse.create(newJob.getId());
+        return RegisterJobResponse.create(job.getId());
     }
 
     public void askingJob2Worker (ChangeStatusClientRequest request) {
