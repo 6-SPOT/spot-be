@@ -13,8 +13,10 @@ import spot.spot.domain.job.command.entity.Matching;
 import spot.spot.domain.notification.command.entity.FcmToken;
 import spot.spot.domain.notification.command.entity.Notification;
 
+@Builder
 @Getter
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name="members")
 public class Member {
@@ -62,22 +64,5 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokenList;
-
-    @Builder
-    private Member(Long id,String email, String nickname, String img, String phone, double lat, double lng, int point, MemberRole memberRole, Worker worker, List<Matching> matchingList, List<Notification> notificationList, List<FcmToken> fcmTokenList) {
-        this.id = id;
-        this.email = email;
-        this.nickname = nickname;
-        this.img = img;
-        this.phone = phone;
-        this.lat = lat;
-        this.lng = lng;
-        this.point = point;
-        this.memberRole = memberRole;
-        this.worker = worker;
-        this.matchingList = matchingList;
-        this.notificationList = notificationList;
-        this.fcmTokenList = fcmTokenList;
-    }
 }
 
