@@ -42,6 +42,6 @@ public class WorkerQueryVersion1Controller implements WorkerQueryVersion1Docs {
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return null;
+        return workerQueryVersion1Service.getNearByJobListWithQueryDsl(lat,lng, zoom, pageable);
     }
 }
