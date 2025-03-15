@@ -15,9 +15,6 @@ public interface JobRepositoryV1 extends JpaRepository<Job, Long> {
     @Query("""
     SELECT j FROM Job j
     WHERE j.startedAt IS NULL
-      AND j.lat BETWEEN :lat - (:dist / 111.045) AND :lat + (:dist / 111.045)
-      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat))))
-                   AND :lng + (:dist / (111.045 * cos(radians(:lat))))
       AND (6371 * acos(
                cos(radians(:lat)) * cos(radians(j.lat)) *
                cos(radians(j.lng) - radians(:lng)) +
@@ -40,10 +37,6 @@ public interface JobRepositoryV1 extends JpaRepository<Job, Long> {
     SELECT j.*
     FROM job j
     WHERE j.started_at IS NULL
-      AND j.lat BETWEEN :lat - (:dist / 111.045) 
-                   AND :lat + (:dist / 111.045)
-      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat)))) 
-                   AND :lng + (:dist / (111.045 * cos(radians(:lat))))
       AND ST_Distance_Sphere(
                point(j.lng, j.lat),
                point(:lng, :lat)

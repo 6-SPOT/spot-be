@@ -29,15 +29,12 @@ public class SearchingListQueryDslV1 {
             "(6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({4})) * sin(radians({5}))))",
             lat, job.lat, job.lng, lng, lat, job.lat
         );
-        final  double rangeFilter = dist / (111.045 * Math.cos(Math.toRadians(lat)));
 
         List<Job> jobs = queryFactory
             .select(job)
             .from(job)
             .where(
                 job.startedAt.isNull(),
-                job.lat.between(lat - (dist / 111.045), lat + (dist / 111.045)),
-                job.lng.between(lng - rangeFilter, lng + rangeFilter),
                 distanceExpression.lt(dist)
             )
             .orderBy(distanceExpression.asc())
