@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import spot.spot.domain.job.v1.query.controller._docs.WorkerQueryVersion1Docs;
+import spot.spot.domain.job.v1.query.controller._docs.WorkerQueryDocsV1;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
-import spot.spot.domain.job.v1.query.service.WorkerQueryVersion1Service;
+import spot.spot.domain.job.v1.query.service.WorkerQueryServiceV1;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/job/v1")
-public class WorkerQueryVersion1Controller implements WorkerQueryVersion1Docs {
+public class WorkerQueryControllerV1 implements WorkerQueryDocsV1 {
 
-    private final WorkerQueryVersion1Service workerQueryVersion1Service;
+    private final WorkerQueryServiceV1 workerQueryServiceV1;
 
     @GetMapping("/search/jpql")
     public Slice<NearByJobResponse> nearByJobWithJPQL(
@@ -24,7 +24,7 @@ public class WorkerQueryVersion1Controller implements WorkerQueryVersion1Docs {
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return workerQueryVersion1Service.getNearByJobListWithJPQL(lat, lng, zoom, pageable);
+        return workerQueryServiceV1.getNearByJobListWithJPQL(lat, lng, zoom, pageable);
     }
 
     @GetMapping("/search/native-query")
@@ -33,7 +33,7 @@ public class WorkerQueryVersion1Controller implements WorkerQueryVersion1Docs {
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return workerQueryVersion1Service.getNearByJobListWithNativeQuery(lat, lng, zoom, pageable);
+        return workerQueryServiceV1.getNearByJobListWithNativeQuery(lat, lng, zoom, pageable);
     }
 
     @GetMapping("/search/query-dsl")
@@ -42,6 +42,6 @@ public class WorkerQueryVersion1Controller implements WorkerQueryVersion1Docs {
         @RequestParam(required = false) Double lng,
         @RequestParam(required = false, defaultValue = "21") Integer zoom,
         Pageable pageable) {
-        return null;
+        return workerQueryServiceV1.getNearByJobListWithQueryDsl(lat, lng, zoom, pageable);
     }
 }

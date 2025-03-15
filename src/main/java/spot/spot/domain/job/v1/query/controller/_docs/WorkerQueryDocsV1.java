@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 
 @Tag(name= "가. (V1) WORKER QUERY API ", description = "<br/> 해결사 R API (첫 구현)")
-public interface WorkerQueryVersion1Docs {
+public interface WorkerQueryDocsV1 {
 
     @Operation(summary = "JPQL로 DB 쿼리로 거리 계산 후 리스트 출력 (default 위도 경도 현 사용자의 위도 경도)")
     public Slice<NearByJobResponse> nearByJobWithJPQL (

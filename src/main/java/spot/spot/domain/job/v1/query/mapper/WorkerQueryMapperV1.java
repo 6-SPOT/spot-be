@@ -1,4 +1,5 @@
-package spot.spot.domain.job.query.mapper;
+package spot.spot.domain.job.v1.query.mapper;
+
 
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -9,8 +10,9 @@ import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.util._docs.DistanceCalculateUtilDocs;
 
+@Deprecated
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface WorkerQueryMapper {
+public interface WorkerQueryMapperV1 {
 
     @Mapping(target = "dist", ignore = true)
     @Mapping(target = "picture", source = "img")
