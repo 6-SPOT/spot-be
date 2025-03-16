@@ -34,6 +34,7 @@ public class WorkerQueryService implements WorkerQueryServiceDocs {
         Member member = userAccessUtil.getMember();
         lat = lat == null? member.getLat() : lat;
         lng = lng == null? member.getLng(): lng;
+        log.info("{}, {}", lat, lng);
         return jobSearchQueryDSLService.findNearByJobs(lat, lng, zoom, pageable);
     }
 

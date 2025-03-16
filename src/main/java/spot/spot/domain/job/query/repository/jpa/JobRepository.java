@@ -9,15 +9,31 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("""
-    SELECT j FROM Job j
+    SELECT new spot.spot.domain.job.query.dto.response.NearByJobResponse(
+        j.id, 
+        j.title, 
+        j.content, 
+        j.img, 
+        j.lat, 
+        j.lng, 
+        j.money, 
+        (6371 * acos(
+               cos(radians(:lat)) * cos(radians(j.lat)) *
+               cos(radians(j.lng) - radians(:lng)) +
+               sin(radians(:lat)) * sin(radians(j.lat))
+           )),
+        j.tid
+    ) 
+    FROM Job j
     WHERE j.startedAt IS NULL
       AND j.lat BETWEEN :lat - (:dist / 111.045) AND :lat + (:dist / 111.045)
-      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat))))
+      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat)))) 
                    AND :lng + (:dist / (111.045 * cos(radians(:lat))))
       AND (6371 * acos(
                cos(radians(:lat)) * cos(radians(j.lat)) *
@@ -30,7 +46,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
                 sin(radians(:lat)) * sin(radians(j.lat))
             )) ASC
     """)
-    Slice<Job> findNearByJobWithJPQL(
+    Slice<NearByJobResponse> findNearByJobWithJPQL(
         @Param("lat") double lat,
         @Param("lng") double lng,
         @Param("dist") double dist,
@@ -38,7 +54,19 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     );
 
     @Query(value = """
-    SELECT j.*
+    SELECT 
+        j.id AS id,
+        j.title AS title,
+        j.content AS content,
+        j.img AS picture,
+        j.lat AS lat,
+        j.lng AS lng,
+        j.money AS money,
+        ST_Distance_Sphere(
+            point(j.lng, j.lat),
+            point(:lng, :lat)
+        ) / 1000 AS dist, -- 미터를 km 단위로 변환
+        j.tid AS tid
     FROM job j
     WHERE j.started_at IS NULL
       AND j.lat BETWEEN :lat - (:dist / 111.045) 
@@ -48,14 +76,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
       AND ST_Distance_Sphere(
                point(j.lng, j.lat),
                point(:lng, :lat)
-           ) / 1000 < :dist -- 미터 단위이므로 km로 변환
+           ) / 1000 < :dist -- km 단위 거리 비교
     ORDER BY ST_Distance_Sphere(
                  point(j.lng, j.lat),
                  point(:lng, :lat)
              ) ASC
     LIMIT :pageSize OFFSET :offset
     """, nativeQuery = true)
-    List<Job> findNearByJobWithNativeQuery(
+    List<NearByJobResponse> findNearByJobWithNativeQuery(
         @Param("lat") double lat,
         @Param("lng") double lng,
         @Param("dist") double dist,

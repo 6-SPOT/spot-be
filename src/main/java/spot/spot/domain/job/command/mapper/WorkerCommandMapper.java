@@ -3,6 +3,9 @@ package spot.spot.domain.job.command.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -20,11 +23,15 @@ import spot.spot.domain.member.repository.AbilityRepository;
         unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AbilityRepository.class, DistanceCalculateUtil.class})
 public interface WorkerCommandMapper {
 
+
+
     // 1) Registing request to Entity
     @Mapping(target = "member", source = "member")
     @Mapping(target = "introduction", source = "request.content")
     @Mapping(target = "workerAbilities", ignore = true) // WorkerAbility 매핑은 별도 처리
     Worker dtoToWorker(RegisterWorkerRequest request, Member member);
+
+
     // 2) 구직자와 강점의 교차테이블 생성
     default List<WorkerAbility> mapWorkerAbilities(List<AbilityType> strong, Worker worker, AbilityRepository abilityRepository) {
         if(strong == null || strong.isEmpty()) return new ArrayList<>();
@@ -39,5 +46,10 @@ public interface WorkerCommandMapper {
                     .build();
             })
             .collect(Collectors.toList());
+    }
+
+    // 3. 구직자 lat, lng -> POINT 객체
+    default Point mapLatLngToPoint (double lat, double lng, GeometryFactory geometryFactory) {
+        return geometryFactory.createPoint(new Coordinate(lat, lng));
     }
 }
