@@ -42,7 +42,6 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     private final QMember member = QMember.member;
 
     public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
-        log.info("최신 query-dsl 사용 중");
         // Haversine을 이용한 거리 계산
         // Expressions.numberTemplate = queryDsl에서 숫자 계산에 쓰는 양식 -> sql 수식을 사용하면서도 Java 코드로서 사용 가능함.
         // NumberExpression<Double> = double 값을 반환함을 명시
