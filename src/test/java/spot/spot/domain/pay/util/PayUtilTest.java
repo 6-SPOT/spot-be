@@ -125,7 +125,7 @@ class PayUtilTest {
         Job findJob = clientQueryService.findById(registerJobResponse.jobId());
         ///when
         payService.payReady(String.valueOf(findMember.getId()), "content", 10000, 0, findJob);
-        PayHistory findPayHistory = payService.findByJob(findJob);
+        PayHistory findPayHistory = payService.findByJobWithDepositor(findJob, findMember.getNickname());
 
         ///then
         Assertions.assertThat(payUtil.getScheduledTasks().containsKey(findPayHistory.getId())).isTrue();
@@ -168,7 +168,7 @@ class PayUtilTest {
         )).thenReturn(mockPayReadyResponse);
 
         payService.payReady(String.valueOf(findMember.getId()), "content", 10000, 0, findJob);
-        PayHistory findPayHistory = payService.findByJob(findJob);
+        PayHistory findPayHistory = payService.findByJobWithDepositor(findJob, findMember.getNickname());
         PayApproveResponse payApproveResponse = new PayApproveResponse();
         PayApproveResponse.Amount amount = new PayApproveResponse.Amount();
         PayApproveResponse.Amount mockAmount = amount.create(10000, 100);
