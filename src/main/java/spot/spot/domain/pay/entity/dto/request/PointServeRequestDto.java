@@ -31,7 +31,8 @@ public record PointServeRequestDto(
                 .pointCode(pointCode)
                 .pointName(req.pointName)
                 .point(req.point)
-                .isValid(true)
+                .count(req.count)
+//                .isValid(true)
                 .build();
     }
 }

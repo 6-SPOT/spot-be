@@ -20,6 +20,11 @@ public class PointController {
 
     private final PointService pointService;
 
+//    @PostMapping("/serve/v1")
+//    public List<PointServeResponseDto> servePointCoupon(@Valid @RequestBody List<@Valid PointServeRequestDto> requestDto) {
+//        return pointService.servePoint(requestDto);
+//    }
+
     @PostMapping("/serve")
     public List<PointServeResponseDto> servePointCoupon(@Valid @RequestBody List<@Valid PointServeRequestDto> requestDto) {
         return pointService.servePoint(requestDto);

@@ -103,19 +103,6 @@ public class PointServiceExceptionTest {
     }
 
     @Test
-    @DisplayName("포인트 삭제 시 유효하지 않은 코드를 입력하면 예외가 발생한다.")
-    void deletePointOnceInvalidPointCode() {
-        ///given
-        String mockPointCode = "12TYYA2";
-
-        ///when, then
-        Assertions.assertThatThrownBy(() -> pointService.deletePointOnce(mockPointCode))
-                .isInstanceOf(GlobalException.class)
-                .extracting(e -> ((GlobalException) e).getErrorCode().getMessage())
-                .isEqualTo(ErrorCode.INVALID_POINT_CODE.getMessage());
-    }
-
-    @Test
     @DisplayName("deltePoint 유효하지 않은 코드 예외")
     void deletePointInvalidPointCode() {
         Assertions.assertThatThrownBy(() -> pointService.deletePoint(""))
