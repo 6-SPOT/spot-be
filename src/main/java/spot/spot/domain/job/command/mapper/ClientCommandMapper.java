@@ -21,6 +21,6 @@ public interface ClientCommandMapper {
     Matching toMatching (Member member, Job job, MatchingStatus status);
 
     default Point mapLatLngToPoint(double lat, double lng, GeometryFactory geometryFactory) {
-        return geometryFactory.createPoint(new Coordinate(lat, lng));
+        return geometryFactory.createPoint(new Coordinate(lng, lat));
     }
 }
