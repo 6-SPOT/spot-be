@@ -1,81 +1,94 @@
 package spot.spot.domain.job.v2.query.repository.dsl;
 
+import com.querydsl.core.JoinFlag.Position;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import com.querydsl.sql.SQLQueryFactory;
+
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.entity.QJob;
-import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
-import spot.spot.domain.member.entity.QMember;
-import spot.spot.domain.member.entity.QWorker;
-import spot.spot.domain.member.entity.QWorkerAbility;
 
 @Deprecated
 @Repository
 @RequiredArgsConstructor
 public class SearchingListQueryDslv2 {
+    private final EntityManager entityManager;
     private final JPAQueryFactory queryFactory;
     private final QJob job = QJob.job;
+    private final SQLQueryFactory sqlQueryFactory;
 
+    @Transactional(readOnly = true)
     public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
-        // Haversine을 이용한 거리 계산
-        // Expressions.numberTemplate = queryDsl에서 숫자 계산에 쓰는 양식 -> sql 수식을 사용하면서도 Java 코드로서 사용 가능함.
-        // NumberExpression<Double> = double 값을 반환함을 명시
+        // ✅ Haversine 거리 계산 수식
         NumberExpression<Double> distanceExpression = Expressions.numberTemplate(Double.class,
-            "(6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({4})) * sin(radians({5}))))",
-            lat, job.lat, job.lng, lng, lat, job.lat
+            "(6371 * acos(cos(radians({0})) * cos(radians(job.lat)) * cos(radians(job.lng) - radians({1})) + sin(radians({2})) * sin(radians(job.lat))))",
+            lat, lng, lat
         );
 
-        /*
-         * 위도는 적도에서 극지까지 거리가 일정하지만, 경도는 위도에 따라 달라진다.
-         * 위도는 1도가 항상 약 111.045km 이지만, 경도는 위도에 따라 1도의 거리가 달라짐(적도에서 최대, 극지에서 최소)
-         * 위도가 변하면 경도 1도의 실제거리가 달라지므로, 이를 위한 보정이 필요하다.
-         * 밑의 수식은 위도에 따른 경도의 보정값이다.
-         * */
-        final  double rangeFilter = dist / (111.045 * Math.cos(Math.toRadians(lat)));
+        final double rangeFilter = dist / (111.045 * Math.cos(Math.toRadians(lat)));
 
-        List<NearByJobResponse> jobs = queryFactory
-            .select(Projections.constructor(
-                NearByJobResponse.class,
+        // ✅ 1️⃣ 서브쿼리 생성 (idx_lat_lng 인덱스 강제 적용)
+        QJob subJob = new QJob("subJob");
+
+        var subQuery = sqlQueryFactory
+            .select(
                 job.id,
                 job.title,
                 job.content,
-                job.img.as("picture"),
+                job.img,
                 job.lat,
                 job.lng,
                 job.money,
-                distanceExpression,
-                job.tid
-            ))
-            .from(job)
-            .where(
-                job.startedAt.isNull(),
-                job.lat.between(lat - (dist / 111.045), lat + (dist / 111.045)),
-                job.lng.between(lng - rangeFilter, lng + rangeFilter),
-                distanceExpression.lt(dist)
+                job.tid,
+                distanceExpression.as("dist") // ✅ 거리 계산 후 별칭(dist) 적용
             )
-            .orderBy(distanceExpression.asc()) // ✅ 거리 기준 정렬
+            .from(job)
+            .addJoinFlag(" FORCE INDEX (idx_lat_lng)", Position.END) // ✅ 인덱스 강제 적용
+            .where(
+                Expressions.stringPath("started_at").isNull(),
+                job.lat.between(lat - (dist / 111.045), lat + (dist / 111.045)),
+                job.lng.between(lng - rangeFilter, lng + rangeFilter)
+            );
+
+        List<NearByJobResponse> jobs = sqlQueryFactory
+            .select(Projections.constructor(
+                NearByJobResponse.class,
+                subJob.id,
+                subJob.title,
+                subJob.content,
+                subJob.img.as("picture"),
+                subJob.lat,
+                subJob.lng,
+                subJob.money,
+                Expressions.numberPath(Double.class, "dist"), // ✅ 서브쿼리의 `dist` 사용
+                subJob.tid
+            ))
+            .from(subQuery, subJob) // ✅ 서브쿼리 적용
+            .having(Expressions.numberPath(Double.class, "dist").loe(dist)) // ✅ 거리 필터링을 HAVING으로 변경
+            .orderBy(Expressions.numberPath(Double.class, "dist").asc()) // ✅ 거리순 정렬
             .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1) // ✅ Slice 지원 위해 1개 더 조회
+            .limit(pageable.getPageSize() + 1)
             .fetch();
 
-        // 다음 페이지가 있는지 계산
-        // QueryDsl은 page 객체는 자동 지원하지만, Slice 객체는 지원하지 않음.
-        // 우리는 APP 용 무한 스크롤을 구현해야함으로, Slice를 사용해야함.
-        // N+1개가 불러와진다. -> 다음이 존재한다. N개 이하로 불러와진다. -> 다음 페이지가 없다.
         boolean hasNext = jobs.size() > pageable.getPageSize();
-        if(hasNext) {
-            // 다음 페이지가 있으면 찾은 게 11개니 10개로 짤라서 반환
+        if (hasNext) {
             jobs = jobs.subList(0, pageable.getPageSize());
         }
-        // Slice 인터페이스의 구현체 (JPA에서 제공). <내용물, pageable 객체, 다음이 있는지 여부>를 주면 된다.
         return new SliceImpl<>(jobs, pageable, hasNext);
     }
+
 }

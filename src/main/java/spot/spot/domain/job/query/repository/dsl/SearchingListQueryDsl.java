@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -24,6 +25,7 @@ import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.repository.dsl._docs.SearchingListQueryDocs;
+import spot.spot.domain.job.query.util.GeometryUtil;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.domain.member.entity.QWorkerAbility;
@@ -40,6 +42,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     private final QWorkerAbility workerAbility = QWorkerAbility.workerAbility;
     private final QMatching matching = QMatching.matching;
     private final QMember member = QMember.member;
+    private final GeometryUtil geometryUtil;
 
     public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
         // Haversine을 이용한 거리 계산
