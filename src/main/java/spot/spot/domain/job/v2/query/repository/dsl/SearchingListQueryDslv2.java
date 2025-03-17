@@ -26,8 +26,6 @@ import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 @Repository
 @RequiredArgsConstructor
 public class SearchingListQueryDslv2 {
-    private final EntityManager entityManager;
-    private final JPAQueryFactory queryFactory;
     private final QJob job = QJob.job;
     private final SQLQueryFactory sqlQueryFactory;
 

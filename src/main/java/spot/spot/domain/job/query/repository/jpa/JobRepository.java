@@ -63,23 +63,18 @@ public interface JobRepository extends JpaRepository<Job, Long> {
         j.lng AS lng,
         j.money AS money,
         ST_Distance_Sphere(
-            point(j.lng, j.lat),
-            point(:lng, :lat)
+            j.location, 
+            ST_GeomFromText(:point, 4326)
         ) / 1000 AS dist, -- 미터를 km 단위로 변환
         j.tid AS tid
     FROM job j
     WHERE j.started_at IS NULL
-      AND j.lat BETWEEN :lat - (:dist / 111.045) 
-                   AND :lat + (:dist / 111.045)
-      AND j.lng BETWEEN :lng - (:dist / (111.045 * cos(radians(:lat)))) 
-                   AND :lng + (:dist / (111.045 * cos(radians(:lat))))
-      AND ST_Distance_Sphere(
-               point(j.lng, j.lat),
-               point(:lng, :lat)
-           ) / 1000 < :dist -- km 단위 거리 비교
+      AND MBRContains(
+          ST_Buffer(ST_GeomFromText(:point, 4326), :dist * 1000), j.location
+      )
     ORDER BY ST_Distance_Sphere(
-                 point(j.lng, j.lat),
-                 point(:lng, :lat)
+                 j.location, 
+                 ST_GeomFromText(:point, 4326)
              ) ASC
     LIMIT :pageSize OFFSET :offset
     """, nativeQuery = true)

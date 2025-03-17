@@ -67,6 +67,8 @@ dependencies {
 	// mySQL 옵티마이저와 소통을 위함
     implementation group: 'com.querydsl', name: 'querydsl-sql', version: '5.0.0'
 	implementation group: 'com.querydsl', name: 'querydsl-sql-spring', version: '5.0.0'
+	// 공간 데이터 query-dsl
+	implementation 'com.querydsl:querydsl-spatial:5.0.0'
 
 
 

@@ -20,7 +20,7 @@ public class DistanceCalculateUtil implements
             case 18 -> 0.5;
             case 17 -> 1;
             case 16 -> 2;
-            default -> 2;
+            default -> 3;
         };
     }
 }
