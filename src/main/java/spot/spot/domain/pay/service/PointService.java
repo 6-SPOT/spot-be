@@ -10,6 +10,7 @@ import spot.spot.domain.pay.entity.Point;
 import spot.spot.domain.pay.entity.dto.request.PointServeRequestDto;
 import spot.spot.domain.pay.entity.dto.response.PointServeResponseDto;
 import spot.spot.domain.pay.repository.PointRepository;
+import spot.spot.domain.pay.repository.PointRepositoryDsl;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
@@ -24,6 +25,7 @@ public class PointService {
 
     private final PointRepository pointRepository;
     private final MemberService memberService;
+    private final PointRepositoryDsl pointRepositoryDsl;
 
     //포인트 쿠폰 등록
 //    public List<PointServeResponseDto> servePoint(List<PointServeRequestDto> requestDto) {
@@ -68,6 +70,25 @@ public class PointService {
         Member findMember = memberService.findById(memberId);
         int point = findMember.getPoint();
         findMember.setPoint(point + validPoint.getPoint());
+    }
+
+    public void registerPointWithOptimisticLock(String pointCode, String memberId) {
+        for (int i = 0; i < 3; i++) {
+            Point point = pointRepository.findByPointCode(pointCode)
+                    .orElseThrow(() -> new RuntimeException("포인트 정보를 찾을 수 없습니다."));
+
+            int oldCount = point.getCount();
+            if(oldCount <= 0) throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
+
+            int newCount = oldCount - 1;
+
+            int updatedRows = pointRepositoryDsl.updatePointOptimistic(pointCode, oldCount, newCount);
+
+            if (updatedRows > 0) {
+                return;
+            }
+        }
+        throw new RuntimeException("포인트 업데이트 중 충돌이 발생했습니다. 다시 시도해주세요.");
     }
 
     public void decreasePointCount(Point point) {
