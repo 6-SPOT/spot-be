@@ -255,9 +255,9 @@ public class PayService {
         String redirectUri = request.getRequestURL().toString();
 
         if (redirectUri.contains("localhost:8080")) {
-            redirectUri = "https://ilmatch.net";
-        } else if (redirectUri.contains("ilmatch.net")) {
             redirectUri = "http://localhost:3000";
+        } else if (redirectUri.contains("ilmatch.net")) {
+            redirectUri = "https://ilmatch.net";
         }
 
         return redirectUri; // 기본값
