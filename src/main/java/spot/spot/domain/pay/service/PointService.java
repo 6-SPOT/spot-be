@@ -15,8 +15,6 @@ import spot.spot.global.response.format.GlobalException;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +26,32 @@ public class PointService {
     private final MemberService memberService;
 
     //포인트 쿠폰 등록
+//    public List<PointServeResponseDto> servePoint(List<PointServeRequestDto> requestDto) {
+//        List<PointServeResponseDto> responseDtos = new ArrayList<>();
+//        List<Point> pointList = requestDto.stream().map(
+//                req -> new AbstractMap.SimpleEntry<>(req, UUID.randomUUID().toString().substring(0, 6))
+//        ).flatMap(entry -> {
+//            PointServeRequestDto req = entry.getKey();
+//            String pointCode = entry.getValue();
+//
+//            Stream<Point> pointStream = IntStream.range(0, req.count())
+//                    .mapToObj(i -> PointServeRequestDto.toPoint(req, pointCode));
+//            responseDtos.add(new PointServeResponseDto(req.pointName(), req.point(), pointCode, req.count()));
+//            return pointStream;
+//        }).collect(Collectors.toList());
+//
+//        pointRepository.saveAll(pointList);
+//
+//        return responseDtos;
+//    }
+
     public List<PointServeResponseDto> servePoint(List<PointServeRequestDto> requestDto) {
         List<PointServeResponseDto> responseDtos = new ArrayList<>();
         List<Point> pointList = requestDto.stream().map(
-                req -> new AbstractMap.SimpleEntry<>(req, UUID.randomUUID().toString().substring(0, 6))
-        ).flatMap(entry -> {
-            PointServeRequestDto req = entry.getKey();
-            String pointCode = entry.getValue();
-
-            Stream<Point> pointStream = IntStream.range(0, req.count())
-                    .mapToObj(i -> PointServeRequestDto.toPoint(req, pointCode));
-            responseDtos.add(new PointServeResponseDto(req.pointName(), req.point(), pointCode));
-            return pointStream;
+                req -> {
+                    String pointCode = UUID.randomUUID().toString().substring(0, 6);
+                    responseDtos.add(new PointServeResponseDto(req.pointName(), req.point(), pointCode, req.count()));
+                    return PointServeRequestDto.toPoint(req, pointCode);
         }).collect(Collectors.toList());
 
         pointRepository.saveAll(pointList);
@@ -49,21 +61,20 @@ public class PointService {
 
     //쿠폰 사용
     public void registerPoint(String pointCode, String memberId) {
-        Point validPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode)
+        Point validPoint = pointRepository.findByPointCode(pointCode)
                 .orElseThrow(() -> new GlobalException(ErrorCode.EMPTY_POINT));
-        validPoint.setValid(false);
+        decreasePointCount(validPoint);
 
         Member findMember = memberService.findById(memberId);
         int point = findMember.getPoint();
         findMember.setPoint(point + validPoint.getPoint());
     }
 
-    //쿠폰 하나삭제
-    public void deletePointOnce(String pointCode) {
-        validatePointCode(pointCode);
-        Optional<Point> firstByPointCode = pointRepository.findFirstByPointCode(pointCode);
-        if(firstByPointCode.isEmpty()) throw new GlobalException(ErrorCode.INVALID_POINT_CODE);
-        firstByPointCode.ifPresent(pointRepository::delete);
+    public void decreasePointCount(Point point) {
+        if(point.getCount() <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
+        }
+        point.setCount(point.getCount() - 1);
     }
 
     //포인트코드가 같은 포인트 전체 삭제
@@ -73,7 +84,7 @@ public class PointService {
     }
 
     private void validatePointCode(String pointCode) {
-        pointRepository.findFirstByPointCode(pointCode).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_POINT_CODE));
+        pointRepository.findByPointCode(pointCode).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_POINT_CODE));
         if (pointCode == null || pointCode.isEmpty()) {
             throw new GlobalException(ErrorCode.INVALID_POINT_CODE);
         }

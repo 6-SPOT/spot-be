@@ -7,15 +7,17 @@ import spot.spot.domain.pay.entity.Point;
 public record PointServeResponseDto(
         String pointName,
         int point,
-        String pointCode
+        String pointCode,
+        int count
 ) {
 
     public Point toPoint(PointServeResponseDto requestDto) {
         return Point.builder()
                 .pointCode(requestDto.pointCode)
                 .pointName(requestDto.pointName())
-                .isValid(true)
+//                .isValid(true)
                 .point(requestDto.point())
+                .count(requestDto.count())
                 .build();
     }
 

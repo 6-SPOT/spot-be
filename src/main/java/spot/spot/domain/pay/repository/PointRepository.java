@@ -10,12 +10,11 @@ import java.util.Optional;
 
 public interface PointRepository extends JpaRepository<Point, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Point> findFirstByPointCodeAndIsValidTrue(String pointCode);
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    Optional<Point> findFirstByPointCodeAndIsValidTrue(String pointCode);
 
-    List<Point> findByPointCodeAndIsValidTrue(String pointCode);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Point> findByPointCode(String pointCode);
 
     void deleteByPointCode(String pointCode);
-
-    Optional<Point> findFirstByPointCode(String pointCode);
 }

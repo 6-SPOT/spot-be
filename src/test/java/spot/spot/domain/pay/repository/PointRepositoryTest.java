@@ -28,40 +28,21 @@ class PointRepositoryTest {
     @MockitoBean
     JPAQueryFactory jpaQueryFactory;
 
-    @DisplayName("사용하지 않은 포인트를 일치하는 포인트코드로 조회하면 일치하는 포인트 중 하나가 조회된다.")
+    @DisplayName("포인트코드가 일치하는 포인트 코드를 조회할 수 있다.")
     @Test
     void findFirstByPointCodeAndIsValidTrue(){
         ///given
         String pointCode = "22444WX";
-        Point point1 = Point.builder().pointName("point1").point(1000).pointCode(pointCode).isValid(true).build();
+        Point point1 = Point.builder().pointName("point1").point(1000).count(10).pointCode(pointCode).build();
         pointRepository.save(point1);
 
         ///when
-        Optional<Point> findPoint = pointRepository.findFirstByPointCodeAndIsValidTrue(pointCode);
+        Optional<Point> findPoint = pointRepository.findByPointCode(pointCode);
 
         ///then
         Assertions.assertThat(findPoint.get())
                 .extracting("pointName", "pointCode", "point")
                 .containsExactly("point1", pointCode, 1000);
-    }
-
-    @DisplayName("사용하지 않은 포인트를 일치하는 포인트 코드로 조회하면 일치하는 모든 포인트가 조회된다.")
-    @Test
-    void findByPointCodeAndIsValidTrue(){
-        ///given
-        String pointCode = "22444WX";
-        for (int i = 0; i < 5; i++) {
-            boolean status = false;
-            if(i % 2 == 0) status = true;
-            Point point1 = Point.builder().pointName("point1").point(1000).pointCode(pointCode).isValid(status).build();
-            pointRepository.save(point1);
-        }
-
-        ///when
-        List<Point> pointList = pointRepository.findByPointCodeAndIsValidTrue(pointCode);
-
-        ///then
-        assertThat(pointList.size()).isEqualTo(3);
     }
 
     @DisplayName("포인트코드로 일치하는 포인트를 전체 삭제한다.")
@@ -70,7 +51,7 @@ class PointRepositoryTest {
         ///given
         String pointCode = "22444WX";
         for (int i = 0; i < 5; i++) {
-            Point point1 = Point.builder().pointName("point1").point(1000).pointCode(pointCode).isValid(true).build();
+            Point point1 = Point.builder().pointName("point1").point(1000).pointCode(pointCode).count(0).build();
             pointRepository.save(point1);
         }
 
@@ -78,23 +59,7 @@ class PointRepositoryTest {
         pointRepository.deleteByPointCode(pointCode);
 
         ///then
-        assertThat(pointRepository.findFirstByPointCode(pointCode)).isEmpty();
+        assertThat(pointRepository.findByPointCode(pointCode)).isEmpty();
     }
 
-    @DisplayName("포인트코드로 일치하는 포인트를 하나 조회한다.")
-    @Test
-    void findFirstByPointCode(){
-        ///given
-        String pointCode = "22444WX";
-        for (int i = 0; i < 5; i++) {
-            Point point1 = Point.builder().pointName("point1").point(1000).pointCode(pointCode).isValid(true).build();
-            pointRepository.save(point1);
-        }
-
-        ///when
-        Optional<Point> firstByPointCode = pointRepository.findFirstByPointCode(pointCode);
-
-        ///then
-        assertThat(firstByPointCode.get()).isNotNull();
-    }
 }

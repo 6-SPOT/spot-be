@@ -10,13 +10,21 @@ import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
+import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
 import spot.spot.domain.job.command.entity.Job;
+import spot.spot.domain.job.command.entity.Matching;
+import spot.spot.domain.job.command.entity.MatchingStatus;
 import spot.spot.domain.job.query.repository.dsl.SearchingOneQueryDsl;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.job.command.service.ClientCommandService;
+import spot.spot.domain.job.query.repository.jpa.MatchingRepository;
 import spot.spot.domain.job.query.service.ClientQueryService;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.repository.MemberRepository;
@@ -32,7 +40,9 @@ import spot.spot.global.klaytn.ConnectToKlaytnNetwork;
 import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
+import spot.spot.global.util.AwsS3ObjectStorage;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +53,7 @@ import static org.mockito.BDDMockito.*;
 @ActiveProfiles("local")
 @Transactional
 @Slf4j
+@WithMockUser("1")
 public class PayServiceTest {
 
     @Autowired
@@ -82,7 +93,12 @@ public class PayServiceTest {
     PayUtil payUtil;
 
     @MockitoBean
+    AwsS3ObjectStorage awsS3ObjectStorage;
+
+    @MockitoBean
     private SearchingOneQueryDsl searchingOneQueryDsl;
+    @Autowired
+    private MatchingRepository matchingRepository;
 
     @BeforeEach
     void setUp() {
@@ -210,11 +226,18 @@ public class PayServiceTest {
         int cancelAmount = 10000;
         //mock 데이터
         Member mockMember = createMockMember();
-        Job mockJob = createMockJob("T123145151");
-        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
-        KlayAboutJob mockKlayAboutJob = createMockKlayAboutJob(amount, mockJob);
-        jobRepository.save(mockJob);
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "test-file.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "This is a test file".getBytes()
+        );
         memberRepository.save(mockMember);
+        RegisterJobRequest request = new RegisterJobRequest("title", "content", 10000, 0, 12.1111, 12.1111);
+        RegisterJobResponse registerJobResponse = clientCommandService.registerJob(request, file);
+        Job mockJob = jobRepository.findById(registerJobResponse.jobId()).orElseThrow();
+        KlayAboutJob mockKlayAboutJob = createMockKlayAboutJob(amount, mockJob);
+        PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
         payHistoryRepository.save(mockPayHistory);
 
         // payCancelResponse mock 생성
@@ -234,6 +257,7 @@ public class PayServiceTest {
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
         when(klayAboutJobRepository.save(any(KlayAboutJob.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(klayAboutJobRepository.findByJob(any(Job.class))).thenReturn(Optional.of(mockKlayAboutJob));
+        when(memberService.findMemberByJobInfo(any())).thenReturn(mockMember);
 
         when(payAPIRequestService.payAPIRequest(
                 eq("cancel"),
@@ -259,20 +283,26 @@ public class PayServiceTest {
         int mockAmount = 10000;
         Member mockMember = createMockMember();
         Job mockJob = createMockJob(mockTid);
+        Member worker = Member.builder()
+                .email("worker@test")
+                .nickname("worker")
+                .build();
         PayHistory mockPayHistory = createMockPayHistory(mockMember.getNickname(), mockJob);
         KlayAboutJob mockKlayAboutJob = createMockKlayAboutJob(mockAmount, mockJob);
         SingleKeyring mockSingleKeyring = mock(SingleKeyring.class);
         jobRepository.save(mockJob);
         memberRepository.save(mockMember);
+        memberRepository.save(worker);
         payHistoryRepository.save(mockPayHistory);
 
         when(mockSingleKeyring.getAddress()).thenReturn("tx1231415116t16");
         when(memberService.findMemberByIdOrNickname(any(), any())).thenReturn(mockMember);
         when(klayAboutJobRepository.findByJob(any(Job.class))).thenReturn(Optional.of(mockKlayAboutJob));
         when(connectToKlaytnNetwork.getSingleKeyring()).thenReturn(mockSingleKeyring);
+        when(memberService.findById(any())).thenReturn(worker);
 
         ///when
-        PaySuccessResponseDto result = payService.payTransfer("1", mockAmount, mockJob);
+        PaySuccessResponseDto result = payService.payTransfer(String.valueOf(worker.getId()), mockAmount, mockJob);
 
         ///then result의 반환값과 일 금액 + 유저 기존금액 비교
         Assertions.assertThat(result).isNotNull()
@@ -385,6 +415,14 @@ public class PayServiceTest {
         return Job.builder().title("음쓰 버려주실 분~")
                 .content("음쓰 버려주실 분~")
                 .tid(mockTid)
+                .build();
+    }
+
+    private static Job createMockJob(String mockTid, Matching matching) {
+        return Job.builder().title("음쓰 버려주실 분~")
+                .content("음쓰 버려주실 분~")
+                .tid(mockTid)
+                .matchings(List.of(matching))
                 .build();
     }
 
