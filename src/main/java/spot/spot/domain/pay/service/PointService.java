@@ -78,6 +78,8 @@ public class PointService {
                     .orElseThrow(() -> new RuntimeException("포인트 정보를 찾을 수 없습니다."));
 
             int oldCount = point.getCount();
+            if(oldCount <= 0) throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
+
             int newCount = oldCount - 1;
 
             int updatedRows = pointRepositoryDsl.updatePointOptimistic(pointCode, oldCount, newCount);
