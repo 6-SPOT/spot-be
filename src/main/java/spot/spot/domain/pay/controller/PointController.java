@@ -35,6 +35,11 @@ public class PointController {
         pointService.registerPoint(pointCode, auth.getName());
     }
 
+    @GetMapping("/register/optimistic")
+    public void registerPointCouponOptimistic(@RequestParam @NotBlank(message = "포인트 등록 시 포인트 코드는 필수 입력값입니다.") String pointCode, Authentication auth) {
+        pointService.registerPointWithOptimisticLock(pointCode, auth.getName());
+    }
+
     @PostMapping("/delete")
     public void deletePointCoupon(@RequestParam @NotBlank(message = "포인트 삭제 시 포인트 코드는 필수 입력값입니다.") String pointCode) {
         pointService.deletePoint(pointCode);
