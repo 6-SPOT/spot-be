@@ -91,7 +91,7 @@ public class PointService {
         throw new RuntimeException("포인트 업데이트 중 충돌이 발생했습니다. 다시 시도해주세요.");
     }
 
-    private void decreasePointCount(Point point) {
+    public void decreasePointCount(Point point) {
         if(point.getCount() <= 0) {
             throw new GlobalException(ErrorCode.INVALID_POINT_COUNT);
         }
