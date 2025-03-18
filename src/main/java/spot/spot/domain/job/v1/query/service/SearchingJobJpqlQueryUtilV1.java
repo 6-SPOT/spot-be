@@ -12,12 +12,12 @@ import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.util.DistanceCalculateUtil;
 import spot.spot.domain.job.v1.query.mapper.WorkerQueryMapperV1;
 import spot.spot.domain.job.v1.query.repository.jpa.JobRepositoryV1;
-import spot.spot.domain.job.v1.query.service._docs.SearchingJobQueryVersionUtilV1;
+import spot.spot.domain.job.v1.query.service._docs.SearchingJobQueryUtilV1;
 
 @Service
 @Deprecated
 @RequiredArgsConstructor
-public class SearchingJobJpqlQueryUtilVV1 implements SearchingJobQueryVersionUtilV1 {
+public class SearchingJobJpqlQueryUtilV1 implements SearchingJobQueryUtilV1 {
     private final JobRepositoryV1 jobRepositoryV1;
     private final DistanceCalculateUtil distanceCalculateUtil;
     private final WorkerQueryMapperV1 workerQueryMapperV1;

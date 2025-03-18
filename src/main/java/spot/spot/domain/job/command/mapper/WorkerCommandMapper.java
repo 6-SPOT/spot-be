@@ -50,6 +50,8 @@ public interface WorkerCommandMapper {
 
     // 3. 구직자 lat, lng -> POINT 객체
     default Point mapLatLngToPoint (double lat, double lng, GeometryFactory geometryFactory) {
-        return geometryFactory.createPoint(new Coordinate(lat, lng));
+        Point ans = geometryFactory.createPoint(new Coordinate(lng, lat));
+        ans.setSRID(4326);
+        return ans;
     }
 }
