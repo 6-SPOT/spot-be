@@ -11,6 +11,7 @@ import spot.spot.domain.notification.command.entity.Notification;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface NotificationMapper {
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "member", source = "sender")
     @Mapping(target = "content", source = "fcmDTO.body")
     @Mapping(target = "receiverId", source = "receiver_id")
