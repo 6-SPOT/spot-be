@@ -40,6 +40,7 @@ spring:
 
 
 # 서버 설정
+# 서버 설정
 server:
   port: 8080
   servlet:
@@ -50,8 +51,11 @@ server:
     context-path: /
   tomcat:
     threads:
-      max: 500
+      max: 2000
     max-connections: 10000
+    accept-count: 1000
+    mbeanregistry:
+      enabled: true
 
 # SWAGGER
 springdoc:
@@ -96,12 +100,17 @@ kakao:
 
 management:
   endpoints:
-    prometheus:
-      enabled: true
     web:
       base-path: /api/actuator
       exposure:
-        include: prometheus
+        include: prometheus, metrics
+  metrics:
+    export:
+      prometheus:
+        enabled:true
+    enalbe:
+      all: true
+      tomcat: true
 
 mongodb:
   client: mongodb://localhost:27017
