@@ -16,7 +16,7 @@ public interface WorkerCommandServiceDocs {
     // 의뢰인이 보낸 요청 승낙하기 혹은 거절하기
     public void yesOrNo2RequestOfClient(YesOrNoClientsRequest request);
     // 일 재개 하기
-    public void contiuneJob(ChangeStatusWorkerRequest request);
+    public void continueJob(ChangeStatusWorkerRequest request);
     // 일 인증 사진 올리기
     public JobCertifiationResponse certificateJob(ChangeStatusWorkerRequest request, MultipartFile file);
     // 일 끝내기
