@@ -33,14 +33,8 @@ public class ClientCommandVersion1Service {
 
     @Transactional
     public void requestWithdrawalTest(ChangeStatusClientRequest request) {
-        Member owner = userAccessUtil.getMember();
-        Member worker = memberRepository
-            .findById(request.workerId()).orElseThrow(() -> new GlobalException(
-                ErrorCode.MEMBER_NOT_FOUND));
-        Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
+        Member worker = memberRepository.findById(request.workerId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         reservationCancelUtil.scheduledSleepMatching2CancelTest(matching);
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
-            fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
     }
 }
