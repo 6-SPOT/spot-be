@@ -78,6 +78,8 @@ public class SwaggerConfig {
                 .description("Default Server URL"))
             .addServersItem(new Server().url("http://localhost:8080")
                 .description("Local Development Server"))
+            .addServersItem(new Server().url("http://171.16.24.158:8080")
+                .description("Local Development Server"))
             .info(info)
             .components(components)
             .addSecurityItem(addSecurityItem);

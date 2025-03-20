@@ -49,6 +49,47 @@ public class FcmMessageUtil {
         return fcm;
     }
 
+    public FcmDTO askingJob2ClientMsg(String ownerName, String workerName, String jobTitle) {
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 ").append(jobTitle).append("을 하고 싶어 합니다!");
+        FcmDTO fcm = makeMsg("일 해결 신청!", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
+
+    public FcmDTO startJob2ClientMsg(String ownerName, String workerName, String jobTitle) {
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 ").append(jobTitle).append("을 시작했습니다!");
+        FcmDTO fcm = makeMsg("일 시작 알림", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
+
+    public FcmDTO sayYes2ClientMsg(String ownerName, String workerName, String jobTitle) {
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 ").append(jobTitle).append("해결 의뢰을 수락하셨습니다!");
+        FcmDTO fcm = makeMsg("일 신청 수락 알림", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
+
+    public FcmDTO sayNo2ClientMsg(String ownerName, String workerName, String jobTitle) {
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 ").append(jobTitle).append("해결 의뢰을 거절 하셨습니다.");
+        FcmDTO fcm = makeMsg("일 신청 거절 알림", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
+
+    public FcmDTO continueJobMsg(String ownerName, String workerName){
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 일을 재개했습니다.");
+        FcmDTO fcm = makeMsg("일 재개 알림", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
+
+    public FcmDTO finishJobMsg(String ownerName, String workerName, String jobTitle) {
+        msg.append(workerName).append("님이 ").append(ownerName).append("님의 일을 끝냈다고 합니다!");
+        FcmDTO fcm = makeMsg("일 성공 알림", msg.toString());
+        msg.setLength(0);
+        return fcm;
+    }
 
     private FcmDTO makeMsg(String title, String body) {
         return FcmDTO.builder()
