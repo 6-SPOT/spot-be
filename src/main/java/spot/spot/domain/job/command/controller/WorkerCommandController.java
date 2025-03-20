@@ -46,7 +46,7 @@ public class WorkerCommandController implements WorkerCommandDocs {
 
     @PostMapping("/continue")
     public void continueJob(@RequestBody ChangeStatusWorkerRequest request) {
-        workerCommandService.contiuneJob(request);
+        workerCommandService.continueJob(request);
     }
 
     @PostMapping(value = "/certificate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

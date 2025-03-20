@@ -58,16 +58,14 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final MatchingRepository matchingRepository;
     private final CertificationRepository certificationRepository;
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
-    private final PayService payService;
-    private final FcmMessageUtil fcmMessageUtil;
     private final WorkerUpdatingCommandDsl workerUpdatingCommandDsl;
+    private final PayService payService;
 
     @Transactional
     public void registeringWorker(RegisterWorkerRequest request) {
         Member member = userAccessUtil.getMember();
         Point location = workerCommandMapper.mapLatLngToPoint(request.lat(), request.lng(), geometryFactory);
         Worker worker = workerCommandMapper.dtoToWorker(request, member);
-
         workerUpdatingCommandDsl.updateLocationById(member.getId(), request.lat(), request.lng(), location);
         workerRepository.save(worker);
         workerAbilityRepository.saveAll(workerCommandMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
@@ -78,8 +76,6 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId());
         Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.ATTENDER).build();
         matchingRepository.save(matching);
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 해결 신청 알림!").body(
-            fcmMessageUtil.askRequest2ClientMsg(worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
@@ -88,8 +84,6 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.YES);
         payService.updateStartJob(job, worker);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("일 시작 알림!").body(
-            fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
@@ -97,12 +91,10 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.REQUEST);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("요청 승낙 알림!").body(
-            fcmMessageUtil.getStartedJobMsg(worker.getNickname(), job.getTitle())).build());
     }
 
     @Transactional
-    public void contiuneJob(ChangeStatusWorkerRequest request) {
+    public void continueJob(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         reservationCancelUtil.withdrawalExistingScheduledTask(matching.getId());

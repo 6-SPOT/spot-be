@@ -45,22 +45,22 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final GeometryFactory geometryFactory;
     // Util
     private final UserAccessUtil userAccessUtil;
+    private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
+    private final ReservationCancelUtil reservationCancelUtil;
+    private final FcmMessageUtil fcmMessageUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
+    private final PayService payService;
     // Mapper
     private final ClientCommandMapper clientCommandMapper;
-    private final JobRepository jobRepository;
+    private final NotificationMapper notificationMapper;
     // JPA
     private final MatchingRepository matchingRepository;
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
+    private final JobRepository jobRepository;
     // Query dsl
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
-    private final FcmAsyncSendingUtil fcmAsyncSendingUtil;
-    private final PayService payService;
-    private final MemberRepository memberRepository;
-    private final ReservationCancelUtil reservationCancelUtil;
-    private final FcmMessageUtil fcmMessageUtil;
-    private final MemberQueryRepository memberQueryRepository;
-    private final NotificationMapper notificationMapper;
 
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = awsS3ObjectStorage.uploadFile(file);
@@ -71,56 +71,64 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         return clientCommandMapper.toRegisterJobResponse(job.getId());
     }
 
-
     public void askingJob2Worker (ChangeStatusClientRequest request) {
         Member worker = memberRepository.findById(request.workerId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(request.workerId(), request.jobId());
-        Matching matching = Matching.builder().job(job).member(worker).status(MatchingStatus.REQUEST).build();
+        Matching matching = clientCommandMapper.toMatching(worker, job, MatchingStatus.REQUEST);
         matchingRepository.save(matching);
-        FcmDTO message = FcmDTO.create("일 해결 신청 알림!",  fcmMessageUtil.askRequest2WorkerMsg(worker.getNickname(), job.getTitle()));
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), message);
-        notificationRepository.save(notificationMapper.toNotification(message, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
+        FcmDTO msg = fcmMessageUtil.askingJob2WorkerMsg(userAccessUtil.getMember().getNickname(), worker.getNickname(), job.getTitle());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
     }
 
     @Transactional
     public void yesOrNo2RequestOfWorker(YesOrNoWorkersRequest request) {
         Member owner = userAccessUtil.getMember();
-        Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(
-            ErrorCode.MEMBER_NOT_FOUND));
+        Member worker = memberRepository.findById(request.attenderId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.ATTENDER);
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes()? MatchingStatus.YES : MatchingStatus.NO);
-        FcmDTO message = FcmDTO.create("일 시작 알림!",  fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle()));
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), message);
-        notificationRepository.save(notificationMapper.toNotification(message,NoticeType.JOB,userAccessUtil.getMember(), worker.getId()));
+        FcmDTO msg = request.isYes()? fcmMessageUtil.sayYes2WorkerMsg(owner.getNickname(),
+            worker.getNickname(), job.getTitle()) : fcmMessageUtil.sayNo2WorkerMsg(owner.getNickname(),
+            worker.getNickname(), job.getTitle());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
     }
 
     @Transactional
     public void requestWithdrawal(ChangeStatusClientRequest request) {
         Member owner = userAccessUtil.getMember();
-        Member worker = memberRepository
-            .findById(request.workerId()).orElseThrow(() -> new GlobalException(
-                ErrorCode.MEMBER_NOT_FOUND));
+        Member worker = memberRepository.findById(request.workerId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), FcmDTO.builder().title("혹시 잠수 타셨나요??").body(
-            fcmMessageUtil.requestAcceptedBody(owner.getNickname(), worker.getNickname(), job.getTitle())).build());
+        FcmDTO msg = fcmMessageUtil.doYouSleepMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
+        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB,owner, worker.getId()));
+    }
+
+    @Transactional
+    public void confirmOrRejectJob(ConfirmOrRejectRequest request) {
+        Member worker = memberQueryRepository.findOneFinisherOfJob(request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
+        Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
+
+        if (matching.getStatus().equals(MatchingStatus.CONFIRM)) {
+            payService.payTransfer(String.valueOf(worker.getId()),
+                payService.findPayAmountByMatchingJob(matching.getId(), worker.getId()),
+                matching.getJob());
+            FcmDTO msg = fcmMessageUtil.confirm2WorkerMsg(userAccessUtil.getMember().getNickname(),
+                worker.getNickname(), job.getTitle());
+            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        }else {
+            FcmDTO msg = fcmMessageUtil.reject2WorkerMsg(userAccessUtil.getMember().getNickname(),
+                worker.getNickname(), job.getTitle());
+            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        }
     }
 
     @Transactional
     public Job updateTidToJob(Job findJob, String tid) {
         findJob.setTid(tid);
         return findJob;
-    }
-
-    @Transactional
-    public void confirmOrRejectJob(ConfirmOrRejectRequest request) {
-        Member worker = memberQueryRepository.findOneFinisherOfJob(request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-        changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.FINISH);
-        Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
-        int payAmountByMatchingJob = payService.findPayAmountByMatchingJob(matching.getId(), worker.getId());
-        if (matching.getStatus().equals(MatchingStatus.CONFIRM)) {
-            payService.payTransfer(String.valueOf(worker.getId()), payAmountByMatchingJob, matching.getJob());
-        }
     }
 }
