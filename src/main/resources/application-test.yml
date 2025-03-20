@@ -3,8 +3,8 @@ spring:
     url: jdbc:mysql://test-db.c1o8wakk25sc.ap-northeast-2.rds.amazonaws.com/spotdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8 #이부분 변경해야함 ilmatch -> local docker로
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 500
-      minimum-idle: 10
+      maximum-pool-size: 1000
+      minimum-idle: 50
       idle-timeout: 30000
       max-lifetime: 1800000
       connection-timeout: 5000
@@ -47,7 +47,7 @@ spring:
 
   data:
     redis:
-      host: redis-server
+      host: localhost
       port: 6379
       password: 1234
 
