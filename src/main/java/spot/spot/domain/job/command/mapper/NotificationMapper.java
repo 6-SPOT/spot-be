@@ -12,7 +12,7 @@ import spot.spot.domain.notification.command.entity.Notification;
 public interface NotificationMapper {
 
     @Mapping(target = "member", source = "sender")
-    @Mapping(target = "content", source = "content")
+    @Mapping(target = "content", source = "fcmDTO.body")
     @Mapping(target = "receiverId", source = "receiver_id")
     Notification toNotification(FcmDTO fcmDTO, NoticeType type, Member sender, Long receiver_id);
 }

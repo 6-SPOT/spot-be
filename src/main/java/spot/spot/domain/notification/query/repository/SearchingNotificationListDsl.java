@@ -36,7 +36,7 @@ public class SearchingNotificationListDsl {
             ))
             .from(notification)
             .join(member)
-            .on(member.id.eq(notification.recevierId))
+            .on(member.id.eq(notification.receiverId))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
             .orderBy(notification.createdAt.desc())

@@ -32,7 +32,7 @@ public class Notification extends Created {
     private Member member;
 
     @Column(name = "receiver_id")
-    private Long recevierId;
+    private Long receiverId;
 
     private String content;
 
