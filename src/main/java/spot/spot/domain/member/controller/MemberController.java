@@ -35,4 +35,14 @@ public class MemberController implements MemberDocs {
     public TokenDTO getToken4Developer(@RequestParam long id) {
         return memberService.getDeveloperToken(id);
     }
+
+    @GetMapping("/developer-get-token/fake-api")
+    public TokenDTO getToken4DeveloperWithFakeApi(@RequestParam long id) {
+        return memberService.getDeveloperTokenWithFakeApi(id);
+    }
+
+//    @GetMapping("/point")
+//    public String getMemberPoint(Authentication auth) {
+//        return memberService.findById(auth.getName());
+//    }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.member.dto.response.LoginResponseDto;
 import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.entity.Member;
 import spot.spot.domain.member.entity.MemberRole;
@@ -24,6 +25,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
+    private final LoginFakeApiService loginFakeApiService;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -43,6 +45,14 @@ public class MemberService {
         Member member = memberRepository.findById(id).orElseThrow(() -> new GlobalException(
             ErrorCode.MEMBER_NOT_FOUND));
         return TokenDTO.builder().accessToken(jwtUtil.createDeveloperToken(member)).build();
+    }
+
+    public TokenDTO getDeveloperTokenWithFakeApi(long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new GlobalException(
+                ErrorCode.MEMBER_NOT_FOUND));
+        LoginResponseDto loginResponseDto = loginFakeApiService.loginfakeAPIRequest(String.valueOf(id), LoginResponseDto.class);
+
+        return TokenDTO.builder().accessToken(loginResponseDto.accessToken()).build();
     }
 
     @Transactional
