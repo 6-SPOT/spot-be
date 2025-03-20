@@ -59,7 +59,6 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final CertificationRepository certificationRepository;
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
     private final PayService payService;
-    private final MemberService memberService;
     private final FcmMessageUtil fcmMessageUtil;
     private final WorkerUpdatingCommandDsl workerUpdatingCommandDsl;
 

@@ -62,8 +62,9 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Job job = jobRepository.save(clientCommandMapper.registerRequestToJob(url, request, geometryFactory));
         Matching matching = clientCommandMapper.toMatching(client, job, MatchingStatus.OWNER);
         matchingRepository.save(matching);
-        return RegisterJobResponse.create(job.getId());
+        return clientCommandMapper.toRegisterJobResponse(job.getId());
     }
+
 
     public void askingJob2Worker (ChangeStatusClientRequest request) {
         Member worker = memberRepository
