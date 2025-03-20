@@ -33,7 +33,6 @@ public interface WorkerCommandMapper {
     @Mapping(target = "workerAbilities", ignore = true) // WorkerAbility 매핑은 별도 처리
     Worker dtoToWorker(RegisterWorkerRequest request, Member member);
 
-    @Mapping(target = "img", source = "url")
     JobCertifiationResponse toJobCertificationResponse (String url);
 
 
