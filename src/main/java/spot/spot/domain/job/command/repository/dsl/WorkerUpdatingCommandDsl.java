@@ -10,7 +10,7 @@ import spot.spot.domain.member.entity.QMember;
 @RequiredArgsConstructor
 public class WorkerUpdatingCommandDsl {
     private final JPAQueryFactory queryFactory;
-    private QMember member = QMember.member;
+    private final QMember member = QMember.member;
 
     public void updateLocationById(long memberId, double lat, double lng, Point location) {
         queryFactory.update(member)
