@@ -1,5 +1,6 @@
 package spot.spot.domain.pay.service;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -109,5 +110,10 @@ public class PointService {
         if (pointCode == null || pointCode.isEmpty()) {
             throw new GlobalException(ErrorCode.INVALID_POINT_CODE);
         }
+    }
+
+    public PointServeResponseDto findByPointName(String pointName) {
+        Point point = pointRepository.findByPointName(pointName).orElseThrow(() -> new GlobalException(ErrorCode.INVALID_POINT_NAME));
+        return PointServeResponseDto.fromPoint(point);
     }
 }

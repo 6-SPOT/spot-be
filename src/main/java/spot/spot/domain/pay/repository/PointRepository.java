@@ -16,4 +16,6 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     Optional<Point> findByPointCode(String pointCode);
 
     void deleteByPointCode(String pointCode);
+
+    Optional<Point> findByPointName(String pointName);
 }
