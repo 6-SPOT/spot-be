@@ -58,7 +58,9 @@ public enum ErrorCode {
     EMPTY_PG_TOKEN(HttpStatus.BAD_REQUEST, "pgToken 값이 비어있습니다."),
     EMPTY_TID(HttpStatus.BAD_REQUEST, "tid 값이 비어있습니다."),
     EMPTY_POINT_NAME(HttpStatus.BAD_REQUEST, "포인트 이름 값이 비어있습니다."),
-    INVALID_POINT_CODE(HttpStatus.BAD_REQUEST, "포인트 코드를 확인해주세요.")
+    INVALID_POINT_CODE(HttpStatus.BAD_REQUEST, "포인트 코드를 확인해주세요."),
+    INVALID_POINT_NAME(HttpStatus.BAD_REQUEST, "포인트 이름을 확인해주세요."),
+    FAIL_LOGIN(HttpStatus.BAD_REQUEST, "로그인에 실패하였습니다.")
     ;
     private final HttpStatus status;
     private final String message;

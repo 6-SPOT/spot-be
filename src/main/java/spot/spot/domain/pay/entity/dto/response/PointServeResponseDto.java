@@ -15,9 +15,16 @@ public record PointServeResponseDto(
         return Point.builder()
                 .pointCode(requestDto.pointCode)
                 .pointName(requestDto.pointName())
-//                .isValid(true)
                 .point(requestDto.point())
                 .count(requestDto.count())
+                .build();
+    }
+
+    public static PointServeResponseDto fromPoint(Point point) {
+        return PointServeResponseDto.builder()
+                .pointName(point.getPointName())
+                .point(point.getPoint())
+                .pointCode(point.getPointCode())
                 .build();
     }
 

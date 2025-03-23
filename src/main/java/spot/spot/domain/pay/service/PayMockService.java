@@ -1,11 +1,16 @@
 package spot.spot.domain.pay.service;
 
 import com.klaytn.caver.wallet.keyring.SingleKeyring;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.dsl.SearchingOneQueryDsl;
 import spot.spot.domain.member.entity.Member;
@@ -23,6 +28,8 @@ import spot.spot.global.klaytn.api.ExchangeRateByBithumbApi;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -46,26 +53,30 @@ public class PayMockService {
     private final ExchangeRateByBithumbApi exchangeRateByBithumbApi;
     private final ConnectToKlaytnNetwork connectToKlaytnNetwork;
     private final KlayAboutJobRepository klayAboutJobRepository;
+    private final PayAPIRequestService payAPIRequestService;
     private final PayUtil payUtil;
 
     //결제준비Mock
     public PayReadyResponseDto payReady(String memberId, String content, int amount, int point, Job job) {
         Member findMember = memberService.findById(memberId);
+        ///요청 파라미터 생성
+        String totalAmount = String.valueOf(amount - point);
+        Map<String, String> parameters = createPaymentParameters(findMember.getNickname(), null, content, "1", totalAmount, null, false);
 
         ///결제 내역 기록 및 결제 준비
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayHistory payHistory = savePayHistory(findMember.getNickname(), amount, point, job);
         payUtil.insertFromSchedule(payHistory);
-        Long id = job.getId();
-        String StringIdNumber = String.valueOf(id);
-
-        PayReadyResponse payReadyResponse = new PayReadyResponse();
-        PayReadyResponse mockPayReadyResponse = payReadyResponse.create("mockTid_" + StringIdNumber, "https://mock-redirect-pc-url.com/payment/success", "https://mock-redirect-mobile-url.com/payment/success");
-        return PayReadyResponseDto.of(mockPayReadyResponse);
+        PayReadyResponse payReadyResponse = payAPIRequestService.payfakeAPIRequest("ready", requestEntity, PayReadyResponse.class);
+        return PayReadyResponseDto.of(payReadyResponse);
     }
 
-    //결제 승인Mock
+    //결제 승인(결제)
     public PayApproveResponseDto payApprove(String memberId, Job job, String pgToken, int totalAmount) {
+        ///요청 파라미터 생성
         Member findMember = memberService.findById(memberId);
+        Map<String, String> parameters = createPaymentParameters(findMember.getNickname(), job.getTid(), null, null, null, pgToken, false);
+
         ///결제 내역 업데이트
         Optional<String> workerNicknameByJob = searchingOneQueryDsl.findWorkerNicknameByJob(job);
         String worker = workerNicknameByJob.orElse("");
@@ -85,17 +96,19 @@ public class PayMockService {
         depositToKlaytn((int) peb);
 
         ///결제 승인
-        PayApproveResponse payApproveResponse = new PayApproveResponse();
-        PayApproveResponse.Amount amount = new PayApproveResponse.Amount(totalAmount, 0, 0, 0, 0, 0);
-        PayApproveResponse mockPayApproveResponse = payApproveResponse.create(job.getTid(), domain, findMember.getNickname(), amount, job.getContent());
-
-        return PayApproveResponseDto.of(mockPayApproveResponse);
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
+        PayApproveResponse payApproveResponse = payAPIRequestService.payfakeAPIRequest("approve", requestEntity, PayApproveResponse.class);
+        return PayApproveResponseDto.of(payApproveResponse);
     }
 
     //결제 취소(등록 취소 시)
     public PayCancelResponseDto payCancel(Job job, int amount){
         Member memberByJobInfo = memberService.findMemberByJobInfo(job);
         PayHistory payHistory = findByJobWithDepositor(job, memberByJobInfo.getNickname());
+
+        ///요청 파라미터 생성
+        String totalAmount = String.valueOf(amount);
+        Map<String, String> parameters = createPaymentParameters(null, job.getTid(), null, null, totalAmount, null, true);
 
         ///포인트로 반환
         int paybackAmount = payHistory.getPayAmount() + payHistory.getPayPoint();
@@ -109,13 +122,29 @@ public class PayMockService {
         KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
         double amtKlay = klayAboutJob.getAmtKlay();
         transferToKlaytn(amtKlay);
-        PayCancelResponse payCancelResponse = new PayCancelResponse();
-        PayCancelResponse.Amount payCancelAmount = new PayCancelResponse.Amount();
-        PayCancelResponse.Amount mockAmount = payCancelAmount.create(amount, 0);
-        PayCancelResponse mockPayCancelResponse = payCancelResponse.create(memberByJobInfo.getNickname(), domain, mockAmount, mockAmount);
-        return PayCancelResponseDto.of(mockPayCancelResponse);
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
+        PayCancelResponse payCancelResponse = payAPIRequestService.payfakeAPIRequest("cancel", requestEntity, PayCancelResponse.class);
+        return PayCancelResponseDto.of(payCancelResponse);
     }
 
+    //일 완료 시 구직자에게 포인트 반환
+    public PaySuccessResponseDto payTransfer(String workerId, int amount, Job job) {
+        ///포인트로 반환
+        int returnPoint = returnPoints(workerId, null, amount);
+        Member worker = memberService.findById(workerId);
+
+        ///결제 내역 업데이트
+        PayHistory payHistory = findByJobWithWorker(job, worker.getNickname());
+        updatePayHistory(payHistory, PayStatus.SUCCESS, payHistory.getWorker());
+
+        ///클레이튼에 전송
+        KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
+        double amtKlay = klayAboutJob.getAmtKlay();
+        transferToKlaytn(amtKlay);
+        return PaySuccessResponseDto.of(returnPoint);
+    }
+
+    //일 등록 시 payHistory에 저장
     @Transactional
     protected PayHistory savePayHistory(String depositor, int payAmount, int point, Job job) {
         PayHistory payHistory = PayHistory.builder()
@@ -130,11 +159,97 @@ public class PayMockService {
         return payHistoryRepository.save(payHistory);
     }
 
+    @Transactional
+    public PayHistory savePayHistory(String depositor,String worker, int payAmount, int point, Job job) {
+        PayHistory payHistory = PayHistory.builder()
+                .payAmount(payAmount)
+                .payPoint(point)
+                .depositor(depositor)
+                .worker(worker)
+                .job(job)
+                .payStatus(PayStatus.PROCESS)
+                .build();
+
+        return payHistoryRepository.save(payHistory);
+    }
+
     //매칭 시 PayHistory에 worker 업데이트
     public void updatePayHistory(PayHistory payHistory, PayStatus payStatus, String worker) {
         if(worker == null) throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
         payHistory.setWorker(worker);
         payHistory.setPayStatus(payStatus);
+    }
+
+    public void updateStartJob(Job job, Member worker) {
+        PayHistory payHistory = findByJobWithWorker(job, "");
+        if(payHistory != null){
+            updatePayHistory(payHistory, PayStatus.PROCESS, worker.getNickname());
+        }else {
+            Member ownerMember = memberService.findMemberByJobInfo(job);
+            savePayHistory(ownerMember.getNickname(), worker.getNickname(), job.getMoney(), 0, job);
+        }
+    }
+
+    private Map<String, String> createPaymentParameters(String partnerUserId, String tid, String itemName, String quantity, String totalAmount, String pgToken, boolean isCancel) {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("partner_order_id", domain);
+        parameters.put("partner_user_id", partnerUserId);
+
+        if (tid != null) {
+            parameters.put("tid", tid);
+        }
+
+        if (itemName != null) {
+            parameters.put("item_name", itemName);
+        }
+
+        if (quantity != null) {
+            parameters.put("quantity", quantity);
+        }
+
+        if (totalAmount != null) {
+            parameters.put("total_amount", totalAmount);
+            parameters.put("vat_amount", "0");
+            parameters.put("tax_free_amount", "0");
+        }
+
+        if (pgToken != null) {
+            parameters.put("pg_token", pgToken);
+        }
+
+        String redirectUri = getRedirectUrl();
+
+        if (isCancel) {
+            parameters.put("cancel_amount", totalAmount);
+            parameters.put("cancel_tax_free_amount", "0");
+            parameters.put("cancel_vat_amount", "0");
+            parameters.put("cancel_available_amount", totalAmount);
+        } else {
+            parameters.put("approval_url", redirectUri + "/payment/success");
+            parameters.put("fail_url", redirectUri + "/payment/fail");
+            parameters.put("cancel_url", redirectUri + "/payment/cancel");
+        }
+
+        return parameters;
+    }
+
+    private String getRedirectUrl() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return "https://ilmatch.net"; // 기본값
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+        String redirectUri = request.getRequestURL().toString();
+
+        if (redirectUri.contains("localhost:8080")) {
+            redirectUri = "http://localhost:3000";
+        } else if (redirectUri.contains("ilmatch.net")) {
+            redirectUri = "https://ilmatch.net";
+        }
+
+        return redirectUri; // 기본값
     }
 
     private void depositToKlaytn(int peb) {
@@ -168,15 +283,27 @@ public class PayMockService {
         return member.getPoint() + amount;
     }
 
-    public int findPayAmountByMatchingJob(Long matchingId, Long workerId) {
-        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId, workerId);
-    }
-
-    public PayHistory findByJobWithDepositor(Job job, String depositor) {
+    public PayHistory findByJobWithDepositor(Job job,String depositor) {
         return payHistoryRepository.findByJobAndDepositor(job, depositor).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
     }
 
     public PayHistory findByJobWithWorker(Job job, String worker) {
-        return payHistoryRepository.findByJobAndWorker(job, worker).orElseThrow(() -> new GlobalException(ErrorCode.JOB_NOT_FOUND));
+        Optional<PayHistory> optFindPayHistory = payHistoryRepository.findByJobAndWorker(job, worker);
+        return optFindPayHistory.orElse(null);
+    }
+
+    public int findPayAmountByMatchingJob(Long matchingId, Long workerId) {
+        return payRepositoryDsl.findByPayAmountFromMatchingJob(matchingId, workerId);
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String auth = "SECRET_KEY " + adminKey;
+
+        httpHeaders.set("Authorization", auth);
+        httpHeaders.set("Content-type", "application/json");
+
+        return httpHeaders;
     }
 }
