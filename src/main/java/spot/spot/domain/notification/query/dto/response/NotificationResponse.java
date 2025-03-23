@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import spot.spot.domain.notification.command.entity.NoticeType;
 
 @Builder
 public record NotificationResponse(
@@ -20,5 +21,5 @@ public record NotificationResponse(
     @Schema(description = "보낸 이의 프로필 사진")
     String sender_img,
     @Schema(description = "메시지의 타입")
-    String msg_type
+    NoticeType msg_type
 ) {}

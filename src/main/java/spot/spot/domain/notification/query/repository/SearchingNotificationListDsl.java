@@ -25,7 +25,7 @@ public class SearchingNotificationListDsl {
     public Slice<NotificationResponse> getMyNotificationList(long memberId, Pageable pageable) {
         List<NotificationResponse> list
             = queryFactory
-            .select(Projections.fields(NotificationResponse.class,
+            .select(Projections.constructor(NotificationResponse.class,
                 notification.id,
                 notification.createdAt,
                 notification.content,
@@ -37,6 +37,7 @@ public class SearchingNotificationListDsl {
             .from(notification)
             .join(member)
             .on(member.id.eq(notification.receiverId))
+            .where(member.id.eq(memberId))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
             .orderBy(notification.createdAt.desc())
