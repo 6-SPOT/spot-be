@@ -27,9 +27,9 @@ spring:
         enabled: true
   jwt:
     access:
-      token: 864000000
+      token: 604800000
     refresh:
-      token: 864000000
+      token: 604800000
     secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf
   kafka:
     admin:
