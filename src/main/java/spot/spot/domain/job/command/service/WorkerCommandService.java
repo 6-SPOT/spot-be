@@ -153,7 +153,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.FINISH);
         Job job = jobRepository.findById(matching.getJob().getId()).orElseThrow(()-> new GlobalException(ErrorCode.JOB_NOT_FOUND));
 
-        Member owner = changeJobStatusCommandDsl.getJobsOwner(matching.getId());
+        Member owner = changeJobStatusCommandDsl.getJobsOwner(job.getId());
         FcmDTO msg = fcmMessageUtil.startJob2ClientMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
         fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB, worker, owner.getId()));
