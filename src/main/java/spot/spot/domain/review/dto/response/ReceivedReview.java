@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CompletedJobReview {
+public class ReceivedReview {
     @Schema(description = "리뷰 id입니다.")
     private Long id;
 
