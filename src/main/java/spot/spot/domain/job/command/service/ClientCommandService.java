@@ -63,7 +63,8 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
 
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
-        String url = awsS3ObjectStorage.uploadFile(file);
+        String url = null;
+        if(file != null) url = awsS3ObjectStorage.uploadFile(file);
         Member client = userAccessUtil.getMember();
         Job job = jobRepository.save(clientCommandMapper.registerRequestToJob(url, request, geometryFactory));
         Matching matching = clientCommandMapper.toMatching(client, job, MatchingStatus.OWNER);
