@@ -25,6 +25,15 @@ public record PayReadyResponseDto(
                         .build();
         }
 
+        public static PayReadyResponseDto of(PayFakeAPIReadyResponse payReadyResponse) {
+                return  PayReadyResponseDto.builder()
+                        .redirectPCUrl(payReadyResponse.getData().getRedirectPCUrl())
+                        .redirectMobileUrl(payReadyResponse.getData().getRedirectMobileUrl())
+                        .tid(payReadyResponse.getData().getTid())
+                        .build();
+        }
+
+
         public static PayReadyResponseDto create(String redirectPcUrl, String redirectMobileUrl, String tid, PayHistory payHistory) {
                 return PayReadyResponseDto.builder()
                         .redirectPCUrl(redirectPcUrl)

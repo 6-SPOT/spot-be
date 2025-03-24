@@ -4,14 +4,12 @@ import lombok.Builder;
 
 @Builder
 public record LoginResponseDto(
-        String refreshToken,
-        String accessToken
+        String status,
+        String message,
+        TokenData data
 ) {
-
-    public static LoginResponseDto create(String accessToken, String refreshToken) {
-        return LoginResponseDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+    public record TokenData(
+            String accessToken,
+            String refreshToken
+    ) {}
 }

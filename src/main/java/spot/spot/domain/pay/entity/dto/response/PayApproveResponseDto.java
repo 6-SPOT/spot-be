@@ -19,6 +19,15 @@ public record PayApproveResponseDto(
                 .build();
     }
 
+    public static PayApproveResponseDto of(PayFakeAPIApproveResponse payApproveResponse) {
+        return PayApproveResponseDto.builder()
+                .nickname(payApproveResponse.getData().getPartnerUserId())
+                .domain(payApproveResponse.getData().getPartnerOrderId())
+                .content(payApproveResponse.getData().getItemName())
+                .amount(Integer.parseInt(payApproveResponse.getData().getTotalAmount()))
+                .build();
+    }
+
     public static PayApproveResponseDto create(String nickname, String domain, String content, int amount) {
         return PayApproveResponseDto.builder()
                 .nickname(nickname)
