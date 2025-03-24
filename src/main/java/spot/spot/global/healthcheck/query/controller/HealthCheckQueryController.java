@@ -30,5 +30,10 @@ public class HealthCheckQueryController implements HealthCheckQueryDocs {
     public ResponseEntity<SampleDto> getResponseEntity() {
         return ResponseEntity.ok(new SampleDto(2, "ResponseEntity 사용"));
     }
+
+    @GetMapping("/fake-api/ok")
+    public ResponseEntity<String> healthCheckFromFakeApiServer() {
+        return ResponseEntity.ok("ok");
+    }
 }
 
