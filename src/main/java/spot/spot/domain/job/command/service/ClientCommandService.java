@@ -114,9 +114,9 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), request.isYes() ? MatchingStatus.CONFIRM : MatchingStatus.REJECT);
 
         if (matching.getStatus().equals(MatchingStatus.CONFIRM)) {
-            payService.payTransfer(String.valueOf(worker.getId()),
-                payService.findPayAmountByMatchingJob(matching.getId(), worker.getId()),
-                matching.getJob());
+//            payService.payTransfer(String.valueOf(worker.getId()),
+//                payService.findPayAmountByMatchingJob(matching.getId(), worker.getId()),
+//                matching.getJob());
             FcmDTO msg = fcmMessageUtil.confirm2WorkerMsg(userAccessUtil.getMember().getNickname(),
                 worker.getNickname(), job.getTitle());
             fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
