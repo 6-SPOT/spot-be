@@ -254,7 +254,7 @@ public class PayService {
         HttpServletRequest request = attributes.getRequest();
         String redirectUri = request.getRequestURL().toString();
 
-        if (redirectUri.contains("localhost:8080")) {
+        if (redirectUri.contains("localhost:8080") || redirectUri.contains("172.16.24.158:8080")) {
             redirectUri = "http://localhost:3000";
         } else if (redirectUri.contains("ilmatch.net")) {
             redirectUri = "https://ilmatch.net";

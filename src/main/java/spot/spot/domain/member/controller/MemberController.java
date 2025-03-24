@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import spot.spot.domain.member._docs.MemberDocs;
 import spot.spot.domain.member.dto.request.MemberRequest;
+import spot.spot.domain.member.dto.response.PointResponse;
 import spot.spot.domain.member.dto.response.TokenDTO;
 import spot.spot.domain.member.dto.response.TokenResponse;
 import spot.spot.domain.member.service.MemberService;
@@ -41,8 +42,9 @@ public class MemberController implements MemberDocs {
         return memberService.getDeveloperTokenWithFakeApi(id);
     }
 
-//    @GetMapping("/point")
-//    public String getMemberPoint(Authentication auth) {
-//        return memberService.findById(auth.getName());
-//    }
+    @GetMapping("/points")
+    public PointResponse getMemberPoint(Authentication auth) {
+        int point = memberService.findById(auth.getName()).getPoint();
+        return new PointResponse(point);
+    }
 }
