@@ -18,4 +18,11 @@ public record PayCancelResponseDto(
                 .cancelAmount(payCancelResponse.getCanceled_amount().getTotal())
                 .build();
     }
+
+    public static PayCancelResponseDto of(PayFakeAPICancelResponse payCancelResponse) {
+        return PayCancelResponseDto.builder()
+                .nickname(payCancelResponse.getData().getItemName())
+                .amount(Integer.parseInt(payCancelResponse.getData().getTotalAmount()))
+                .build();
+    }
 }

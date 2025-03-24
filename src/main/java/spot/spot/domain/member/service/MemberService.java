@@ -52,7 +52,7 @@ public class MemberService {
                 ErrorCode.MEMBER_NOT_FOUND));
         LoginResponseDto loginResponseDto = loginFakeApiService.loginfakeAPIRequest(String.valueOf(id), LoginResponseDto.class);
 
-        return TokenDTO.builder().accessToken(loginResponseDto.accessToken()).build();
+        return TokenDTO.builder().accessToken(loginResponseDto.data().accessToken()).build();
     }
 
     @Transactional

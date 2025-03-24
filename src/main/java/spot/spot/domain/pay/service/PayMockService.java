@@ -67,7 +67,7 @@ public class PayMockService {
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         PayHistory payHistory = savePayHistory(findMember.getNickname(), amount, point, job);
         payUtil.insertFromSchedule(payHistory);
-        PayReadyResponse payReadyResponse = payAPIRequestService.payfakeAPIRequest("ready", requestEntity, PayReadyResponse.class);
+        PayFakeAPIReadyResponse payReadyResponse = payAPIRequestService.payfakeAPIRequest("ready", requestEntity, PayFakeAPIReadyResponse.class);
         return PayReadyResponseDto.of(payReadyResponse);
     }
 
@@ -97,7 +97,7 @@ public class PayMockService {
 
         ///결제 승인
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayApproveResponse payApproveResponse = payAPIRequestService.payfakeAPIRequest("approve", requestEntity, PayApproveResponse.class);
+        PayFakeAPIApproveResponse payApproveResponse = payAPIRequestService.payfakeAPIRequest("approve", requestEntity, PayFakeAPIApproveResponse.class);
         return PayApproveResponseDto.of(payApproveResponse);
     }
 
@@ -123,25 +123,8 @@ public class PayMockService {
         double amtKlay = klayAboutJob.getAmtKlay();
         transferToKlaytn(amtKlay);
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
-        PayCancelResponse payCancelResponse = payAPIRequestService.payfakeAPIRequest("cancel", requestEntity, PayCancelResponse.class);
+        PayFakeAPICancelResponse payCancelResponse = payAPIRequestService.payfakeAPIRequest("cancel", requestEntity, PayFakeAPICancelResponse.class);
         return PayCancelResponseDto.of(payCancelResponse);
-    }
-
-    //일 완료 시 구직자에게 포인트 반환
-    public PaySuccessResponseDto payTransfer(String workerId, int amount, Job job) {
-        ///포인트로 반환
-        int returnPoint = returnPoints(workerId, null, amount);
-        Member worker = memberService.findById(workerId);
-
-        ///결제 내역 업데이트
-        PayHistory payHistory = findByJobWithWorker(job, worker.getNickname());
-        updatePayHistory(payHistory, PayStatus.SUCCESS, payHistory.getWorker());
-
-        ///클레이튼에 전송
-        KlayAboutJob klayAboutJob = klayAboutJobRepository.findByJob(job).orElseThrow(() -> new GlobalException(ErrorCode.PAY_SUCCESS_NOT_FOUND));
-        double amtKlay = klayAboutJob.getAmtKlay();
-        transferToKlaytn(amtKlay);
-        return PaySuccessResponseDto.of(returnPoint);
     }
 
     //일 등록 시 payHistory에 저장
