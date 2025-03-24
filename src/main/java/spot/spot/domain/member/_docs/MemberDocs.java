@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import spot.spot.domain.member.dto.response.TokenDTO;
 
-@Tag(name = "MEMBER API", description = "<br/> 회원 공통 API")
+@Tag(name = "0. MEMBER API", description = "<br/> 회원 공통 API")
 public interface MemberDocs {
 
     @Operation(summary = "개발자 용 토큰 발급기",
