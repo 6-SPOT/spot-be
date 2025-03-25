@@ -118,6 +118,11 @@ dependencies {
 	// 공간데이터 활용
 	implementation 'org.hibernate:hibernate-spatial:6.1.7.Final' // Hibernate 6.x 버전
 
+	// RETRY CONFIG 의존성 추가
+	implementation 'org.springframework.retry:spring-retry'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+
 	//kafka
 //	implementation "org.springframework.kafka:spring-kafka"
 
