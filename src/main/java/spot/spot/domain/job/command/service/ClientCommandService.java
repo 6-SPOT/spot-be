@@ -3,6 +3,7 @@ package spot.spot.domain.job.command.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +51,7 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final FcmMessageUtil fcmMessageUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final PayService payService;
+    private final RetryTemplate retryTemplate;
     // Mapper
     private final ClientCommandMapper clientCommandMapper;
     private final NotificationMapper notificationMapper;
@@ -78,7 +80,11 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Matching matching = clientCommandMapper.toMatching(worker, job, MatchingStatus.REQUEST);
         matchingRepository.save(matching);
         FcmDTO msg = fcmMessageUtil.askingJob2WorkerMsg(userAccessUtil.getMember().getNickname(), worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사에게 일 의뢰: FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+            return null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
     }
 
@@ -91,7 +97,11 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         FcmDTO msg = request.isYes()? fcmMessageUtil.sayYes2WorkerMsg(owner.getNickname(),
             worker.getNickname(), job.getTitle()) : fcmMessageUtil.sayNo2WorkerMsg(owner.getNickname(),
             worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("의뢰인의 일 해결 요청: FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+            return null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
     }
 
@@ -103,7 +113,11 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
         reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
         FcmDTO msg = fcmMessageUtil.doYouSleepMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사 취소 요청 (NO SHOW): FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+            return null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB,owner, worker.getId()));
     }
 
@@ -119,11 +133,19 @@ public class ClientCommandService implements ClientCommandServiceDocs {
 //                matching.getJob());
             FcmDTO msg = fcmMessageUtil.confirm2WorkerMsg(userAccessUtil.getMember().getNickname(),
                 worker.getNickname(), job.getTitle());
-            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+            retryTemplate.execute(context -> {
+                log.warn("해결사 확정 재시도 : FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+                fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+                return null;
+            });
         }else {
             FcmDTO msg = fcmMessageUtil.reject2WorkerMsg(userAccessUtil.getMember().getNickname(),
                 worker.getNickname(), job.getTitle());
-            fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+            retryTemplate.execute(context -> {
+                log.warn("해결사 거절 재시도: FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+                fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
+                return null;
+            });
         }
     }
 

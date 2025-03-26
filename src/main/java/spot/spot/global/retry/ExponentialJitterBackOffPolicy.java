@@ -10,16 +10,16 @@ import org.springframework.retry.backoff.BackOffInterruptedException;
 import org.springframework.retry.backoff.BackOffPolicy;
 
 @Slf4j
-public class ExponentialJitterBackOffPolicy implements BackOffPolicy { // 전략 클래스 - 어떻게 재시도 할지 전략만 정의
+public class ExponentialJitterBackOffPolicy implements BackOffPolicy {
 
-    private final long initialInterval = 1000L;
-    private double multiplier = 2.0;
-    private long maxInterval = 10000L;
+    // BACK-OFF POLICY: 전략 클래스 - 어떻게 재시도 할지 전략만 정의
+    // BACK-OFF CONTEXT: 상태 클래스 -> 개별 재시도 루틴마다의 상태를 기록 후 저장
+
     private final Random random = new Random();
 
     @Override
     public BackOffContext start(RetryContext retryContext) {
-        return new ExponentialJitterBackOffContext(initialInterval, multiplier, maxInterval);
+        return new ExponentialJitterBackOffContext(1000L, 2.0, 5000L);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ExponentialJitterBackOffPolicy implements BackOffPolicy { // 전략
                 // 현재 스레드 인터럽트 상태 복구 (권장 패턴)
                 Thread.currentThread().interrupt();
                 // 로그 남기기
-                log.warn("Backoff sleep interrupted: {}", e.getMessage());
+                log.warn("다른 쓰레드가 잠든 쓰레드를 깨워버렸습니다. {}", e.getMessage());
             }
 
             long next = (long) (ctx.currentInterval * ctx.multiplier);
@@ -41,8 +41,7 @@ public class ExponentialJitterBackOffPolicy implements BackOffPolicy { // 전략
         }
     }
 
-    @Setter
-    private static class ExponentialJitterBackOffContext implements BackOffContext {  // 상태 클래스 -> 개별 재시도 루틴마다의 상태를 기록 후 저장
+    private static class ExponentialJitterBackOffContext implements BackOffContext {
         private long currentInterval;
         private final double multiplier;
         private final long maxInterval;
@@ -52,8 +51,6 @@ public class ExponentialJitterBackOffPolicy implements BackOffPolicy { // 전략
             this.multiplier = multiplier;
             this.maxInterval = maxInterval;
         }
-
-
     }
 
 

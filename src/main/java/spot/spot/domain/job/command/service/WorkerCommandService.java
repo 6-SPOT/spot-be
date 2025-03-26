@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +56,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
     private final WorkerCommandMapper workerCommandMapper;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
     private final ReservationCancelUtil reservationCancelUtil;
+    private final RetryTemplate retryTemplate;
     // Repo
     private final WorkerRepository workerRepository;
     private final AbilityRepository abilityRepository;
@@ -86,7 +88,11 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         matchingRepository.save(matching);
         Member owner = changeJobStatusCommandDsl.getJobsOwner(job.getId());
         FcmDTO msg = fcmMessageUtil.askingJob2ClientMsg(owner.getNickname(), worker.getNickname(),job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("의뢰인의 일 해결 요청: FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+            return  null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, worker, owner.getId()));
     }
 
@@ -98,7 +104,11 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
         Member owner = changeJobStatusCommandDsl.getJobsOwner(job.getId());
         FcmDTO msg = fcmMessageUtil.startJob2ClientMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사의 일 시작 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+            return  null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB, worker,
             owner.getId()));
     }
@@ -112,7 +122,11 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         FcmDTO msg = request.isYes()?
             fcmMessageUtil.sayYes2ClientMsg(owner.getNickname(), worker.getNickname(), job.getTitle()) :
             fcmMessageUtil.sayNo2ClientMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사의 일 의뢰 승낙 혹은 거절 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+            return  null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB, worker,
             owner.getId()));
     }
@@ -123,10 +137,13 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         Matching matching = matchingRepository.findByMemberAndJob_Id(worker, request.jobId()).orElseThrow(() -> new GlobalException(ErrorCode.MATCHING_NOT_FOUND));
         reservationCancelUtil.withdrawalExistingScheduledTask(matching.getId());
         changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.START);
-
         Member owner = changeJobStatusCommandDsl.getJobsOwner(matching.getId());
         FcmDTO msg = fcmMessageUtil.continueJobMsg(owner.getNickname(), worker.getNickname());
-        fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사의 일 재개 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+            return  null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB, worker,
             owner.getId()));
     }
@@ -155,7 +172,11 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
 
         Member owner = changeJobStatusCommandDsl.getJobsOwner(job.getId());
         FcmDTO msg = fcmMessageUtil.startJob2ClientMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
-        fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+        retryTemplate.execute(context -> {
+            log.warn("해결사의 일 성공 알림 [재시도 횟수 {}]", context.getRetryCount());
+            fcmAsyncSendingUtil.singleFcmSend(owner.getId(), msg);
+            return  null;
+        });
         notificationRepository.save(notificationMapper.toNotification(msg,NoticeType.JOB, worker, owner.getId()));
     }
 
