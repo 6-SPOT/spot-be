@@ -71,7 +71,6 @@ dependencies {
 	implementation 'com.querydsl:querydsl-spatial:5.0.0'
 
 
-
 	// Map Struct ⭐
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.5.Final'			// MapStruct 사용을 위한 의존성 라이브러리
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'							// MapStruct는 컴파일 타임에 인터페이스의 구현체를 만들어서 build에 올림. 이를 위한 Processor 라이브러리

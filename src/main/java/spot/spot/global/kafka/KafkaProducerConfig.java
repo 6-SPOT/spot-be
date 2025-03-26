@@ -20,7 +20,7 @@ import spot.spot.domain.chat.dto.KafkaMessage;
 
 @EnableKafka
 @Configuration
-@Profile("dev")
+@Profile("kafka")
 public class KafkaProducerConfig {
 
 

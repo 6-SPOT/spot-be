@@ -11,7 +11,7 @@ import spot.spot.domain.chat.dto.request.ChatMessageCreateRequest;
 
 @Service
 @RequiredArgsConstructor
-@Profile("dev")
+@Profile("kafka")
 public class ConsumerService {
 
 	private final SimpMessageSendingOperations messageTemplate;
