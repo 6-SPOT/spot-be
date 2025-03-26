@@ -29,11 +29,6 @@ public class FcmAsyncSendingUtil {
     // 회원 한 명과 관련된 FCM 토큰에 메시지를 보내는 기능
 
     @Async("taskExecutor")
-    @Retryable(
-        retryFor = RejectedExecutionException.class,
-        maxAttempts = 3,
-        backoff = @Backoff(delay = 1000, multiplier = 2.0, maxDelay = 5000)
-    )
     public void singleFcmSend(long receiverId,  FcmDTO fcmDTO) {
         fcmTokenRepository.findAllByMember_Id(receiverId)
             .stream()

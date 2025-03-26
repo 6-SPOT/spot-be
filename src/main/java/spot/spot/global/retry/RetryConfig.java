@@ -17,18 +17,14 @@ public class RetryConfig {
     @Bean
     public RetryTemplate retryTemplate() {
         RetryTemplate template = new RetryTemplate();
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(3,
+            Map.of(
+                RejectedExecutionException.class, true
+            ));
 
-        Map<Class<? extends Throwable>, Boolean> retryable = Map.of(
-            RejectedExecutionException.class, true
-        );
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(3, retryable);
-
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(1000);
-        backOffPolicy.setMultiplier(2.0);
-        backOffPolicy.setMaxInterval(5000);
+        ExponentialJitterBackOffPolicy jitterPolicy = new ExponentialJitterBackOffPolicy();
         template.setRetryPolicy(retryPolicy);
-        template.setBackOffPolicy(backOffPolicy);
+        template.setBackOffPolicy(jitterPolicy);
 
         return template;
     }
