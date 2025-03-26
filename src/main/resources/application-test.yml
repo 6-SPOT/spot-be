@@ -8,6 +8,7 @@ spring:
       idle-timeout: 30000
       max-lifetime: 1800000
       connection-timeout: 5000
+      leak-detection-threshold: 5001
 
   jpa:
     hibernate:
@@ -68,5 +69,5 @@ management:
     web:
       base-path: /api/actuator
       exposure:
-        include: prometheus
+        include: prometheus,health,info,metrics
 
