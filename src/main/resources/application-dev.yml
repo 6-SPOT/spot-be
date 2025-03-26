@@ -52,10 +52,8 @@ spring:
       password: 1234
 
     mongodb:
-      uri: mongodb://43.201.16.92:27017
       database: mongo
   kafka:
-    bootstrap-servers: 43.201.16.92:9092
     consumer:
       group-id: my-group
 
