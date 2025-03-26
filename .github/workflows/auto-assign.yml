@@ -25,17 +25,11 @@ jobs:
         run: |
           AUTHOR="${{ github.event.sender.login }}"
           case "$AUTHOR" in
-              immyeong)
-                  reviewers=("42kko" "dalcheonroadhead")
-                  ;;
               42kko)
                   reviewers=("dalcheonroadhead")
                   ;;
               dalcheonroadhead)
-                  reviewers=("hxcva1")
-                  ;;
-              hxcva1)
-                  reviewers=("immyeong" "42kko")
+                  reviewers=("42kko")
                   ;;
               *)
                   echo "No reviewers assigned"
