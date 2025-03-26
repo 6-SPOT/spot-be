@@ -19,7 +19,7 @@ public class ExponentialJitterBackOffPolicy implements BackOffPolicy {
 
     @Override
     public BackOffContext start(RetryContext retryContext) {
-        return new ExponentialJitterBackOffContext(1000L, 2.0, 7000L);
+        return new ExponentialJitterBackOffContext(1000L, 2.0, 5000L);
     }
 
     @Override
