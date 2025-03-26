@@ -1,12 +1,10 @@
 package spot.spot.domain.chat.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +18,7 @@ import spot.spot.domain.chat.dto.response.ChatHistoryResponse;
 import spot.spot.domain.chat.dto.response.ChatListResponse;
 import spot.spot.domain.chat.dto.response.ChatMessageResponse;
 import spot.spot.domain.chat.service.ChatService;
+import spot.spot.domain.chat.service.SimpleChatService;
 
 @RestController
 @RequiredArgsConstructor

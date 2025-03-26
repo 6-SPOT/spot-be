@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import spot.spot.domain.chat.service.ChatService;
+import spot.spot.domain.chat.service.SimpleChatService;
 import spot.spot.domain.job.command.controller.ClientCommandController;
 import spot.spot.domain.job.command.dto.request.RegisterJobRequest;
 import spot.spot.domain.job.command.dto.response.RegisterJobResponse;
@@ -57,7 +57,7 @@ class Job4ClientControllerTest {
     ClientQueryService clientQueryService;
 
     @MockitoBean
-    ChatService chatService;
+	SimpleChatService chatService;
 
     @MockitoBean
     SimpMessageSendingOperations messagingTemplate;
