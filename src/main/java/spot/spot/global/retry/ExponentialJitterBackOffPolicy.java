@@ -19,13 +19,13 @@ public class ExponentialJitterBackOffPolicy implements BackOffPolicy {
 
     @Override
     public BackOffContext start(RetryContext retryContext) {
-        return new ExponentialJitterBackOffContext(1000L, 2.0, 5000L);
+        return new ExponentialJitterBackOffContext(1000L, 2.0, 7000L);
     }
 
     @Override
     public void backOff(BackOffContext backOffContext) {
         if(backOffContext instanceof  ExponentialJitterBackOffContext ctx) {
-            long jitter = (long) (ctx.currentInterval * 0.5 * random.nextDouble());
+            long jitter = (long) (ctx.currentInterval * 0.8 * random.nextDouble());
             long delay  = ctx.currentInterval - jitter / 2 + jitter;
             try {
                 Thread.sleep(delay);

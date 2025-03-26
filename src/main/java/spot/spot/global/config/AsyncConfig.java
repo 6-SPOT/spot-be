@@ -15,7 +15,7 @@ public class AsyncConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(50); // 기본 pool size
         executor.setMaxPoolSize(200); // 최대 pool size
-        executor.setQueueCapacity(10000); // Thread를 이미 10개 사용하고 있을 때, 작업을 대기하는 큐의 크기 (100개의 작업 저장 - 그 이상 거부됨)
+        executor.setQueueCapacity(15000); // Thread를 이미 10개 사용하고 있을 때, 작업을 대기하는 큐의 크기 (100개의 작업 저장 - 그 이상 거부됨)
         executor.setThreadNamePrefix("Async-Executor-");
         executor.initialize();
         return new DelegatingSecurityContextExecutor(executor);
