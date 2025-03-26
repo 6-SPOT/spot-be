@@ -33,7 +33,7 @@ import spot.spot.domain.member.repository.MemberRepository;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Profile("dev")
+@Profile("kafka")
 public class MongoChatService implements ChatService{
 
 	private final ChatRoomRepository chatRoomRepository;

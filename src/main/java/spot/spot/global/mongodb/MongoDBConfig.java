@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import com.mongodb.client.MongoClients;
 
 @Configuration
-@Profile("dev")
+@Profile("kafka")
 public class MongoDBConfig {
 
 	@Value("${spring.data.mongodb.uri}")
