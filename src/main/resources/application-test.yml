@@ -3,12 +3,12 @@ spring:
     url: jdbc:mysql://test-db.c1o8wakk25sc.ap-northeast-2.rds.amazonaws.com/spotdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8 #이부분 변경해야함 ilmatch -> local docker로
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 1000
-      minimum-idle: 50
-      idle-timeout: 30000
-      max-lifetime: 1800000
-      connection-timeout: 5000
-      leak-detection-threshold: 5001
+      maximum-pool-size: 1000  # 최대 커넥션 수
+      minimum-idle: 50         # 최소한 유지할 유후 커넥션 수
+      idle-timeout: 600000     # 유후 커넥션 유효 기간
+      max-lifetime: 1800000    # 커넥션 최대 생명 주기
+      connection-timeout: 5000 # 커넥션 못 받을 경우의 대기 시간
+      leak-detection-threshold: 5000 # 커낵션 안 받으면 추적할 시간
 
   jpa:
     hibernate:
