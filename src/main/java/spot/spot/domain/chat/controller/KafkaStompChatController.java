@@ -17,7 +17,7 @@ import spot.spot.domain.chat.service.SimpleChatService;
 
 @Controller
 @RequiredArgsConstructor
-@Profile("dev")
+@Profile("kafka")
 public class KafkaStompChatController implements StompChatController{
 	private final ChatService chatService;
 	private final KafkaTemplate<String, KafkaMessage> kafkaTemplate;

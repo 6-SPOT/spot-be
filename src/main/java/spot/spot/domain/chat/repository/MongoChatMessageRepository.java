@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import spot.spot.domain.chat.mongodb.MongoChatMessage;
 
 @Repository
-@Profile("dev")
+@Profile("kafka")
 public interface MongoChatMessageRepository extends MongoRepository<MongoChatMessage, String> {
 	List<MongoChatMessage> findByChatRoomIdOrderByCreatedAtAsc(Long chatRoomId);
 }

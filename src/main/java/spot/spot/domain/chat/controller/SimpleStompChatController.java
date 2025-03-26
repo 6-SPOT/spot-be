@@ -15,7 +15,7 @@ import spot.spot.domain.chat.service.SimpleChatService;
 
 @Controller
 @RequiredArgsConstructor
-@Profile("!dev")
+@Profile("!kafka")
 public class SimpleStompChatController implements StompChatController{
 
 	private final SimpMessageSendingOperations messageTemplate;

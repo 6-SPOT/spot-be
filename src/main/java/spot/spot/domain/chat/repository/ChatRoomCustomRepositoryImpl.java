@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import lombok.RequiredArgsConstructor;
 import spot.spot.domain.chat.entity.QChatParticipant;
 import spot.spot.domain.chat.entity.QChatRoom;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
