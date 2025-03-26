@@ -4,7 +4,6 @@ spring:
     name: spot-be
   profiles:
     active: test
-    include: default
   thymeleaf:
     check-template-location: false
   servlet:
