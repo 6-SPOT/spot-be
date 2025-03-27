@@ -64,6 +64,7 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     // Query dsl
     private final ChangeJobStatusCommandDsl changeJobStatusCommandDsl;
 
+    @Transactional
     public RegisterJobResponse registerJob(RegisterJobRequest request, MultipartFile file) {
         String url = null;
         if(file != null) url = awsS3ObjectStorage.uploadFile(file);

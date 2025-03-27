@@ -81,6 +81,7 @@ public class WorkerCommandService implements WorkerCommandServiceDocs {
         workerAbilityRepository.saveAll(workerCommandMapper.mapWorkerAbilities(request.strong(), worker, abilityRepository));
     }
 
+    @Transactional
     public void askingJob2Client(ChangeStatusWorkerRequest request) {
         Member worker = userAccessUtil.getMember();
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId());

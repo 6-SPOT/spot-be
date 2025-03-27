@@ -4,7 +4,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 1000  # 최대 커넥션 수
-      minimum-idle: 50         # 최소한 유지할 유후 커넥션 수
+      minimum-idle: 250         # 최소한 유지할 유후 커넥션 수
       idle-timeout: 600000     # 유후 커넥션 유효 기간
       max-lifetime: 1800000    # 커넥션 최대 생명 주기
       connection-timeout: 5000 # 커넥션 못 받을 경우의 대기 시간

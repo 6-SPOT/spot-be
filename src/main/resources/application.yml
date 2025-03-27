@@ -77,6 +77,7 @@ springdoc:
 
 logging:
   level:
+    com.zaxxer.hikari:
     org:
       springframework:
         web: ERROR
