@@ -6,7 +6,7 @@
 PATCH_VERSIONS=$(aws s3 ls| while read -r line; do
   FILE=$(echo "$line" | xargs | cut -d' ' -f4)
 
-  if [[ "$FILE" == ${SERVER_TYPE}-*.zip ]]; then
+  if [[ "$FILE" == ${SERVER_TYPE}/*.zip ]]; then
     # 예: fe-1.0.13.zip → 13 추출
     VERSION_PART=${FILE%.zip}              # .zip 제거 → fe-1.0.13
     VERSION_ONLY=${VERSION_PART#${SERVER_TYPE}-} # fe- 제거 → 1.0.13
@@ -23,7 +23,7 @@ NEXT_PATCH=$((LATEST_PATCH + 1))
 NEW_VERSION="1.0.${NEXT_PATCH}"
 NEW_FILENAME="${SERVER_TYPE}-${NEW_VERSION}.zip"
 
-OLD_FILENAME="${SERVER_TYPE}-1.0.${LATEST_PATCH}.zip"
+OLD_FILENAME="${SERVER_TYPE}/1.0.${LATEST_PATCH}.zip"
 unzip $OLD_FILENAME -d ./extracted
 
  sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/deploy.sh
