@@ -71,11 +71,12 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_NAME: backend-repo
-          CODEPIPELINE_NAME: spot-prod-be-pipe
         run: |
           docker build -t $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION -f Dockerfile_be .
           docker push $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION
 
       - name: Trigger AWS CodePipeline
+        env:
+          CODEPIPELINE_NAME: spot-prod-be-pipe
         run: |
           aws codepipeline start-pipeline-execution --name "$CODEPIPELINE_NAME"
