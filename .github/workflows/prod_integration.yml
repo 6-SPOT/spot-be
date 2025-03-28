@@ -11,9 +11,9 @@ permissions:
 
 env:
   SERVER_TYPE: be
-  S3_BUCKET: ${{ secrets.S3_BUCKET_PROD }}
   CODEPIPELINE_NAME: ${{ secrets.prod-be-pipe }}
   AWS_REGION: ap-northeast-2
+  S3_BUCKET_PROD: ${{ secrets.S3_BUCKET_PROD }}
 
 jobs:
   deploy:
