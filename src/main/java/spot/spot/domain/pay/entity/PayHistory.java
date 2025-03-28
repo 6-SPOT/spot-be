@@ -1,24 +1,59 @@
 package spot.spot.domain.pay.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import spot.spot.domain.job.command.entity.Job;
+
+import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class PayHistory {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "pay_amount", nullable = false)
     private int payAmount;
+
     private int payPoint;
+
+    @Column(name = "depositor", nullable = false)
     private String depositor;
-    private Long memberId;
+
+    @Setter
+    private String worker;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "job_id", nullable = false)
+    private Job job;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private PayStatus payStatus;
+
+    private LocalDateTime createAt = LocalDateTime.now();
+
+    @Builder
+    private PayHistory(int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus, Job job) {
+        this.payAmount = payAmount;
+        this.payPoint = payPoint;
+        this.depositor = depositor;
+        this.worker = worker;
+        this.payStatus = payStatus;
+        this.job = job;
+    }
+
+    public static PayHistory create(int payAmount, int payPoint, String depositor, String worker, PayStatus payStatus, Job job) {
+        return PayHistory.builder()
+                .payAmount(payAmount)
+                .payPoint(payPoint)
+                .payStatus(payStatus)
+                .depositor(depositor)
+                .worker(worker)
+                .job(job)
+                .build();
+    }
+
 }

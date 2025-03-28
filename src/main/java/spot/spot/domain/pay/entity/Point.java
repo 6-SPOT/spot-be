@@ -1,24 +1,35 @@
 package spot.spot.domain.pay.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Point {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "point_name", nullable = false)
     private String pointName;
-    private int pointAmount;
+
+    @Column(name = "point", nullable = false)
+    private int point;
+
+    @Column(name = "point_code", nullable = false)
     private String pointCode;
 
+    @Column(name = "count", nullable = false)
     @Setter
-    private boolean isValid;
+    private int count;
+
+
+    @Builder
+    private Point(String pointName, int point, String pointCode, int count) {
+        this.pointName = pointName;
+        this.point = point;
+        this.pointCode = pointCode;
+        this.count = count;
+    }
 }

@@ -1,25 +1,35 @@
 package spot.spot.domain.pay.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import spot.spot.domain.job.command.entity.Job;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class KlayAboutJob {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int amtKlay;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "job_id")
+    private Job job;
 
-    private int amtKRW;
+    @Column(name = "amt_klay", nullable = false)
+    private double amtKlay;
 
+    @Column(name = "amt_krw" , nullable = false)
+    private int amtKrw;
+
+    @Column(name = "exchange_rate", nullable = false)
     private double exchangeRate;
+
+    @Builder
+    private KlayAboutJob(Job job, double amtKlay, int amtKrw, double exchangeRate) {
+        this.job = job;
+        this.amtKlay = amtKlay;
+        this.amtKrw = amtKrw;
+        this.exchangeRate = exchangeRate;
+    }
 }
