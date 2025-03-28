@@ -26,11 +26,12 @@ NEXT_PATCH=$((LATEST_PATCH + 1))
 NEW_VERSION="1.0.${NEXT_PATCH}"
 NEW_FILENAME="${SERVER_TYPE}/${NEW_VERSION}.zip"
 
-OLD_FILENAME="${SERVER_TYPE}/1.0.${LATEST_PATCH}.zip"
+#OLD_FILENAME="${SERVER_TYPE}/1.0.${LATEST_PATCH}.zip"
+OLD_FILENAME= "1.0.${LATEST_PATCH}.zip"
 
 aws s3 cp "${S3_BUCKET_PROD}/${OLD_FILENAME}" "$OLD_FILENAME"
 
-#unzip $OLD_FILENAME -d ./extracted
+unzip $OLD_FILENAME -d ./extracted
 
 sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/scripts/deploy.sh
 
