@@ -32,7 +32,7 @@ aws s3 cp "${S3_BUCKET_PROD}/${OLD_FILENAME}" "$OLD_FILENAME"
 
 unzip $OLD_FILENAME -d ./extracted
 
-sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/deploy.sh
+sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/scripts/deploy.sh
 
 cd extracted
 zip -r ./$NEW_FILENAME ./*
