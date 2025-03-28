@@ -3,7 +3,7 @@ name: Build, Package, and Deploy BE
 on:
   push:
     branches:
-      - develop
+      - feat/#276
 
 permissions:
   id-token: write
