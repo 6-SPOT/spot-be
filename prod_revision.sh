@@ -30,7 +30,7 @@ OLD_FILENAME="${SERVER_TYPE}/1.0.${LATEST_PATCH}.zip"
 
 aws s3 cp "${S3_BUCKET_PROD}/${OLD_FILENAME}" "$OLD_FILENAME"
 
-unzip $OLD_FILENAME -d ./extracted
+#unzip $OLD_FILENAME -d ./extracted
 
 sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/scripts/deploy.sh
 
