@@ -1,4 +1,4 @@
-name: prod-deploy-actions
+`name: prod-deploy-actions
 on:
   push:
     branches:
