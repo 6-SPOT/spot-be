@@ -1,0 +1,50 @@
+name: Build, Package, and Deploy BE
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  SERVER_TYPE: be
+  S3_BUCKET: ${{ secrets.S3_BUCKET_PROD }}
+  CODEPIPELINE_NAME: ${{ secrets.prod-be-pipe }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run custom versioning script \
+        run: |
+          chmod +x ./prod_revision.sh
+          source ./prod_revision.sh
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_FILENAME=$NEW_FILENAME" >> $GITHUB_ENV
+
+      - name: Build and Push Backend App Docker image (with version tag)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_NAME: backend-repo
+        run: |
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest -t $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION -f Dockerfile_be .
+          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+          docker push $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION
+
+#      - name: Trigger AWS CodePipeline
+#        run: |
+#          aws codepipeline start-pipeline-execution --name $CODEPIPELINE_NAME
