@@ -31,20 +31,17 @@ OLD_FILENAME="1.0.${LATEST_PATCH}.zip"
 
 aws s3 cp "${S3_BUCKET_PROD}/${OLD_FILENAME_LO}" "$OLD_FILENAME"
 
-echo "-------"
-echo ls
-
 unzip $OLD_FILENAME -d ./extracted
 
 sed -i "s/backend-repo:.*/backend-repo:${NEW_VERSION}/" ./extracted/scripts/deploy.sh
 
 cd extracted
-zip -r ./$NEW_FILENAME ./*
+zip -r ../$NEW_FILENAME . -x "__MACOSX/*" -x "*/__MACOSX/*"
 cd ..
 
 # S3 업로드 (버전별 + latest.zip)
-aws s3 cp "${NEW_FILENAME##*/}" "${S3_BUCKET_PROD}/${SERVER_TYPE}/"
-cp "${NEW_FILENAME##*/}" latest.zip
+aws s3 cp "${NEW_FILENAME}" "${S3_BUCKET_PROD}/${SERVER_TYPE}/"
+cp "${NEW_FILENAME}" latest.zip
 aws s3 cp latest.zip "${S3_BUCKET_PROD}/${SERVER_TYPE}/"
 
 rm -rf extracted
