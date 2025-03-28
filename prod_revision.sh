@@ -32,6 +32,7 @@ OLD_FILENAME="1.0.${LATEST_PATCH}.zip"
 aws s3 cp "${S3_BUCKET_PROD}/${OLD_FILENAME_LO}" "$OLD_FILENAME"
 
 echo "-------"
+echo ls
 
 unzip $OLD_FILENAME -d ./extracted
 
