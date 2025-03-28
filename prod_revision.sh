@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# SERVER_TYPE="be"
+ SERVER_TYPE="be"
 # S3_BUCKET="your-test-bucket"
 
-PATCH_VERSIONS=$(aws s3 ls| while read -r line; do
+PATCH_VERSIONS=$(aws s3 ls ${S3_BUCKET_PROD}/${SERVER_TYPE} | while read -r line; do
   FILE=$(echo "$line" | xargs | cut -d' ' -f4)
 
-  if [[ "$FILE" == ${SERVER_TYPE}/*.zip ]]; then
+  if [[ "$FILE" == *.zip ]]; then
     # 예: fe-1.0.13.zip → 13 추출
-    VERSION_PART=${FILE%.zip}              # .zip 제거 → fe-1.0.13
-    VERSION_ONLY=${VERSION_PART#${SERVER_TYPE}-} # fe- 제거 → 1.0.13
-    PATCH=${VERSION_ONLY##*.}              # 마지막 . 기준 → 13
+    VERSION_PART=${FILE%.zip}        # .zip 제거 → 1.0.13
+    PATCH=${VERSION_PART##*.}        # 마지막 . 기준 → 13
     echo "$PATCH"
   fi
 done)
@@ -33,9 +32,9 @@ zip -r ./$NEW_FILENAME ./*
 cd ..
 
 # S3 업로드 (버전별 + latest.zip)
-aws s3 cp $NEW_FILENAME s3://${S3_BUCKET}/${SERVER_TYPE}/
+aws s3 cp $NEW_FILENAME ${S3_BUCKET_PROD}/${SERVER_TYPE}/
 cp $NEW_FILENAME latest.zip
-aws s3 cp latest.zip s3://${S3_BUCKET}${SERVER_TYPE}/
+aws s3 cp latest.zip ${S3_BUCKET_PROD}${SERVER_TYPE}/
 
 # Github Actions용 환경변수 출력
 echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
