@@ -10,6 +10,8 @@ import spot.spot.domain.job.command.entity.MatchingStatus;
 import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.member.dto.request.MemberRequest;
 import spot.spot.domain.member.entity.Member;
+import spot.spot.domain.pay.entity.Point;
+import spot.spot.domain.pay.entity.QPoint;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,7 @@ public class MemberQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QMatching matching = QMatching.matching;
+    private final QPoint point = QPoint.point1;
 
     public void updateMember(Long memberId, MemberRequest.modify modify) {
         jpaQueryFactory.update(member)
@@ -75,5 +78,27 @@ public class MemberQueryRepository {
             .where(matching.job.id.eq(jobId).and(matching.status.eq(MatchingStatus.FINISH)))
             .limit(1)
             .fetchOne());
+    }
+
+    public Optional<Member> updatePointByRegister(Long memberId, String pointCode) {
+        long updateCount = jpaQueryFactory
+                .update(member)
+                .set(member.point, member.point.add(
+                        jpaQueryFactory
+                                .select(point.point)
+                                .from(point)
+                                .where(point.pointCode.eq(pointCode))
+                ))
+                .where(member.id.eq(memberId))
+                .execute();
+
+        if(updateCount > 0) {
+            return Optional.ofNullable(
+                    jpaQueryFactory
+                            .selectFrom(member)
+                            .where(member.id.eq(memberId))
+                            .fetchOne()
+            );
+        } else return Optional.empty();
     }
 }

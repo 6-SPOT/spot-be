@@ -1,18 +1,30 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:spot;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL
-    username: sa
+    url: jdbc:mysql://localhost:3306/spotdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8 #이부분 변경해야함 ilmatch -> local docker로
+    username: root
     password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 1000
+      minimum-idle: 50
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 5000
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+        use_sql_comments: true
+        dialect: org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
   sql:
     init:
       mode: never

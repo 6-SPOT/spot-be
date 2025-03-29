@@ -24,12 +24,24 @@ public class Point {
     @Setter
     private int count;
 
+    @Enumerated(EnumType.STRING)
+    private PointStatus pointStatus;
 
     @Builder
     private Point(String pointName, int point, String pointCode, int count) {
         this.pointName = pointName;
         this.point = point;
         this.pointCode = pointCode;
+        this.pointStatus = PointStatus.VALID;
         this.count = count;
+    }
+
+    public static Point create(String pointName, int point, String pointCode, int count) {
+        return Point.builder()
+                .pointName(pointName)
+                .point(point)
+                .pointCode(pointCode)
+                .count(count)
+                .build();
     }
 }

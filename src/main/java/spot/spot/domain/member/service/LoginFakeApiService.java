@@ -39,18 +39,23 @@ public class LoginFakeApiService {
     }
 
     public ResponseEntity<String> healthCheck() {
-        String requestUrl = fromHttpUrl("http://172.16.24.136:8080/health-check")
-                .toUriString();
+        try {
+            String requestUrl = fromHttpUrl("http://172.16.24.136:8080/health-check")
+                    .toUriString();
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                requestUrl,
-                HttpMethod.GET,
-                null,
-                String.class
-        );
+            ResponseEntity<String> response = restTemplate.exchange(
+                    requestUrl,
+                    HttpMethod.GET,
+                    null,
+                    String.class
+            );
 
-        log.info("fake-api 헬스 체크 response : {}", response.getBody());
+            log.info("fake-api 헬스 체크 response : {}", response.getBody());
 
-        return ResponseEntity.ok(response.getBody()); // "ok"라는 문자열을 그대로 클라이언트에 전달
+            return ResponseEntity.ok(response.getBody()); // "ok"라는 문자열을 그대로 클라이언트에 전달
+        } catch (Exception e) {
+            log.error("fakeApi Server 연결 에러 : {}", e.getMessage(), e);
+            throw new IllegalArgumentException("헬스 체크 api 실패");
+        }
     }
 }
