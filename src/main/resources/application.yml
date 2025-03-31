@@ -49,7 +49,7 @@ server:
     context-path: /
   tomcat:
     threads:
-      max: 1000
+      max: 3000
     max-connections: 10000
     accept-count: 1000
     mbeanregistry:
