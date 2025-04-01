@@ -1,28 +1,22 @@
 package spot.spot.domain.job.query.repository.dsl;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.sql.MySQLTemplates;
+import com.querydsl.jpa.impl.JPAQueryFactory;;
 import com.querydsl.sql.SQLQueryFactory;
-import com.querydsl.sql.SQLTemplates;
 import java.util.List;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import spot.spot.domain.job.command.dto.response.JobSituationResponse;
-import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.command.entity.MatchingStatus;
 import spot.spot.domain.job.command.entity.QCertification;
 import spot.spot.domain.job.command.entity.QJob;
@@ -30,7 +24,6 @@ import spot.spot.domain.job.command.entity.QMatching;
 import spot.spot.domain.job.query.dto.response.CertificationImgResponse;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.repository.dsl._docs.SearchingListQueryDocs;
-import spot.spot.domain.job.query.util.GeometryUtil;
 import spot.spot.domain.member.entity.QMember;
 import spot.spot.domain.member.entity.QWorker;
 import spot.spot.domain.member.entity.QWorkerAbility;
@@ -85,7 +78,6 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1) // Slice 지원 위해 1개 더 조회
             .fetch();
-        log.info(job.toString());
         // 다음 페이지가 있는지 계산
         boolean hasNext = jobs.size() > pageable.getPageSize();
         if (hasNext) {
