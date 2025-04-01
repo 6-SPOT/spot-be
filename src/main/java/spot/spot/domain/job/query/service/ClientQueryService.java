@@ -12,7 +12,7 @@ import spot.spot.domain.job.command.dto.response.JobSituationResponse;
 import spot.spot.domain.job.command.entity.Job;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.job.query.service._docs.ClientQueryServiceDocs;
-import spot.spot.domain.job.query.util.DistanceCalculateUtil;
+import spot.spot.domain.job.query.util.calculate.DistanceCalculateUtil;
 import spot.spot.domain.job.query.dto.response.AttenderResponse;
 import spot.spot.domain.job.query.dto.response.NearByWorkersResponse;
 import spot.spot.domain.job.query.mapper.ClientQueryMapper;

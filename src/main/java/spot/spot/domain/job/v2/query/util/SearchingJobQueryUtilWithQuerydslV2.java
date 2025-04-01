@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
-import spot.spot.domain.job.query.util.DistanceCalculateUtil;
+import spot.spot.domain.job.query.util.calculate.DistanceCalculateUtil;
 import spot.spot.domain.job.v2.query.repository.dsl.SearchingListQueryDslv2;
 
 @Service

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import spot.spot.domain.job.query.dto.response.NearByJobResponse;
 import spot.spot.domain.job.query.repository.jpa.JobRepository;
 import spot.spot.domain.job.query.util._docs.SearchingJobQueryUtil;
-import spot.spot.domain.job.query.util.DistanceCalculateUtil;
+import spot.spot.domain.job.query.util.calculate.DistanceCalculateUtil;
 
 @Service
 @RequiredArgsConstructor
