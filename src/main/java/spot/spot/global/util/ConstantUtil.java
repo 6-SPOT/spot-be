@@ -1,5 +1,7 @@
 package spot.spot.global.util;
 
+import java.time.Duration;
+
 public class ConstantUtil {
     // FOR SECURITY
     public static final String AUTHORIZATION = "Authorization";
@@ -16,4 +18,5 @@ public class ConstantUtil {
     public static final String AUTH_ERROR = "auth_error";
     // GEO-HASH
     public static final int GEOHASH_PRECISION = 7;
+    public static final Duration SYNC_INTERVAL = Duration.ofDays(1);
 }
