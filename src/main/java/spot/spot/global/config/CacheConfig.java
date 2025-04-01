@@ -15,7 +15,7 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager("job-geohash");
         manager.setCaffeine(Caffeine.newBuilder()
-            .maximumSize(10_000)
+            .maximumSize(200_000)
             .expireAfterWrite(Duration.ofDays(1))
             .recordStats());
         return manager;

@@ -34,6 +34,7 @@ public class Notification extends Created {
     @Column(name = "receiver_id")
     private Long receiverId;
 
+    @Column(length = 1000)
     private String content;
 
     @Enumerated(EnumType.STRING)
