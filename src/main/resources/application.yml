@@ -49,9 +49,9 @@ server:
     context-path: /
   tomcat:
     threads:
-      max: 3000
+      max: 500
     max-connections: 10000
-    accept-count: 1000
+    accept-count: 3000
     mbeanregistry:
       enabled: true
     connection-timeout: 60000
