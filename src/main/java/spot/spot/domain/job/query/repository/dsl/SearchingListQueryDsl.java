@@ -42,6 +42,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     private final QWorkerAbility workerAbility = QWorkerAbility.workerAbility;
     private final QMatching matching = QMatching.matching;
     private final QMember member = QMember.member;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Transactional(readOnly = true)
     public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
@@ -194,7 +195,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     public List<NearByJobResponse> findJobsforGeoHashSync() {
         // MySQL 인식 용
         // QueryDSL 실행 (SPATIAL INDEX 사용)
-        return  sqlQueryFactory
+        return  jpaQueryFactory
             .select(Projections.constructor(
                 NearByJobResponse.class,
                 job.id,
