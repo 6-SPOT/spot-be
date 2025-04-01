@@ -42,6 +42,7 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
     private final QWorkerAbility workerAbility = QWorkerAbility.workerAbility;
     private final QMatching matching = QMatching.matching;
     private final QMember member = QMember.member;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Transactional(readOnly = true)
     public Slice<NearByJobResponse> findNearByJobsWithQueryDSL(double lat, double lng, double dist, Pageable pageable) {
@@ -187,5 +188,29 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
             .join(matching).on(certification.matching.id.eq(matching.id))
             .where(matching.job.id.eq(jobId).and(matching.status.notIn(MatchingStatus.OWNER, MatchingStatus.ATTENDER, MatchingStatus.REQUEST)))
             .fetch();
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<NearByJobResponse> findJobsforGeoHashSync() {
+        // MySQL 인식 용
+        // QueryDSL 실행 (SPATIAL INDEX 사용)
+        return  jpaQueryFactory
+            .select(Projections.constructor(
+                NearByJobResponse.class,
+                job.id,
+                job.title,
+                job.content,
+                job.img.as("picture"),
+                job.lat,
+                job.lng,
+                job.money,
+                Expressions.constant(0.0),
+                job.tid
+            ))
+            .from(job)
+            .where(job.startedAt.isNull(), job.location.isNotNull())
+            .fetch();
+        // 다음 페이지가 있는지 계산
     }
 }
