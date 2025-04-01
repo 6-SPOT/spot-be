@@ -1,11 +1,9 @@
 package spot.spot.domain.job.query.util.caching;
 
-import ch.hsr.geohash.GeoHash;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +18,7 @@ import static spot.spot.global.util.ConstantUtil.GEOHASH_PRECISION;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JobGeoCacheSyncService {
+public class JobGeoCacheSyncUtil {
 
     private final SearchingListQueryDsl searchingListQueryDsl;
     private final CacheManager cacheManager;
