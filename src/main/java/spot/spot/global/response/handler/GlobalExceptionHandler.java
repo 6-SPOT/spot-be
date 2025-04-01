@@ -4,6 +4,7 @@ package spot.spot.global.response.handler;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,11 @@ import spot.spot.global.logging.ColorLogger;
 import spot.spot.global.response.format.ResultResponse;
 import spot.spot.global.response.format.GlobalException;
 import org.springframework.validation.FieldError;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Set;
 
+@Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
@@ -65,7 +68,7 @@ public class GlobalExceptionHandler {
     // 사용자가 예측 가능한 에러 발생 시
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<ResultResponse<Object>> handleGlobalException ( GlobalException globalException) {
-        ColorLogger.red("Global Exception: {}",globalException.getMessage());
+        log.error("Global Exception: {}",globalException.getMessage());
         return ResponseEntity
             .status(globalException.getErrorCode().getStatus())
             .headers(jsonHeaders)
@@ -74,7 +77,7 @@ public class GlobalExceptionHandler {
     // 예기치 못한 에러 발생 시 (일단 에러 내용이 front 한테도 보이게 뒀습니다. 배포할 때 고치겠습니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultResponse<Object>> handleUnExpectException (Exception e) {
-        ColorLogger.red("예상치 못한 에러: ",e);
+        log.error("예상치 못한 에러: {}", ExceptionUtils.getStackTrace(e).replace("\n", "\\n").replace("\r", ""));
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .headers(jsonHeaders)
