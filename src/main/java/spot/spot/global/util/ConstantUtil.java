@@ -17,6 +17,6 @@ public class ConstantUtil {
     public static final String PERMIT_ALL = "permitAll";
     public static final String AUTH_ERROR = "auth_error";
     // GEO-HASH
-    public static final int GEOHASH_PRECISION = 7;
+    public static final int GEOHASH_PRECISION = 6;
     public static final Duration SYNC_INTERVAL = Duration.ofDays(1);
 }
