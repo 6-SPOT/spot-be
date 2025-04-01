@@ -1,6 +1,7 @@
 package spot.spot.domain.job.query.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,4 +28,25 @@ public class NearByJobResponse {
     private double dist;
     @Schema(description = "카카오페이 결제 번호")
     private String tid;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NearByJobResponse that = (NearByJobResponse) o;
+        return id == that.id &&
+            Double.compare(that.lat, lat) == 0 &&
+            Double.compare(that.lng, lng) == 0 &&
+            money == that.money &&
+            Double.compare(that.dist, dist) == 0 &&
+            Objects.equals(title, that.title) &&
+            Objects.equals(content, that.content) &&
+            Objects.equals(picture, that.picture);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, content, picture, lat, lng, money, dist);
+    }
+
 }
