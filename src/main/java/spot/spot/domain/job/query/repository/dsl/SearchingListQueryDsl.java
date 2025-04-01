@@ -85,7 +85,6 @@ public class SearchingListQueryDsl implements SearchingListQueryDocs {  // java 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1) // Slice 지원 위해 1개 더 조회
             .fetch();
-        log.info(job.toString());
         // 다음 페이지가 있는지 계산
         boolean hasNext = jobs.size() > pageable.getPageSize();
         if (hasNext) {
