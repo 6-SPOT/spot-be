@@ -54,6 +54,7 @@ server:
     accept-count: 1000
     mbeanregistry:
       enabled: true
+    connection-timeout: 60000
 
 # SWAGGER
 springdoc:
