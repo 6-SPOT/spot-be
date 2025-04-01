@@ -1,12 +1,9 @@
-package spot.spot.domain.job.query.util;
+package spot.spot.domain.job.query.util.calculate;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 import spot.spot.domain.job.query.util._docs.GeometryUtilDocs;
 
 @Component
