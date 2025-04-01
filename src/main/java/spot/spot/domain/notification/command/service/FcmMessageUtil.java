@@ -6,22 +6,13 @@ import spot.spot.domain.notification.command.dto.response.FcmDTO;
 @Component
 public class FcmMessageUtil {
 
-    private static final ThreadLocal<StringBuilder> localBuilder = ThreadLocal.withInitial(StringBuilder::new);
-
     public FcmDTO askingJob2WorkerMsg(String ownerName, String workerName, String jobTitle) {
-        localBuilder.remove();
-        StringBuilder msg = localBuilder.get();
-        msg.setLength(0);
-        msg.append(ownerName).append("님이 ").append(workerName).append("님께 ").append(jobTitle).append("을 신청하였습니다.");
-        return makeMsg("일 의뢰 알림!",msg.toString());
+        return makeMsg("일 의뢰 알림!", ownerName + "님이 " + workerName + "님께 " + jobTitle + "을 신청하였습니다.");
     }
 
     public FcmDTO sayYes2WorkerMsg(String ownerName, String workerName, String jobTitle) {
-        localBuilder.remove();
-        StringBuilder msg = localBuilder.get();
-        msg.setLength(0);
-        msg.append(ownerName).append("님이 ").append(workerName).append("님의 ").append(jobTitle).append("해결 요청을 수락하셨습니다!");
-        return makeMsg("일 신청 수락 알림", msg.toString());
+        return makeMsg("일 신청 수락 알림",
+            ownerName + "님이 " + workerName + "님의 " + jobTitle + "해결 요청을 수락하셨습니다!");
 
     }
 

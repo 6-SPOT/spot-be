@@ -1,4 +1,4 @@
-package spot.spot.domain.job.query.util;
+package spot.spot.domain.job.query.util.calculate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
