@@ -19,7 +19,7 @@ public interface WorkerQueryMapperV1 {
     NearByJobResponse toNearByJobResponse(Job job);
 
     default List<NearByJobResponse> toNearByJobResponseList(List<Job> jobs, Location location) {
-        return jobs.stream()
+        return jobs.parallelStream()
             .map(job -> {
                 NearByJobResponse response = toNearByJobResponse(job);
                 double distance = DistanceCalculateUtilDocs.calculateHaversineDistance(location.lat(), location.lng(), job.getLat(), job.getLng());
