@@ -30,7 +30,6 @@ import spot.spot.domain.notification.command.entity.NoticeType;
 import spot.spot.domain.notification.command.repository.NotificationRepository;
 import spot.spot.domain.notification.command.service.FcmAsyncSendingUtil;
 import spot.spot.domain.notification.command.service.FcmMessageUtil;
-import spot.spot.domain.pay.service.PayService;
 import spot.spot.global.response.format.ErrorCode;
 import spot.spot.global.response.format.GlobalException;
 import spot.spot.global.security.util.UserAccessUtil;
@@ -48,7 +47,6 @@ public class ClientCommandService implements ClientCommandServiceDocs {
     private final ReservationCancelUtil reservationCancelUtil;
     private final FcmMessageUtil fcmMessageUtil;
     private final AwsS3ObjectStorage awsS3ObjectStorage;
-    private final PayService payService;
     private final RetryTemplate retryTemplate;
     // Mapper
     private final ClientCommandMapper clientCommandMapper;
@@ -104,16 +102,20 @@ public class ClientCommandService implements ClientCommandServiceDocs {
         notificationRepository.save(notificationMapper.toNotification(msg, NoticeType.JOB, userAccessUtil.getMember(), worker.getId()));
     }
 
+
     @Transactional
     public void requestWithdrawal(ChangeStatusClientRequest request) {
         Member owner = userAccessUtil.getMember();
         Member worker = memberRepository.findById(request.workerId()).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Job job = changeJobStatusCommandDsl.findJobWithValidation(worker.getId(), request.jobId(), MatchingStatus.START);
         Matching matching = changeJobStatusCommandDsl.updateMatchingStatus(worker.getId(), request.jobId(), MatchingStatus.SLEEP);
-        reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
+        retryTemplate.execute(context -> {
+            reservationCancelUtil.scheduledSleepMatching2Cancel(matching);
+            return null;
+        });
         FcmDTO msg = fcmMessageUtil.doYouSleepMsg(owner.getNickname(), worker.getNickname(), job.getTitle());
         retryTemplate.execute(context -> {
-            log.warn("해결사 취소 요청 (NO SHOW): FCM 전송 시도 [재시도 횟수 {}]", context.getRetryCount());
+            log.warn("해결사 취소 요청 (NO SHOW): [재시도 횟수 {}]", context.getRetryCount());
             fcmAsyncSendingUtil.singleFcmSend(worker.getId(), msg);
             return null;
         });

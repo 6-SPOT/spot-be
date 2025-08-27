@@ -52,10 +52,10 @@ public class SearchingListQueryDslv2 {
                 job.lng,
                 job.money,
                 job.tid,
-                distanceExpression.as("dist") // ✅ 거리 계산 후 별칭(dist) 적용
+                distanceExpression.as("dist") //  거리 계산 후 별칭(dist) 적용
             )
             .from(job)
-            .addJoinFlag(" FORCE INDEX (idx_lat_lng)", Position.END) // ✅ 인덱스 강제 적용
+            .addJoinFlag(" FORCE INDEX (idx_lat_lng)", Position.END) //  인덱스 강제 적용
             .where(
                 Expressions.stringPath("started_at").isNull(),
                 job.lat.between(lat - (dist / 111.045), lat + (dist / 111.045)),
@@ -72,12 +72,12 @@ public class SearchingListQueryDslv2 {
                 subJob.lat,
                 subJob.lng,
                 subJob.money,
-                Expressions.numberPath(Double.class, "dist"), // ✅ 서브쿼리의 `dist` 사용
+                Expressions.numberPath(Double.class, "dist"), // 서브쿼리의 `dist` 사용
                 subJob.tid
             ))
-            .from(subQuery, subJob) // ✅ 서브쿼리 적용
-            .having(Expressions.numberPath(Double.class, "dist").loe(dist)) // ✅ 거리 필터링을 HAVING으로 변경
-            .orderBy(Expressions.numberPath(Double.class, "dist").asc()) // ✅ 거리순 정렬
+            .from(subQuery, subJob) // 서브쿼리 적용
+            .having(Expressions.numberPath(Double.class, "dist").loe(dist)) // 거리 필터링을 HAVING으로 변경
+            .orderBy(Expressions.numberPath(Double.class, "dist").asc()) // 거리순 정렬
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
             .fetch();
