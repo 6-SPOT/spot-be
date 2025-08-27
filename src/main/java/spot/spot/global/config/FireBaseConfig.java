@@ -16,30 +16,29 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 @Slf4j
 @Configuration
 public class FireBaseConfig {
 
     @Value("${firebase.credentials}")
-    private String firebaseCredentials;
+    private Resource serviceAccount;
 
     @Bean
     public FirebaseMessaging firebaseMessaging() throws IOException {
-        InputStream inputStream = new ByteArrayInputStream(firebaseCredentials.getBytes());
-
-        if (FirebaseApp.getApps().isEmpty()) {
+        try (InputStream inputStream = serviceAccount.getInputStream()) {
+            GoogleCredentials creds = GoogleCredentials.fromStream(inputStream);
             FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(inputStream))
-                .setProjectId("soomin-dea03")
+                .setCredentials(creds)
                 .build();
-            FirebaseApp.initializeApp(options);
-            log.info("✅ Firebase 초기화 완료!");
-        } else {
-            log.warn("⚠️ Firebase는 이미 초기화 되었습니다.");
-        }
 
-        FirebaseApp existingApp = FirebaseApp.getInstance();
-        return FirebaseMessaging.getInstance();
+            FirebaseApp app = FirebaseApp.getApps().isEmpty()
+                ? FirebaseApp.initializeApp(options, "spot-app")
+                : FirebaseApp.getInstance("spot-app");
+
+            log.info("✅ Firebase 초기화 완료!");
+            return FirebaseMessaging.getInstance(app);
+        }
     }
 }

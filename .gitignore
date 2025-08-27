@@ -25,8 +25,10 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
 **/src/main/resources/firebase
+**/src/main/resources/application-localmysql.yml
+
+
 
 ### NetBeans ###
 /nbproject/private/

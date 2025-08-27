@@ -18,6 +18,9 @@ spring:
       token: 604800000
     secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf
 
+# FCM 설정
+firebase:
+  credentials: "classpath:firebase/firebase_key.json"
 
 
 # 서버 설정
@@ -94,6 +97,3 @@ management:
       all: true
       tomcat: true
 
-mongodb:
-  client: mongodb://localhost:27017
-  name : test
