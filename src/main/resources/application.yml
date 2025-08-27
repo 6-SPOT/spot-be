@@ -1,0 +1,99 @@
+# 스프링 설정
+spring:
+  application:
+    name: spot-be
+  profiles:
+    active: localmysql
+  thymeleaf:
+    check-template-location: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jwt:
+    access:
+      token: 604800000
+    refresh:
+      token: 604800000
+    secretKey: dfafjdsldfkldsjfsoifjsdfjsdlkfjskadfjsdoifjsadlfjksdfasdfasdfasdfsadsdf
+
+# FCM 설정
+firebase:
+  credentials: "classpath:firebase/firebase_key.json"
+
+
+# 서버 설정
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    context-path: /
+  tomcat:
+    threads:
+      max: 500
+    max-connections: 10000
+    accept-count: 3000
+    mbeanregistry:
+      enabled: true
+    connection-timeout: 60000
+
+# SWAGGER
+springdoc:
+  show-login-endpoint: true
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /api/swagger-ui.html
+    tags-sorter: alpha # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    operations-sorter: alpha # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    display-request-duration: true
+    disable-swagger-default-url: true # petStore default로 들어가는 것 끄기
+    urls:
+      - name: "Default Server URL"
+        url: "/v3/api-docs"
+
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    com.zaxxer.hikari: DEBUG
+    org:
+      springframework:
+        web: ERROR
+        security: DEBUG
+        vault: DEBUG
+        cloud:
+          vault: DEBUG
+    root: INFO
+
+klaytn:
+  bithumb:
+    kaia:
+      krw:
+        api:
+          url: https://api.bithumb.com/v1/ticker?markets=KRW-KAIA
+
+kakao:
+  pay:
+    partner_order_id: ilmatch
+
+management:
+  endpoints:
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: prometheus, metrics
+  metrics:
+    export:
+      prometheus:
+        enabled:true
+    enalbe:
+      all: true
+      tomcat: true
+

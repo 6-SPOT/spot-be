@@ -1,0 +1,81 @@
+name: Build, Package, and Deploy BE
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  SERVER_TYPE: be
+  CODEPIPELINE_NAME: ${{ secrets.prod-be-pipe }}
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_PROD: ${{ secrets.S3_BUCKET_PROD }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run custom versioning script \
+        run: |
+          chmod +x ./prod_revision.sh
+          source ./prod_revision.sh
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_FILENAME=$NEW_FILENAME" >> $GITHUB_ENV
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test --no-daemon
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::160885287796:role/GithubActionsOIDC
+          role-session-name: GitHubActionsSession
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Backend App Docker image (with version tag)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_NAME: backend-repo
+          CODEPIPELINE_NAME: spot-prod-be-pipe
+        run: |
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION -f Dockerfile_be .
+          docker push $ECR_REGISTRY/$IMAGE_NAME:$NEW_VERSION
+
+      - name: Trigger AWS CodePipeline
+        run: |
+          aws codepipeline start-pipeline-execution --name $CODEPIPELINE_NAME
